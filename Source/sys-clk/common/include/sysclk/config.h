@@ -426,8 +426,6 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
         case SysClkConfigValue_FreqLogIntervalMs:
         case SysClkConfigValue_PowerLogIntervalMs:
         case SysClkConfigValue_CsvWriteIntervalMs:
-        case HocClkConfigValue_UncappedClocks:
-        case HocClkConfigValue_OverwriteBoostMode:
         case HorizonOCConfigValue_BatteryChargeCurrent:
         case HorizonOCConfigValue_OverwriteRefreshRate:
         case HorizonOCConfigValue_EnableUnsafeDisplayFreqs:
@@ -440,9 +438,8 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
 
         case HocClkConfigValue_MarikoMaxCpuClock:
             return 1963ULL;
-
-        case HocClkConfigValue_ThermalThrottle:
-        case HocClkConfigValue_HandheldTDP:
+        case HocClkConfigValue_UncappedClocks:
+        case HocClkConfigValue_OverwriteBoostMode:
         case HocClkConfigValue_IsFirstLoad:
         case HorizonOCConfigValue_DVFSMode:
         case HorizonOCConfigValue_EnableExperimentalSettings:
@@ -533,8 +530,6 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HorizonOCConfigValue_DVFSOffset:
         case HorizonOCConfigValue_GPUScheduling:
             return true;
-        case HorizonOCConfigValue_BatteryChargeCurrent:
-            return ((input >= 1024) && (input <= 3072)) || !input;
         default:
             return true;
     }

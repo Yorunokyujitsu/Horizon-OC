@@ -748,10 +748,12 @@ void ClockManager::DVFSReset() {
                 targetHz = this->config->GetAutoClockHz(GLOBAL_PROFILE_ID, SysClkModule_GPU, this->context->profile, false);
             }
         }
+        u32 maxHz = this->GetMaxAllowedHz(SysClkModule_GPU, this->context->profile);
+        u32 nearestHz = this->GetNearestHz(SysClkModule_GPU, targetHz, maxHz);
 
         Board::SetHz(SysClkModule_GPU, ~0);
         if(targetHz) {
-            Board::SetHz(SysClkModule_GPU, targetHz);
+            Board::SetHz(SysClkModule_GPU, nearestHz);
         } else {
             Board::ResetToStockGpu();
         }
@@ -778,8 +780,8 @@ void ClockManager::HandleFreqReset(SysClkModule module, bool isBoost) {
     case SysClkModule_MEM:
         Board::ResetToStockMem();
         DVFSReset();
-        default:
-            break;
+    default:
+        break;
     }
 
 }

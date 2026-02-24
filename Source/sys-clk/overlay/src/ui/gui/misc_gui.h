@@ -1,4 +1,3 @@
-
 /*
  *
  * Copyright (c) Souldbminer, Lightos_ and Horizon OC Contributors
@@ -19,12 +18,12 @@
 #pragma once
 #include "../../ipc.h"
 #include "base_menu_gui.h"
+#include <set>
 #include <unordered_map>
 #include <string>
 #include <vector>
 #include "freq_choice_gui.h"
 #include "value_choice_gui.h"
-
 class MiscGui : public BaseMenuGui
 {
 public:
@@ -40,6 +39,8 @@ protected:
     std::map<SysClkConfigValue, std::vector<NamedValue>> configNamedValues;
     std::map<SysClkConfigValue, tsl::elm::ToggleListItem*> configToggles;
     std::map<SysClkConfigValue, std::tuple<tsl::elm::TrackBar*, tsl::elm::ListItem*, std::vector<uint64_t>>> configTrackbars;
+    std::set<SysClkConfigValue> configButtonSKeys;
+    std::map<SysClkConfigValue, std::string> configButtonSSubtext;
     
     void addConfigToggle(SysClkConfigValue configVal, const char* altName);
     void addConfigButton(SysClkConfigValue configVal, 
@@ -50,6 +51,16 @@ protected:
         const std::map<uint32_t, std::string>& labels = {},
         const std::vector<NamedValue>& namedValues = {},
         bool showDefaultValue = true);
+        
+    void addConfigButtonS(SysClkConfigValue configVal, 
+        const char* altName, 
+        const ValueRange& range,
+        const std::string& categoryName,
+        const ValueThresholds* thresholds,
+        const std::map<uint32_t, std::string>& labels = {},
+        const std::vector<NamedValue>& namedValues = {},
+        bool showDefaultValue = true,
+        const char* subText = nullptr);
     void addFreqButton(SysClkConfigValue configVal,
                             const char* altName,
                             SysClkModule module,

@@ -80,7 +80,7 @@ volatile CustomizeTable C = {
 .marikoCpuUVLow = 0, // No undervolt
 .marikoCpuUVHigh = 0, // No undervolt
 
-.tableConf = DEFAULT_TABLE,
+.tableConf = TBREAK_1683,
 .marikoCpuLowVmin = 620,
 .marikoCpuHighVmin = 750,
 /* 1120mV is NVIDIA rating */
@@ -98,7 +98,7 @@ volatile CustomizeTable C = {
 .eristaCpuBoostClock = 1785000, // Default boost clock
 .marikoCpuBoostClock = 1963000, // Default boost clock
 
-.eristaGpuUV = 0,
+.eristaGpuUV = 2,
 .eristaGpuVmin = 810,
 
 .marikoGpuUV = 0,

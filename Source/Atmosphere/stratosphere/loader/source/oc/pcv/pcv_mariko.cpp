@@ -653,7 +653,6 @@ namespace ams::ldr::hoc::pcv::mariko {
         // Copy unmodified 1600000 table to tmp
         std::memcpy(reinterpret_cast<void *>(tmp), reinterpret_cast<void *>(table_max), sizeof(MarikoMtcTable));
         // Adjust max freq mtc timing parameters with reference to 1331200 table
-        /* TODO: Implement mariko */
 
         MemMtcTableAutoAdjust(table_max);
 

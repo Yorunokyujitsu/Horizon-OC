@@ -28,6 +28,8 @@
 #pragma message("Compiling with minimal features")
 #endif
 
+class DisplaySubMenuGui;
+class SafetySubMenuGui;
 class RamSubmenuGui;
 class RamTimingsSubmenuGui;
 class RamLatenciesSubmenuGui;
@@ -355,7 +357,7 @@ void MiscGui::listUI()
     ValueThresholds thresholdsDisabled(0, 0);
     std::vector<NamedValue> noNamedValues = {};
 
-    this->listElement->addItem(new tsl::elm::CategoryHeader("UI Settings"));
+    this->listElement->addItem(new tsl::elm::CategoryHeader("Hoc-clk Settings"));
     std::vector<NamedValue> ramVoltDispModes = {
         NamedValue("VDD2 + VDDQ", RamDisplayMode_VDD2VDDQ),
         NamedValue("VDD2 + Usage", RamDisplayMode_VDD2Usage),
@@ -364,111 +366,15 @@ void MiscGui::listUI()
 
     addConfigButton(HorizonOCConfigValue_RAMVoltUsageDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
 
-    this->listElement->addItem(new tsl::elm::CategoryHeader("Safety Settings"));
-    addConfigToggle(HocClkConfigValue_UncappedClocks, nullptr);
-    addConfigToggle(HocClkConfigValue_ThermalThrottle, nullptr);
-    addConfigToggle(HocClkConfigValue_HandheldTDP, nullptr);
-//  addConfigToggle(HocClkConfigValue_EnforceBoardLimit, nullptr);
-
-    #if IS_MINIMAL == 0
-        std::map<uint32_t, std::string> labels_pwr_l = {
-            {6400, "Official Rating"}
-        };
-
-        if(IsHoag()) {
-            ValueThresholds tdpThresholdsLite(6400, 7500);
-            addConfigButton(
-                HocClkConfigValue_LiteTDPLimit,
-                "Lite TDP Threshold",
-                ValueRange(4000, 8000, 100, "mW", 1),
-                "Power",
-                &tdpThresholdsLite,
-                labels_pwr_l
-            );
-        } else {
-            ValueThresholds tdpThresholds(9600, 11000);
-            addConfigButton(
-                HocClkConfigValue_HandheldTDPLimit,
-                "TDP Threshold",
-                ValueRange(8000, 12000, 100, "mW", 1),
-                "Power",
-                &tdpThresholds
-            );
+    tsl::elm::ListItem* safetySubmenu = new tsl::elm::ListItem("Safety Settings");
+    safetySubmenu->setClickListener([](u64 keys) {
+        if (keys & HidNpadButton_A) {
+            tsl::changeTo<SafetySubMenuGui>();
+            return true;
         }
-
-        ValueThresholds throttleThresholds(70, 80);
-        addConfigButton(
-            HocClkConfigValue_ThermalThrottleThreshold,
-            "Thermal Throttle Limit",
-            ValueRange(50, 85, 1, "°C", 1),
-            "Temp",
-            &throttleThresholds
-        );
-    #endif
-
-    this->listElement->addItem(new tsl::elm::CategoryHeader("CPU Settings"));
-    addConfigToggle(HocClkConfigValue_OverwriteBoostMode, nullptr);
-    std::vector<NamedValue> gpuSchedValues = {
-        NamedValue("Do not override", GpuSchedulingMode_DoNotOverride),
-        NamedValue("Enabled (Default)", GpuSchedulingMode_Enabled, "96.6% limit"),
-        NamedValue("Disabled", GpuSchedulingMode_Disabled, "99.7% limit"),
-    };
-
-    this->listElement->addItem(new tsl::elm::CategoryHeader("GPU Settings"));
-    addConfigButton(
-        HorizonOCConfigValue_GPUScheduling,
-        "GPU Scheduling Override",
-        ValueRange(0, 0, 1, "", 0),
-        "GPU Scheduling Override",
-        &thresholdsDisabled,
-        {},
-        gpuSchedValues,
-        false
-    );
-
-    if (IsMariko()) {
-        std::vector<NamedValue> dvfsValues = {
-            NamedValue("Disabled", DVFSMode_Disabled),
-            NamedValue("PCV Hijack", DVFSMode_Hijack),
-            // NamedValue("Official Service", DVFSMode_OfficialService),
-            // NamedValue("Hack", DVFSMode_Hack),
-        };
-
-        addConfigButton(
-            HorizonOCConfigValue_DVFSMode,
-            "GPU DVFS Mode",
-            ValueRange(0, 0, 1, "", 0),
-            "GPU DVFS Mode",
-            &thresholdsDisabled,
-            {},
-            dvfsValues,
-            false
-        );
-
-        std::vector<NamedValue> dvfsOffset = {
-            NamedValue("-80 mV", 0xFFFFFFB0),
-            NamedValue("-75 mV", 0xFFFFFFB5),
-            NamedValue("-70 mV", 0xFFFFFFBA),
-            NamedValue("-65 mV", 0xFFFFFFBF),
-            NamedValue("-60 mV", 0xFFFFFFC4),
-            NamedValue("-55 mV", 0xFFFFFFC9),
-            NamedValue("-50 mV", 0xFFFFFFCE),
-            NamedValue("-45 mV", 0xFFFFFFD3),
-            NamedValue("-40 mV", 0xFFFFFFD8),
-            NamedValue("-30 mV", 0xFFFFFFE2),
-            NamedValue("-25 mV", 0xFFFFFFE7),
-            NamedValue("-20 mV", 0xFFFFFFEC),
-            NamedValue("-10 mV", 0xFFFFFFF6),
-            NamedValue(" -5 mV", 0xFFFFFFFB),
-            NamedValue("Disabled",        0),
-            NamedValue(" +5 mV",          5),
-            NamedValue("+10 mV",         10),
-            NamedValue("+15 mV",         15),
-            NamedValue("+20 mV",         20),
-        };
-
-        addConfigButton(HorizonOCConfigValue_DVFSOffset, "GPU DVFS Offset", ValueRange(0, 12, 1, "", 0), "GPU DVFS Offset", &thresholdsDisabled, {}, dvfsOffset, false);
-    }
+        return false;
+    });
+    this->listElement->addItem(safetySubmenu);
 
     this->listElement->addItem(new tsl::elm::CategoryHeader("KIP"));
 
@@ -515,19 +421,18 @@ void MiscGui::listUI()
         return false;
     });
     this->listElement->addItem(gpuSubmenu);
-    if(!IsHoag()) {
+
     this->listElement->addItem(new tsl::elm::CategoryHeader("Display"));
-        addConfigToggle(HorizonOCConfigValue_OverwriteRefreshRate, nullptr);
-        tsl::elm::CustomDrawer* warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-            renderer->drawString("\uE150 Enabling unsafe display", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-            renderer->drawString("refresh rates may cause stress", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-            renderer->drawString("or damage to your display! ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-            renderer->drawString("Proceed at your own risk!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
-        });
-        warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
-        this->listElement->addItem(warningText);
-        addConfigToggle(HorizonOCConfigValue_EnableUnsafeDisplayFreqs, nullptr);
-    }
+    tsl::elm::ListItem* displaySubMenu = new tsl::elm::ListItem("Display Settings");
+    displaySubMenu->setClickListener([](u64 keys) {
+        if (keys & HidNpadButton_A) {
+            tsl::changeTo<DisplaySubMenuGui>();
+            return true;
+        }
+        return false;
+    });
+    this->listElement->addItem(displaySubMenu);
+
     #if IS_MINIMAL == 0
         // std::vector<NamedValue> chargerCurrents = {
         //     NamedValue("Disabled", 0),
@@ -624,6 +529,75 @@ void MiscGui::listUI()
     #endif
 }
 
+class DisplaySubMenuGui : public MiscGui {
+public:
+    DisplaySubMenuGui() { }
+
+protected:
+    void listUI() override {
+        if(!IsHoag()) {
+            addConfigToggle(HorizonOCConfigValue_OverwriteRefreshRate, nullptr);
+            tsl::elm::CustomDrawer* warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+                renderer->drawString("\uE150 Enabling unsafe display", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
+                renderer->drawString("refresh rates may cause stress", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
+                renderer->drawString("or damage to your display! ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
+                renderer->drawString("Proceed at your own risk!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
+            });
+            warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
+            this->listElement->addItem(warningText);
+            addConfigToggle(HorizonOCConfigValue_EnableUnsafeDisplayFreqs, nullptr);
+        }
+    }
+};
+
+class SafetySubMenuGui : public MiscGui {
+public:
+    SafetySubMenuGui() { }
+
+protected:
+    void listUI() override {
+        this->listElement->addItem(new tsl::elm::CategoryHeader("Safety Settings"));
+        addConfigToggle(HocClkConfigValue_UncappedClocks, nullptr);
+        addConfigToggle(HocClkConfigValue_ThermalThrottle, nullptr);
+        addConfigToggle(HocClkConfigValue_HandheldTDP, nullptr);
+
+        #if IS_MINIMAL == 0
+            std::map<uint32_t, std::string> labels_pwr_l = {
+                {6400, "Official Rating"}
+            };
+
+            if(IsHoag()) {
+                ValueThresholds tdpThresholdsLite(6400, 7500);
+                addConfigButton(
+                    HocClkConfigValue_LiteTDPLimit,
+                    "Lite TDP Threshold",
+                    ValueRange(4000, 8000, 100, "mW", 1),
+                    "Power",
+                    &tdpThresholdsLite,
+                    labels_pwr_l
+                );
+            } else {
+                ValueThresholds tdpThresholds(9600, 11000);
+                addConfigButton(
+                    HocClkConfigValue_HandheldTDPLimit,
+                    "TDP Threshold",
+                    ValueRange(8000, 12000, 100, "mW", 1),
+                    "Power",
+                    &tdpThresholds
+                );
+            }
+
+            ValueThresholds throttleThresholds(70, 80);
+            addConfigButton(
+                HocClkConfigValue_ThermalThrottleThreshold,
+                "Thermal Throttle Limit",
+                ValueRange(50, 85, 1, "°C", 1),
+                "Temp",
+                &throttleThresholds
+            );
+        #endif
+    }
+};
 
 class RamSubmenuGui : public MiscGui {
 public:
@@ -1013,6 +987,9 @@ protected:
                 {},
                 false
             );
+
+            addConfigToggle(HocClkConfigValue_OverwriteBoostMode, nullptr);
+
         }
     }
 };
@@ -1282,6 +1259,66 @@ protected:
             {},
             false
         );
+
+        std::vector<NamedValue> gpuSchedValues = {
+            NamedValue("Do not override", GpuSchedulingMode_DoNotOverride),
+            NamedValue("Enabled (Default)", GpuSchedulingMode_Enabled, "96.6% limit"),
+            NamedValue("Disabled", GpuSchedulingMode_Disabled, "99.7% limit"),
+        };
+
+        addConfigButton(
+            HorizonOCConfigValue_GPUScheduling,
+            "GPU Scheduling Override",
+            ValueRange(0, 0, 1, "", 0),
+            "GPU Scheduling Override",
+            &thresholdsDisabled,
+            {},
+            gpuSchedValues,
+            false
+        );
+
+        if (IsMariko()) {
+            std::vector<NamedValue> dvfsOffset = {
+                NamedValue("-80 mV", 0xFFFFFFB0),
+                NamedValue("-75 mV", 0xFFFFFFB5),
+                NamedValue("-70 mV", 0xFFFFFFBA),
+                NamedValue("-65 mV", 0xFFFFFFBF),
+                NamedValue("-60 mV", 0xFFFFFFC4),
+                NamedValue("-55 mV", 0xFFFFFFC9),
+                NamedValue("-50 mV", 0xFFFFFFCE),
+                NamedValue("-45 mV", 0xFFFFFFD3),
+                NamedValue("-40 mV", 0xFFFFFFD8),
+                NamedValue("-30 mV", 0xFFFFFFE2),
+                NamedValue("-25 mV", 0xFFFFFFE7),
+                NamedValue("-20 mV", 0xFFFFFFEC),
+                NamedValue("-10 mV", 0xFFFFFFF6),
+                NamedValue(" -5 mV", 0xFFFFFFFB),
+                NamedValue("Disabled",        0),
+                NamedValue(" +5 mV",          5),
+                NamedValue("+10 mV",         10),
+                NamedValue("+15 mV",         15),
+                NamedValue("+20 mV",         20),
+            };
+
+            std::vector<NamedValue> dvfsValues = {
+                NamedValue("Disabled", DVFSMode_Disabled),
+                NamedValue("PCV Hijack", DVFSMode_Hijack),
+                // NamedValue("Official Service", DVFSMode_OfficialService),
+            };
+
+            addConfigButton(
+                HorizonOCConfigValue_DVFSMode,
+                "GPU DVFS Mode",
+                ValueRange(0, 0, 1, "", 0),
+                "GPU DVFS Mode",
+                &thresholdsDisabled,
+                {},
+                dvfsValues,
+                false
+            );
+
+            addConfigButton(HorizonOCConfigValue_DVFSOffset, "GPU DVFS Offset", ValueRange(0, 12, 1, "", 0), "GPU DVFS Offset", &thresholdsDisabled, {}, dvfsOffset, false);
+        }
 
         tsl::elm::ListItem* customTableSubmenu = new tsl::elm::ListItem("GPU Voltage Table");
         customTableSubmenu->setClickListener([](u64 keys) {

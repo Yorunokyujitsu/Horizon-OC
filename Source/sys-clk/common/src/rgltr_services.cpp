@@ -53,6 +53,14 @@ Result rgltrGetVoltage(RgltrSession* session, u32* out_volt) {
     return rc;
 }
 
+Result rgltrRequestVoltage(RgltrSession* session, u32 microvolt) {
+    return serviceDispatchIn(&session->s, 5, microvolt);
+}
+
+Result rgltrCancelVoltageRequest(RgltrSession* session) {
+    return serviceDispatch(&session->s, 6);
+}
+
 void rgltrCloseSession(RgltrSession* session) {
     serviceClose(&session->s);
 }

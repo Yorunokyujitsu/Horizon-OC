@@ -34,3 +34,5 @@ void rgltrCloseSession(RgltrSession* session);
 Result rgltrGetVoltage(RgltrSession* session, u32 *out_volt);
 Result rgltrGetPowerModuleNumLimit(u32 *out);
 Result rgltrGetVoltageEnabled(RgltrSession* session, u32 *out);
+Result rgltrRequestVoltage(RgltrSession* session, u32 microvolt);
+Result rgltrCancelVoltageRequest(RgltrSession* session);

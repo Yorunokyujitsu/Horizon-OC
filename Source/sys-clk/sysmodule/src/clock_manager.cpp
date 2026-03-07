@@ -711,6 +711,7 @@ void ClockManager::DVFSBeforeSet(u32 targetHz) {
 
     this->context->voltages[HocClkVoltage_GPU] = vmin * 1000;
 }
+
 void ClockManager::DVFSAfterSet(u32 targetHz) {
     s32 dvfsOffset = this->config->GetConfigValue(HorizonOCConfigValue_DVFSOffset);
     dvfsOffset = std::max(dvfsOffset, -50);
@@ -724,9 +725,13 @@ void ClockManager::DVFSAfterSet(u32 targetHz) {
         if(!targetHz)
             targetHz = this->config->GetAutoClockHz(GLOBAL_PROFILE_ID, SysClkModule_GPU, this->context->profile, false);
     }
+
+    u32 maxHz = this->GetMaxAllowedHz(SysClkModule_GPU, this->context->profile);
+    u32 nearestHz = this->GetNearestHz(SysClkModule_GPU, targetHz, maxHz);
+
     if(targetHz) {
         Board::SetHz(SysClkModule_GPU, ~0);
-        Board::SetHz(SysClkModule_GPU, targetHz);
+        Board::SetHz(SysClkModule_GPU, nearestHz);
     }
 }
 

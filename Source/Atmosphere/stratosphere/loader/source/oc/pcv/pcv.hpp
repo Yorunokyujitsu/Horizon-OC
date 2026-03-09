@@ -224,7 +224,7 @@ namespace ams::ldr::hoc::pcv {
             u32 val = *ptr32;
             return (val == 1132 || val == 1170 || val == 1227);
         }
-        
+
         static const u32 gpuVoltDvfsPattern[] = { 810, 1150, 1000, 100, 1000, 10, };
         static_assert(sizeof(gpuVoltDvfsPattern) == (sizeof(u32) * 6), "Invalid gpuVoltDvfsPattern");
 

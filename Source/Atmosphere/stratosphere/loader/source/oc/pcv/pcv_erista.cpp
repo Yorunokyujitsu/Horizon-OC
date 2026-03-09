@@ -40,23 +40,20 @@ namespace ams::ldr::hoc::pcv::erista {
     }
 
     Result CpuVoltDvfs(u32 *ptr) {
-        if (MatchesPattern(ptr, cpuVoltDvfsPattern, cpuVoltDvfsOffsets)) {
-            if (C.eristaCpuVmin) {
-                PATCH_OFFSET(ptr, C.eristaCpuVmin);
-            }
-
-            if (C.eristaCpuUV) {
-                PATCH_OFFSET(ptr - 2, C.eristaCpuVmin);
-            }
-
-            if (C.eristaCpuMaxVolt) {
-                PATCH_OFFSET(ptr + 5, C.eristaCpuMaxVolt);
-            }
-
-            R_SUCCEED();
+        if (std::memcmp(ptr + 5, cpuVoltDvfsPattern, sizeof(cpuVoltDvfsPattern))) {
+            R_THROW(ldr::ResultInvalidCpuMinVolt());
         }
 
-        R_THROW(ldr::ResultInvalidCpuMinVolt());
+        if (C.eristaCpuVmin) {
+            PATCH_OFFSET(ptr, C.eristaCpuVmin);
+            PATCH_OFFSET(ptr - 2, C.eristaCpuVmin);
+        }
+
+        if (C.eristaCpuMaxVolt) {
+            PATCH_OFFSET(ptr + 5, C.eristaCpuMaxVolt);
+        }
+
+        R_SUCCEED();
     }
 
     Result CpuVoltThermals(u32 *ptr) {
@@ -67,7 +64,7 @@ namespace ams::ldr::hoc::pcv::erista {
         if (C.eristaCpuVmin) {
             PATCH_OFFSET(    ptr, C.eristaCpuVmin);
             PATCH_OFFSET(ptr + 3, C.eristaCpuVmin);
-            PATCH_OFFSET(ptr + 9, C.eristaCpuVmin);
+            PATCH_OFFSET(ptr + 6, C.eristaCpuVmin);
         }
 
         if (C.eristaCpuMaxVolt) {
@@ -120,20 +117,19 @@ namespace ams::ldr::hoc::pcv::erista {
     }
 
     Result GpuVoltDVFS(u32 *ptr) {
-        u32 result = std::memcmp(ptr, gpuVoltDvfsPattern, sizeof(gpuVoltDvfsPattern));
-
-        if (result)
+        if (std::memcmp(ptr, gpuVoltDvfsPattern, sizeof(gpuVoltDvfsPattern))) {
             R_THROW(ldr::ResultInvalidGpuDvfs());
+        }
 
-        if (C.eristaGpuVmin)
+        if (C.eristaGpuVmin) {
             PATCH_OFFSET(ptr, C.eristaGpuVmin);
+        }
 
         R_SUCCEED();
     }
 
     Result GpuVoltThermals(u32 *ptr) {
-        u32 result = std::memcmp(ptr - 3, gpuVoltThermalPattern, sizeof(gpuVoltThermalPattern));
-        if (result) {
+        if (std::memcmp(ptr - 3, gpuVoltThermalPattern, sizeof(gpuVoltThermalPattern))) {
             R_THROW(ldr::ResultInvalidGpuDvfs());
         }
 

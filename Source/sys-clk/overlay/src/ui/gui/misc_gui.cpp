@@ -820,7 +820,7 @@ protected:
                 NamedValue("2091 MHz", 2091000),
                 NamedValue("2193 MHz", 2193000),
                 NamedValue("2295 MHz", 2295000),
-                NamedValue("2397 MHz", 2295000),
+                NamedValue("2397 MHz", 2397000),
             };
             ValueThresholds eCpuClockThresholds(1785000, 2091000);
             addConfigButton(

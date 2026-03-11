@@ -107,12 +107,6 @@ u32 speedoBracket;
 u16 cpuIDDQ, gpuIDDQ, socIDDQ;
 u8 g_dramID = 0;
 u64 cldvfs, cldvfs_temp;
-
-// LED notification driver state
-static HidsysUniquePadId g_ledPads[8];
-static int g_ledPadCount = 0;
-static HidsysNotificationLedPattern g_ledPattern;
-Thread ledThread;
 u32 cachedEristaUvLowTune0 = 0, cachedEristaUvLowTune1 = 0, cachedMarikoUvHighTune0 = 0;
 
 static const u32 ramBrackets[][22] = {
@@ -219,128 +213,6 @@ void miscThreadFunc(void*) {
     }
 }
 
-static void changeLed(); // forward declaration
-
-void Board::SetLedSolid() {
-    memset(&g_ledPattern, 0, sizeof(g_ledPattern));
-    g_ledPattern.baseMiniCycleDuration = 0x0F;
-    g_ledPattern.startIntensity = 0xF;
-    g_ledPattern.miniCycles[0].ledIntensity = 0xF;
-    g_ledPattern.miniCycles[0].transitionSteps = 0x0;
-    g_ledPattern.miniCycles[0].finalStepDuration = 0x0F;
-    changeLed();
-}
-
-void Board::SetLedDim() {
-    memset(&g_ledPattern, 0, sizeof(g_ledPattern));
-    g_ledPattern.baseMiniCycleDuration = 0x0F;
-    g_ledPattern.startIntensity = 0x5;
-    g_ledPattern.miniCycles[0].ledIntensity = 0x5;
-    g_ledPattern.miniCycles[0].transitionSteps = 0x0F;
-    g_ledPattern.miniCycles[0].finalStepDuration = 0x0F;
-    changeLed();
-}
-
-void Board::SetLedFade() {
-    memset(&g_ledPattern, 0, sizeof(g_ledPattern));
-    g_ledPattern.baseMiniCycleDuration = 0x8;
-    g_ledPattern.totalMiniCycles = 0x0; // 0 = loop indefinitely
-    g_ledPattern.startIntensity = 0x2;
-    g_ledPattern.miniCycles[0].ledIntensity = 0xF;
-    g_ledPattern.miniCycles[0].transitionSteps = 0xF;
-    g_ledPattern.miniCycles[1].ledIntensity = 0x2;
-    g_ledPattern.miniCycles[1].transitionSteps = 0xF;
-    changeLed();
-}
-
-void Board::SetLedOff() {
-    memset(&g_ledPattern, 0, sizeof(g_ledPattern));
-    changeLed();
-}
-
-void Board::SetLedBlink() {
-    memset(&g_ledPattern, 0, sizeof(g_ledPattern));
-    g_ledPattern.baseMiniCycleDuration = 0x4;
-    g_ledPattern.totalMiniCycles = 0x0; // 0 = loop indefinitely
-    g_ledPattern.startIntensity = 0x2;
-    g_ledPattern.miniCycles[0].ledIntensity = 0xF;
-    g_ledPattern.miniCycles[0].transitionSteps = 0x2;
-    g_ledPattern.miniCycles[1].ledIntensity = 0x2;
-    g_ledPattern.miniCycles[1].transitionSteps = 0x2;
-    changeLed();
-}
-
-static bool isLedControllerConnected(HidsysUniquePadId* padId) {
-    for (int i = 0; i < g_ledPadCount; i++) {
-        if (memcmp(&g_ledPads[i], padId, sizeof(HidsysUniquePadId)) == 0)
-            return true;
-    }
-    return false;
-}
-
-static void removeLedController(HidsysUniquePadId* padId) {
-    for (int i = 0; i < g_ledPadCount; i++) {
-        if (memcmp(&g_ledPads[i], padId, sizeof(HidsysUniquePadId)) == 0) {
-            for (int j = i; j < g_ledPadCount - 1; j++)
-                g_ledPads[j] = g_ledPads[j + 1];
-            g_ledPadCount--;
-            break;
-        }
-    }
-}
-
-static void setLedOnPad(HidsysUniquePadId* padId) {
-    if (R_FAILED(hidsysSetNotificationLedPattern(&g_ledPattern, *padId)))
-        removeLedController(padId);
-}
-
-static void changeLed() {
-    for (int i = 0; i < g_ledPadCount; i++)
-        setLedOnPad(&g_ledPads[i]);
-}
-
-static void scanForNewLedControllers() {
-    static const HidNpadIdType controllerTypes[8] = {
-        HidNpadIdType_Handheld,
-        HidNpadIdType_No1, HidNpadIdType_No2, HidNpadIdType_No3, HidNpadIdType_No4,
-        HidNpadIdType_No5, HidNpadIdType_No6, HidNpadIdType_No7
-    };
-    for (int i = 0; i < 8; i++) {
-        HidsysUniquePadId padIds[8];
-        s32 total = 0;
-        if (R_SUCCEEDED(hidsysGetUniquePadsFromNpad(controllerTypes[i], padIds, 8, &total)) && total > 0) {
-            for (int j = 0; j < total; j++) {
-                if (!isLedControllerConnected(&padIds[j]) && g_ledPadCount < 8) {
-                    g_ledPads[g_ledPadCount++] = padIds[j];
-                    setLedOnPad(&padIds[j]);
-                }
-            }
-        }
-    }
-}
-
-static void verifyLedControllers() {
-    for (int i = 0; i < g_ledPadCount; i++) {
-        if (R_FAILED(hidsysSetNotificationLedPattern(&g_ledPattern, g_ledPads[i]))) {
-            removeLedController(&g_ledPads[i]);
-            i--;
-        }
-    }
-}
-
-void ledThreadFunc(void*) {
-    scanForNewLedControllers();
-    int verifyCounter = 0;
-    for (;;) {
-        scanForNewLedControllers();
-        if (verifyCounter++ >= 5) {
-            verifyLedControllers();
-            verifyCounter = 0;
-        }
-        svcSleepThread(500000000ULL);
-    }
-}
-
 void Board::Initialize()
 {
     Result rc = 0;
@@ -388,12 +260,6 @@ void Board::Initialize()
 
     rc = pmdmntInitialize();
     ASSERT_RESULT_OK(rc, "pmdmntInitialize");
-    
-    rc = hidInitialize();
-    ASSERT_RESULT_OK(rc, "hidInitialize");
-
-    rc = hidsysInitialize();
-    ASSERT_RESULT_OK(rc, "hidsysInitialize");
 
     threadCreate(&gpuLThread, gpuLoadThread, NULL, NULL, 0x1000, 0x3F, -2);
 	threadStart(&gpuLThread);
@@ -437,10 +303,6 @@ void Board::Initialize()
         cachedMarikoUvHighTune0 = *(u32*)(cldvfs + CL_DVFS_TUNE0_0);
         Board::ResetToStockCpu();
     }
-
-    threadCreate(&ledThread, ledThreadFunc, NULL, NULL, 0x4000, 0x15, -2);
-    threadStart(&ledThread);
-    svcSleepThread(1'000'000'000); // Give the LED thread some time to initialize and detect controllers before we set the pattern for the first time
 }
 
 void Board::fuseReadSpeedos() {
@@ -553,7 +415,6 @@ void Board::Exit()
     threadClose(&cpuCore2Thread);
     // threadClose(&cpuCore3Thread);
     threadClose(&miscThread);
-    threadClose(&ledThread);
 
     pwmChannelSessionClose(&g_ICon);
 	pwmExit();
@@ -561,8 +422,6 @@ void Board::Exit()
     batteryInfoExit();
     pmdmntExit();
     nvExit();
-    hidsysExit();
-    hidExit();
     if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
         DisplayRefresh_Shutdown();
 }

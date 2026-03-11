@@ -68,6 +68,11 @@ class Board
     static void SetDisplayRefreshDockedState(bool docked);
     static void SetCpuUvLevel(u32 levelLow, u32 levelHigh, u32 tbreakPoint);
     static u32 CalculateTbreak(u32 table);
+    static void SetLedSolid();
+    static void SetLedDim();
+    static void SetLedFade();
+    static void SetLedBlink();
+    static void SetLedOff();
   protected:
     static void FetchHardwareInfos();
     static PcvModule GetPcvModule(SysClkModule sysclkModule);

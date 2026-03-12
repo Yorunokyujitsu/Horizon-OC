@@ -322,7 +322,7 @@ u32 ClockManager::SchedutilTargetHz(u32 util, u32 tableMaxHz) {
 
 u32 ClockManager::TableIndexForHz(const FreqTable& table, u32 targetHz) { // must pass in a freqTable as tables are different for cpu/gpu
     for (u32 i = 0; i < table.count; i++)
-        if (this->freqTable.list[i] >= targetHz)
+        if (table.list[i] >= targetHz)
             return i;
     return table.count - 1;
 }

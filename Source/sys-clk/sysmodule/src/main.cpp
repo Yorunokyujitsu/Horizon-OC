@@ -65,6 +65,8 @@ extern "C"
 
         fake_heap_start = (char*)addr;
         fake_heap_end = (char*)addr + size;
+        
+        virtmemSetup();
     }
 
     void __appInit(void)
@@ -91,8 +93,6 @@ extern "C"
         rc = i2cInitialize();
         if (R_FAILED(rc))
             diagAbortWithResult(MAKERESULT(Module_Libnx, LibnxError_ShouldNotHappen));
-        
-        virtmemSetup();
     }
 
     void __appExit(void)

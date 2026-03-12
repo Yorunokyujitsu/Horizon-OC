@@ -632,7 +632,6 @@ void ClockManager::HandleFreqReset(SysClkModule module, bool isBoost) {
 }
 
 void ClockManager::SetClocks(bool isBoost) {
-    FileUtils::LogLine("FPS: %d", this->saltyNXIntegration->GetFPS());
     std::uint32_t targetHz = 0;
     std::uint32_t maxHz = 0;
     std::uint32_t nearestHz = 0;
@@ -892,6 +891,8 @@ bool ClockManager::RefreshContext()
     if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
         Board::SetDisplayRefreshDockedState(this->context->profile == SysClkProfile_Docked);
 
+    this->context->fps = saltyNXIntegration->GetFPS();
+    
     return hasChanged;
 }
 

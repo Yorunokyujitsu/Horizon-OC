@@ -2,7 +2,7 @@
  * @file ipc.h
  * @brief Inter-process communication handling
  * @author plutoo
- * @copyright libnx Authors
+ * @copyright libnx Authors (ISC License)
  */
 #pragma once
 #include <switch.h>

@@ -32,9 +32,12 @@ bool SysDockIntegration::getCurrentSysDockState() {
         return false;
     }
 }
-
+bool wasSaltyNxLoaded = false;
 SaltyNXIntegration::SaltyNXIntegration() {
-    if(!CheckPort()) return;
+    if(!CheckPort()) {
+        return;
+    }
+    wasSaltyNxLoaded = true;
     LoadSharedMemory();
 }
 
@@ -42,22 +45,15 @@ SaltyNXIntegration::SaltyNXIntegration() {
 //Check if SaltyNX is working
 bool SaltyNXIntegration::CheckPort () {
     Handle saltysd;
-    for (int i = 0; i < 67; i++) {
-        if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
-            svcCloseHandle(saltysd);
-            break;
-        }
-        else {
-            if (i == 66) return false;
-            svcSleepThread(1'000'000);
-        }
-    }
-    for (int i = 0; i < 67; i++) {
+    for (int i = 0; i < 500; i++) {
         if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
             svcCloseHandle(saltysd);
             return true;
         }
-        else svcSleepThread(1'000'000);
+        else {
+            if (i == 499) return false;
+            svcSleepThread(100'000'000);
+        }
     }
     return false;
 }
@@ -90,15 +86,15 @@ void SaltyNXIntegration::searchSharedMemoryBlock(uintptr_t base) {
 u64 prevTid = 0;
 
 u8 SaltyNXIntegration::GetFPS() {
-    if(ProcessManagement::GetCurrentApplicationId() <= 0x010000000000FFFFULL) return 254; // only try to read fps for games, not system apps
-    if(prevTid != ProcessManagement::GetCurrentApplicationId()) {
-				uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
-				searchSharedMemoryBlock(base);
-                        prevTid = ProcessManagement::GetCurrentApplicationId();
+    u64 tid = ProcessManagement::GetCurrentApplicationId();
+    if(tid == 0 || wasSaltyNxLoaded == false) 
+        return 254; // only try to read fps for games, not system apps
+
+    if(prevTid != tid) {
+		uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
+		searchSharedMemoryBlock(base);
+        prevTid = tid;
     }
-    if (NxFps) {
-        return NxFps->FPS;
-    } else {
-        return 254;
-    }
+    
+    return NxFps ? NxFps->FPS : 254;
 }

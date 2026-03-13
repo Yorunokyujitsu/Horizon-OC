@@ -371,8 +371,8 @@ void MiscGui::listUI()
         "Polling Interval",
         ValueRange(50, 1000, 50, "ms", 1),
         "Polling Interval",
-        &thresholdsDisabled, 
-        {}, 
+        &thresholdsDisabled,
+        {},
         {},
         false
     );
@@ -859,7 +859,7 @@ protected:
             addConfigButton(
                 KipConfigValue_eristaCpuVmin,
                 "CPU VMIN",
-                ValueRange(700, 900, 5, "mV", 1),
+                ValueRange(700, 900, 25, "mV", 1),
                 "CPU VMIN",
                 &thresholdsDisabled,
                 {},

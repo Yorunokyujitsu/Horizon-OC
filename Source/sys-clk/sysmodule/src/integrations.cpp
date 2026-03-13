@@ -26,17 +26,21 @@ SysDockIntegration::SysDockIntegration() {
 
 bool SysDockIntegration::getCurrentSysDockState() {
     struct stat st = {0};
-    if (stat("sdmc:/atmosphere/contents/42000000000000A0", &st) == 0 && S_ISDIR(st.st_mode)) {
-        return true;
-    } else {
-        return false;
-    }
+    return stat("sdmc:/atmosphere/contents/42000000000000A0/flags/boot2.flag", &st) == 0;
 }
 
 SaltyNXIntegration::SaltyNXIntegration() {
+}
+
+void SaltyNXIntegration::LoadSaltyNX() {
     if (!CheckPort())
         return;
     LoadSharedMemory();
+}
+
+bool SaltyNXIntegration::getCurrentSaltyNXState() {
+    struct stat st = {0};
+    return stat("sdmc:/atmosphere/contents/0000000000534C56/flags/boot2.flag", &st) == 0;
 }
  
 bool SaltyNXIntegration::CheckPort() {
@@ -104,4 +108,3 @@ u8 SaltyNXIntegration::GetFPS() {
  
     return NxFps ? NxFps->FPS : 254;
 }
- 

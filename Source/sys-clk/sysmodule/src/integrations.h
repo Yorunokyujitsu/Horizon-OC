@@ -83,6 +83,8 @@ public:
     bool SharedMemoryUsed = false;
     Handle remoteSharedMemory = 1;
     SaltyNXIntegration();
+    void LoadSaltyNX();
+    bool getCurrentSaltyNXState();
 
     bool CheckPort();
     void LoadSharedMemory();

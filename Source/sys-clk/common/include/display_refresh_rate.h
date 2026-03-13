@@ -108,22 +108,17 @@ typedef struct {
     unsigned int PLLD_LDPULSE_ADJ: 3;
     unsigned int reserved: 2;
 } PLLD_MISC;
-
-// Configuration structure
 typedef struct {
-    uint64_t clkVirtAddr;
-    uint64_t dsiVirtAddr;
+    uintptr_t clkVirtAddr;
+    uintptr_t dsiVirtAddr;
     bool isDocked;
     bool isLite;
     bool isRetroSUPER;
     bool isPossiblySpoofedRetro;
-    bool dontForce60InDocked;
-    bool matchLowestDocked;
     bool displaySync;
-    bool displaySyncOutOfFocus60;
-    bool displaySyncDocked;
-    bool displaySyncDockedOutOfFocus60;
+    bool matchLowestDocked;
 } DisplayRefreshConfig;
+
 bool DisplayRefresh_Initialize(const DisplayRefreshConfig* config);
 void DisplayRefresh_SetDockedState(bool isDocked);
 bool DisplayRefresh_SetRate(uint32_t new_refreshRate);

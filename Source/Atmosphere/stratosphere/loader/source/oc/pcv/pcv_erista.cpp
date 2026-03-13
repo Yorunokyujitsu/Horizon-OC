@@ -24,21 +24,6 @@
 
 namespace ams::ldr::hoc::pcv::erista {
 
-    Result CpuVoltRange(u32* ptr) {
-        u32 min_volt_got = *(ptr - 1);
-        for (const auto& mv : CpuMinVolts) {
-            if (min_volt_got != mv)
-                continue;
-
-            if (!C.eristaCpuMaxVolt)
-                R_SKIP();
-
-            PATCH_OFFSET(ptr, C.eristaCpuMaxVolt);
-            R_SUCCEED();
-        }
-        R_THROW(ldr::ResultInvalidCpuMinVolt());
-    }
-
     Result CpuVoltDvfs(u32 *ptr) {
         if (std::memcmp(ptr + 5, cpuVoltDvfsPattern, sizeof(cpuVoltDvfsPattern))) {
             R_THROW(ldr::ResultInvalidCpuMinVolt());
@@ -77,7 +62,6 @@ namespace ams::ldr::hoc::pcv::erista {
         R_SUCCEED();
     }
 
-    /* In theory this should work, but it doesn't, I have no idea why ¯\_(ツ)_/¯ */
     Result CpuVoltDfll(u32* ptr) {
         cvb_cpu_dfll_data *entry = reinterpret_cast<cvb_cpu_dfll_data *>(ptr);
         R_UNLESS(entry->tune0_low == 0xFFEAD0FF, ldr::ResultInvalidCpuVoltDfllEntry());
@@ -85,7 +69,7 @@ namespace ams::ldr::hoc::pcv::erista {
         R_UNLESS(entry->tune1_low == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
         R_UNLESS(entry->tune1_high == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
 
-        if( !C.eristaCpuUV) {
+        if (!C.eristaCpuUV) {
             R_SKIP();
         }
 
@@ -367,44 +351,54 @@ namespace ams::ldr::hoc::pcv::erista {
         table->min_volt = std::min(static_cast<u32>(1050), 900 + C.emcDvbShift * 25);
     }
 
+    /* Probably more intuitive to point to 40800 rather than 1600000, but oh well. */
     Result MemFreqMtcTable(u32 *ptr) {
         if (GET_MAX_OF_ARR(maxEmcClocks) <= EmcClkOSLimit) {
             R_SKIP();
         }
 
-        u32 khz_list[] = {1600000, 1331200, 1065600, 800000, 665600, 408000, 204000, 102000, 68000, 40800};
-        std::sort(maxEmcClocks, maxEmcClocks + std::size(maxEmcClocks), std::greater<>());
-        u32 khz_list_size = sizeof(khz_list) / sizeof(u32);
+        u32 khz_list[] = { 40800, 68000, 102000, 204000, 408000, 665600, 800000, 1065600, 1331200, 1600000 };
+        std::sort(maxEmcClocks, maxEmcClocks + std::size(maxEmcClocks));
+        u32 khz_list_size = std::size(khz_list);
 
         // Generate list for mtc table pointers
         EristaMtcTable *table_list[khz_list_size];
         for (u32 i = 0; i < khz_list_size; i++) {
+            u32 mtcIndex = khz_list_size - 1 - i;
             u8 *table = reinterpret_cast<u8 *>(ptr) - offsetof(EristaMtcTable, rate_khz) - i * sizeof(EristaMtcTable);
-            table_list[i] = reinterpret_cast<EristaMtcTable *>(table);
-            R_UNLESS(table_list[i]->rate_khz == khz_list[i], ldr::ResultInvalidMtcTable());
-            R_UNLESS(table_list[i]->rev == MTC_TABLE_REV, ldr::ResultInvalidMtcTable());
+            table_list[mtcIndex] = reinterpret_cast<EristaMtcTable *>(table);
+            R_UNLESS(table_list[mtcIndex]->rate_khz == khz_list[mtcIndex], ldr::ResultInvalidMtcTable());
+            R_UNLESS(table_list[mtcIndex]->rev == MTC_TABLE_REV, ldr::ResultInvalidMtcTable());
         }
 
-        u32 additionalFreqs = 0;
-        for (u32 i = 0; i < std::size(maxEmcClocks); ++i) {
-            if (maxEmcClocks[i] > EmcClkOSLimit) {
-                ++additionalFreqs;
+        /* If we oc ram at all, tables are always shifted by at least 1. */
+        u32 tableShifts = 1;
+        for (u32 i = 0; i < std::size(maxEmcClocks) - 1; ++i) {
+            /* Duplicated mtc tables may cause pcv to not select frequencies properly, causing issues. */
+            if (maxEmcClocks[i] != maxEmcClocks[i + 1] && maxEmcClocks[i] > EmcClkOSLimit) {
+                ++tableShifts;
             } else {
-                break;
+                maxEmcClocks[i] = 0;
             }
         }
 
-        // Make room for new mtc table, discarding useless 40.8, 68000 and 102000 MHz table
-        // 40800 overwritten by 204000, ..., 1331200 overwritten by 1600000, leaving table_list[0], table_list[1] and table_list[2] not overwritten
-        for (u32 i = khz_list_size - 1; i > additionalFreqs - 1; --i) {
-            std::memcpy(static_cast<void *>(table_list[i]), static_cast<void *>(table_list[i - additionalFreqs]), sizeof(EristaMtcTable));
+        /* Erista has extra, useless mtc tables, such as 40.8 Mhz, overwrite them to make room for oc freqs. */
+        /* More than 3 tables can be overwritten, but 3 is plenty. */
+        std::memmove(table_list[0], table_list[tableShifts], sizeof(EristaMtcTable) * (khz_list_size - tableShifts));
+
+        /* Since we're not scaling r/w latency properly on Erista, we first overwrite the tables with the 1600 MHz table before scaling it. */
+        for (u32 i = 0; i < tableShifts; ++i) {
+            std::memcpy(table_list[khz_list_size - i - 1], table_list[khz_list_size - tableShifts - 1], sizeof(EristaMtcTable));
         }
 
-        for (u32 i = 0; i < additionalFreqs; ++i) {
-            /* Since we're not scaling latency timings properly, copy over the 1600Mhz table to get the closest timings. */
-            std::memcpy(table_list[i], table_list[additionalFreqs], sizeof(EristaMtcTable));
-            table_list[i]->rate_khz = maxEmcClocks[i];
-            MemMtcTableAutoAdjust(table_list[i]);
+        for (u32 i = tableShifts, j = 0; i > 0 && j < std::size(maxEmcClocks); ++j) {
+            if (!maxEmcClocks[j]) {
+                continue;
+            }
+
+            table_list[khz_list_size - i]->rate_khz = maxEmcClocks[j];
+            MemMtcTableAutoAdjust(table_list[khz_list_size - i]);
+            --i;
         }
 
         R_SUCCEED();

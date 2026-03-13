@@ -290,6 +290,17 @@ void GlobalOverrideGui::addModuleToggleItem(SysClkModule module)
     this->listItems[module] = toggle;
 }
 
+std::vector<NamedValue> governorSettingsE = {
+    NamedValue("Do Not Override", GovernorState_DoNotOverride),
+    NamedValue("Disabled", GovernorState_Disabled),
+    NamedValue("CPU + GPU + VRR", GovernorState_Enabled_CpuGpuVrr),
+    NamedValue("CPU + VRR", GovernorState_Enabled_CpuVrr),
+    NamedValue("GPU + VRR", GovernorState_Enabled_GpuVrr),
+    NamedValue("CPU + GPU", GovernorState_Enabled_CpuGpu),
+    NamedValue("CPU", GovernorState_Enabled_Cpu),
+    NamedValue("GPU", GovernorState_Enabled_Gpu),
+    NamedValue("VRR", GovernorState_Enabled_Vrr),
+};
 
 void GlobalOverrideGui::listUI()
 {
@@ -306,23 +317,20 @@ void GlobalOverrideGui::listUI()
     this->addModuleListItem(SysClkModule_MEM);
     #if IS_MINIMAL == 0
         ValueThresholds lcdThresholds(60, 65);
-        if(!IsHoag() && configList.values[HorizonOCConfigValue_OverwriteRefreshRate])
+        if(configList.values[HorizonOCConfigValue_OverwriteRefreshRate])
             this->addModuleListItemValue(HorizonOCModule_Display, "Display", IsAula() ? 45 : 40, configList.values[HorizonOCConfigValue_EnableUnsafeDisplayFreqs] ? IsAula() ? 65 : 72 : 60, 1, " Hz", 1, 0, lcdThresholds);
     #endif
     
-    std::vector<NamedValue> governorSettingsE = {
-        NamedValue("Do Not Override", GovernorState_DoNotOverride),
-        NamedValue("Disabled", GovernorState_Disabled),
-        NamedValue("CPU + GPU", GovernorState_Enabled_CpuGpu),
-        NamedValue("CPU", GovernorState_Enabled_Cpu),
-        NamedValue("GPU", GovernorState_Enabled_Gpu),
-    };
+
 
     std::vector<NamedValue> governorSettings = {
         NamedValue("Do Not Override", GovernorState_DoNotOverride),
         NamedValue("Disabled", GovernorState_Disabled),
+        NamedValue("GPU + VRR", GovernorState_Enabled_GpuVrr),
         NamedValue("GPU", GovernorState_Enabled_Gpu),
+        NamedValue("VRR", GovernorState_Enabled_Vrr),
     };
+
     this->addModuleListItemValue(HorizonOCModule_Governor, "Governor", 0, 0, 1, "", 1, 0, ValueThresholds(), configList.values[HorizonOCConfigValue_EnableExperimentalSettings] ?governorSettingsE : governorSettings, false);
 }
 
@@ -341,15 +349,8 @@ void GlobalOverrideGui::refresh()
                 std::string displayText = FREQ_DEFAULT_TEXT;
                 std::uint32_t currentValue = this->context->overrideFreqs[m];
                 
-                std::vector<NamedValue> governorSettings = {
-                    NamedValue("Do Not Override", GovernorState_DoNotOverride),
-                    NamedValue("Disabled", GovernorState_Disabled),
-                    NamedValue("CPU + GPU", GovernorState_Enabled_CpuGpu),
-                    NamedValue("CPU", GovernorState_Enabled_Cpu),
-                    NamedValue("GPU", GovernorState_Enabled_Gpu),
-                };
-                
-                for (const auto& setting : governorSettings) {
+
+                for (const auto& setting : governorSettingsE) {
                     if (setting.value == currentValue) {
                         displayText = setting.name;
                         break;

@@ -424,18 +424,16 @@ void MiscGui::listUI()
         return false;
     });
     this->listElement->addItem(gpuSubmenu);
-    if(!IsHoag()) {
-        this->listElement->addItem(new tsl::elm::CategoryHeader("Display"));
-        tsl::elm::ListItem* displaySubMenu = new tsl::elm::ListItem("Display Settings");
-        displaySubMenu->setClickListener([](u64 keys) {
-            if (keys & HidNpadButton_A) {
-                tsl::changeTo<DisplaySubMenuGui>();
-                return true;
-            }
-            return false;
-        });
-        this->listElement->addItem(displaySubMenu);
-    }
+    this->listElement->addItem(new tsl::elm::CategoryHeader("Display"));
+    tsl::elm::ListItem* displaySubMenu = new tsl::elm::ListItem("Display Settings");
+    displaySubMenu->setClickListener([](u64 keys) {
+        if (keys & HidNpadButton_A) {
+            tsl::changeTo<DisplaySubMenuGui>();
+            return true;
+        }
+        return false;
+    });
+    this->listElement->addItem(displaySubMenu);
     #if IS_MINIMAL == 0
         // std::vector<NamedValue> chargerCurrents = {
         //     NamedValue("Disabled", 0),

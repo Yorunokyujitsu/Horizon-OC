@@ -146,9 +146,13 @@ typedef enum {
 typedef enum {
     GovernorState_DoNotOverride = 0,
     GovernorState_Disabled,
+    GovernorState_Enabled_CpuGpuVrr,
+    GovernorState_Enabled_CpuVrr,
+    GovernorState_Enabled_GpuVrr,
     GovernorState_Enabled_CpuGpu,
     GovernorState_Enabled_Cpu,
     GovernorState_Enabled_Gpu,
+    GovernorState_Enabled_Vrr,
     GovernorState_EnumMax,
 } GovernorState;
 typedef enum {

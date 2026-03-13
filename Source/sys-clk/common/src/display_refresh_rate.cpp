@@ -554,9 +554,10 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
     if (g_config.isRetroSUPER && !g_config.isDocked) {
         return _setNvDispHandheldRefreshRate(new_refreshRate);
     }
-    else if ((!g_config.isRetroSUPER && g_config.isLite) || 
-             nvOpen(&fd, "/dev/nvdisp-disp1")) {
-        return _setPLLDHandheldRefreshRate(new_refreshRate);
+
+    else if ((!g_config.isRetroSUPER && g_config.isLite) || R_FAILED(nvOpen(&fd, "/dev/nvdisp-disp1"))) {
+        if (_setPLLDHandheldRefreshRate(new_refreshRate) == false) 
+            return false;
     }
     else {
         struct dpaux_read {
@@ -578,15 +579,19 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
         nvClose(fd);
         
         if (rc != 0) {
-            if (!g_config.isRetroSUPER) {
-                return _setPLLDHandheldRefreshRate(new_refreshRate);
-            } else {
-                return _setNvDispHandheldRefreshRate(new_refreshRate);
-            }
+                if (!g_config.isRetroSUPER) {
+                    return _setPLLDHandheldRefreshRate(new_refreshRate);
+                } else {
+                    return _setNvDispHandheldRefreshRate(new_refreshRate);
+                }
         } else {
-            return _setNvDispDockedRefreshRate(new_refreshRate);
+            if(g_config.isDocked)
+                return _setNvDispDockedRefreshRate(new_refreshRate);
+            else 
+                return true;
         }
     }
+    return false;
 }
 
 bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {

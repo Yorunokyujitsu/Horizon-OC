@@ -280,17 +280,15 @@ void Board::Initialize()
     if (hosversionAtLeast(6,0,0) && R_SUCCEEDED(pwmInitialize())) {
         pwmCheck = pwmOpenSession2(&g_ICon, 0x3D000001);
     }
-    if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag) {
-        u64 clkVirtAddr, dsiVirtAddr, outsize;
-        rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
-        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
-        rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
-        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
+    u64 clkVirtAddr, dsiVirtAddr, outsize;
+    rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
+    ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
+    rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
+    ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
 
-        DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
+    DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
 
-        DisplayRefresh_Initialize(&cfg);
-    }
+    DisplayRefresh_Initialize(&cfg);
 
     FetchHardwareInfos();
     rc = svcQueryMemoryMapping(&cldvfs, &cldvfs_temp, CLDVFS_REGION_BASE, CLDVFS_REGION_SIZE);
@@ -422,8 +420,7 @@ void Board::Exit()
     batteryInfoExit();
     pmdmntExit();
     nvExit();
-    if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
-        DisplayRefresh_Shutdown();
+    DisplayRefresh_Shutdown();
 }
 
 SysClkProfile Board::GetProfile()
@@ -457,7 +454,7 @@ SysClkProfile Board::GetProfile()
 void Board::SetHz(SysClkModule module, std::uint32_t hz)
 {
     Result rc = 0;
-    if(module == HorizonOCModule_Display && Board::GetConsoleType() != HorizonOCConsoleType_Hoag) {
+    if(module == HorizonOCModule_Display) {
         DisplayRefresh_SetRate(hz);
         return;
     }
@@ -496,10 +493,7 @@ std::uint32_t Board::GetHz(SysClkModule module)
     std::uint32_t hz = 0;
 
     if(module == HorizonOCModule_Display) {
-        if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
-            DisplayRefresh_GetRate(&hz, false);
-        else
-            hz = 60;
+        DisplayRefresh_GetRate(&hz, false);
         return hz;
     }
 
@@ -536,10 +530,7 @@ std::uint32_t Board::GetRealHz(SysClkModule module)
         case SysClkModule_MEM:
             return t210ClkMemFreq();
         case HorizonOCModule_Display:
-            if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
-                DisplayRefresh_GetRate(&hz, false);
-            else
-                hz = 60;
+            DisplayRefresh_GetRate(&hz, false);
             return hz;
         default:
             ASSERT_ENUM_VALID(SysClkModule, module);
@@ -734,9 +725,7 @@ void Board::ResetToStockGpu()
 }
 
 void Board::ResetToStockDisplay() {
-    if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag) {
-        DisplayRefresh_SetRate(60);
-    }
+    DisplayRefresh_SetRate(60);
 }
 
 u8 Board::GetHighestDockedDisplayRate() {

@@ -93,6 +93,9 @@ extern "C"
         rc = i2cInitialize();
         if (R_FAILED(rc))
             diagAbortWithResult(MAKERESULT(Module_Libnx, LibnxError_ShouldNotHappen));
+        rc = appletInitialize();
+        if (R_FAILED(rc))
+            diagAbortWithResult(MAKERESULT(Module_Libnx, LibnxError_ShouldNotHappen));
     }
 
     void __appExit(void)
@@ -102,6 +105,7 @@ extern "C"
         i2cExit();
         fsExit();
         fsdevUnmountAll();
+        appletExit();
         }
 }
 

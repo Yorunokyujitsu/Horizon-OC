@@ -509,10 +509,10 @@ void ClockManager::VRRThread(void* arg) {
 
         if(fps == 254)
             continue;
-        if(appletGetFocusState() != AppletFocusState_InFocus) {
-            Board::ResetToStockDisplay();
-            continue;
-        }
+        // if(appletGetFocusState() != AppletFocusState_InFocus) {
+        //     Board::ResetToStockDisplay();
+        //     continue;
+        // }
         u8 maxDisplay;
         if(Board::GetConsoleType() == HorizonOCConsoleType_Aula) {
             maxDisplay = mgr->config->GetConfigValue(HorizonOCConfigValue_EnableUnsafeDisplayFreqs) ? 65 : 60;

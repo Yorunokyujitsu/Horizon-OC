@@ -28,6 +28,7 @@
 #pragma message("Compiling with minimal features")
 #endif
 
+class SysmoduleSettingsSubMenuGui;
 class DisplaySubMenuGui;
 class SafetySubMenuGui;
 class RamSubmenuGui;
@@ -358,24 +359,16 @@ void MiscGui::listUI()
     std::vector<NamedValue> noNamedValues = {};
 
     this->listElement->addItem(new tsl::elm::CategoryHeader("Settings"));
-    std::vector<NamedValue> ramVoltDispModes = {
-        NamedValue("VDD2 + VDDQ", RamDisplayMode_VDD2VDDQ),
-        NamedValue("VDD2 + Usage", RamDisplayMode_VDD2Usage),
-        NamedValue("VDDQ + Usage", RamDisplayMode_VDDQUsage),
-    };
+    tsl::elm::ListItem* sysmoduleSettingsSubMenu = new tsl::elm::ListItem("Sysmodule Settings");
+    sysmoduleSettingsSubMenu->setClickListener([](u64 keys) {
+        if (keys & HidNpadButton_A) {
+            tsl::changeTo<SysmoduleSettingsSubMenuGui>();
+            return true;
+        }
+        return false;
+    });
+    this->listElement->addItem(sysmoduleSettingsSubMenu);
 
-    addConfigButton(HorizonOCConfigValue_RAMVoltUsageDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
-
-    addConfigButton(
-        SysClkConfigValue_PollingIntervalMs,
-        "Polling Interval",
-        ValueRange(50, 1000, 50, "ms", 1),
-        "Polling Interval",
-        &thresholdsDisabled,
-        {},
-        {},
-        false
-    );
     tsl::elm::ListItem* safetySubmenu = new tsl::elm::ListItem("Safety Settings");
     safetySubmenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
@@ -538,6 +531,34 @@ void MiscGui::listUI()
         }
     #endif
 }
+
+class SysmoduleSettingsSubMenuGui : public MiscGui {
+public:
+    SysmoduleSettingsSubMenuGui() { }
+
+protected:
+    void listUI() override {
+        ValueThresholds thresholdsDisabled(0, 0);
+        std::vector<NamedValue> ramVoltDispModes = {
+            NamedValue("VDD2 + VDDQ", RamDisplayMode_VDD2VDDQ),
+            NamedValue("VDD2 + Usage", RamDisplayMode_VDD2Usage),
+            NamedValue("VDDQ + Usage", RamDisplayMode_VDDQUsage),
+        };
+
+        addConfigButton(HorizonOCConfigValue_RAMVoltUsageDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
+
+        addConfigButton(
+            SysClkConfigValue_PollingIntervalMs,
+            "Polling Interval",
+            ValueRange(50, 1000, 50, "ms", 1),
+            "Polling Interval",
+            &thresholdsDisabled,
+            {},
+            {},
+            false
+        );
+    }
+};
 
 class DisplaySubMenuGui : public MiscGui {
 public:

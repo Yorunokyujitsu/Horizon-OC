@@ -814,9 +814,9 @@ namespace ams::ldr::hoc::pcv::mariko {
             if (R_FAILED(entry.CheckResult())) {
                 #if defined(AMS_BUILD_FOR_AUDITING) || defined(AMS_BUILD_FOR_DEBUGGING)
                     panic::SmcError(panic::Patch);
-                #else
-                    CRASH(entry.description);
                 #endif
+
+                CRASH(entry.description);
             }
         }
     }

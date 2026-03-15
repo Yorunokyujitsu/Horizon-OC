@@ -98,6 +98,7 @@ static const HandheldTimings g_handheldTimingsRETRO[] = {
 
 static const MinMaxRefreshRate g_handheldModeRefreshRate = {40, 80};
 
+static uint8_t _getDockedRefreshRateIterator(uint32_t refreshRate) {
     for (size_t i = 0; i < sizeof(g_dockedRefreshRates) / sizeof(g_dockedRefreshRates[0]); i++) {
         if (g_dockedRefreshRates[i] == refreshRate) return i;
     }

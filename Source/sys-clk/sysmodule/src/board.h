@@ -68,6 +68,7 @@ class Board
     static void SetDisplayRefreshDockedState(bool docked);
     static void SetCpuUvLevel(u32 levelLow, u32 levelHigh, u32 tbreakPoint);
     static u32 CalculateTbreak(u32 table);
+    static bool IsHoag();
   protected:
     static void FetchHardwareInfos();
     static PcvModule GetPcvModule(SysClkModule sysclkModule);

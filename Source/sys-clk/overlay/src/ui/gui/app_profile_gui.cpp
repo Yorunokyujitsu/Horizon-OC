@@ -360,8 +360,8 @@ void AppProfileGui::addProfileUI(SysClkProfile profile)
                         NamedValue("115 Hz", 115),
                         NamedValue("120 Hz", 120)
                     };
-                    
-                    this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 50, 120, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqsStandard);
+                    if(configList.values[HorizonOCConfigValue_OverwriteRefreshRate] && !IsHoag())
+                        this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 50, 120, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqsStandard);
                 }
             }
         }
@@ -378,8 +378,15 @@ void AppProfileGui::addProfileUI(SysClkProfile profile)
         NamedValue("VRR", GovernorState_Enabled_Vrr),
     };
 
+    std::vector<NamedValue> governorSettingsH = {
+        NamedValue("Do Not Override", GovernorState_DoNotOverride),
+        NamedValue("Disabled", GovernorState_Disabled),
+        NamedValue("CPU + GPU", GovernorState_Enabled_CpuGpu),
+        NamedValue("CPU", GovernorState_Enabled_Cpu),
+        NamedValue("GPU", GovernorState_Enabled_Gpu),
+    };
 
-    this->addModuleListItemValue(profile, HorizonOCModule_Governor, "Governor", 0, 0, 1, "", 1, 0, ValueThresholds(), governorSettingsE, false);
+    this->addModuleListItemValue(profile, HorizonOCModule_Governor, "Governor", 0, 0, 1, "", 1, 0, ValueThresholds(), IsHoag() ? governorSettingsH : governorSettingsE, false);
 }
 
 void AppProfileGui::listUI()

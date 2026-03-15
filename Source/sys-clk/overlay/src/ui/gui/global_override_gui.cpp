@@ -302,6 +302,14 @@ std::vector<NamedValue> governorSettingsE = {
     NamedValue("VRR", GovernorState_Enabled_Vrr),
 };
 
+std::vector<NamedValue> governorSettingsH = {
+    NamedValue("Do Not Override", GovernorState_DoNotOverride),
+    NamedValue("Disabled", GovernorState_Disabled),
+    NamedValue("CPU + GPU", GovernorState_Enabled_CpuGpu),
+    NamedValue("CPU", GovernorState_Enabled_Cpu),
+    NamedValue("GPU", GovernorState_Enabled_Gpu),
+};
+
 void GlobalOverrideGui::listUI()
 {
     Result rc = sysclkIpcGetConfigValues(&configList); // idk why this is needed, probably some refreshing issue
@@ -317,11 +325,11 @@ void GlobalOverrideGui::listUI()
     this->addModuleListItem(SysClkModule_MEM);
     #if IS_MINIMAL == 0
         ValueThresholds lcdThresholds(60, 65);
-        if(configList.values[HorizonOCConfigValue_OverwriteRefreshRate])
+        if(configList.values[HorizonOCConfigValue_OverwriteRefreshRate] && !IsHoag())
             this->addModuleListItemValue(HorizonOCModule_Display, "Display", IsAula() ? 45 : 40, configList.values[HorizonOCConfigValue_EnableUnsafeDisplayFreqs] ? IsAula() ? 65 : 72 : 60, 1, " Hz", 1, 0, lcdThresholds);
     #endif
 
-    this->addModuleListItemValue(HorizonOCModule_Governor, "Governor", 0, 0, 1, "", 1, 0, ValueThresholds(), governorSettingsE, false);
+    this->addModuleListItemValue(HorizonOCModule_Governor, "Governor", 0, 0, 1, "", 1, 0, ValueThresholds(), IsHoag() ? governorSettingsH : governorSettingsE, false);
 }
 
 void GlobalOverrideGui::refresh()

@@ -276,23 +276,27 @@ void Board::Initialize()
     // threadStart(&cpuCore3Thread);
     threadStart(&miscThread);
     batteryInfoInitialize();
+    FetchHardwareInfos();
 
     if (hosversionAtLeast(6,0,0) && R_SUCCEEDED(pwmInitialize())) {
         pwmCheck = pwmOpenSession2(&g_ICon, 0x3D000001);
     }
-    u64 clkVirtAddr, dsiVirtAddr, outsize;
-    rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
-    ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
-    rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
-    ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
 
-    DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
+    if(!IsHoag()) {
+        u64 clkVirtAddr, dsiVirtAddr, outsize;
+        rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
+        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
+        rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
+        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
 
-    DisplayRefresh_Initialize(&cfg);
+        DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
 
-    FetchHardwareInfos();
+        DisplayRefresh_Initialize(&cfg);
+    }
+
     rc = svcQueryMemoryMapping(&cldvfs, &cldvfs_temp, CLDVFS_REGION_BASE, CLDVFS_REGION_SIZE);
     ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (cldvfs)");
+
     if(Board::GetSocType() == SysClkSocType_Erista) {
         cachedEristaUvLowTune0 = *(u32*)(cldvfs + CL_DVFS_TUNE0_0);
         cachedEristaUvLowTune1 = *(u32*)(cldvfs + CL_DVFS_TUNE1_0);
@@ -301,6 +305,8 @@ void Board::Initialize()
         cachedMarikoUvHighTune0 = *(u32*)(cldvfs + CL_DVFS_TUNE0_0);
         Board::ResetToStockCpu();
     }
+
+
 }
 
 void Board::fuseReadSpeedos() {
@@ -420,7 +426,8 @@ void Board::Exit()
     batteryInfoExit();
     pmdmntExit();
     nvExit();
-    DisplayRefresh_Shutdown();
+    if(!IsHoag())
+        DisplayRefresh_Shutdown();
 }
 
 SysClkProfile Board::GetProfile()
@@ -455,7 +462,8 @@ void Board::SetHz(SysClkModule module, std::uint32_t hz)
 {
     Result rc = 0;
     if(module == HorizonOCModule_Display) {
-        DisplayRefresh_SetRate(hz);
+        if(!IsHoag())
+            DisplayRefresh_SetRate(hz);
         return;
     }
     if(module > SysClkModule_MEM)
@@ -493,7 +501,10 @@ std::uint32_t Board::GetHz(SysClkModule module)
     std::uint32_t hz = 0;
 
     if(module == HorizonOCModule_Display) {
-        DisplayRefresh_GetRate(&hz, false);
+        if(!IsHoag())
+            DisplayRefresh_GetRate(&hz, false);
+        else
+            hz = 60;
         return hz;
     }
 
@@ -530,7 +541,10 @@ std::uint32_t Board::GetRealHz(SysClkModule module)
         case SysClkModule_MEM:
             return t210ClkMemFreq();
         case HorizonOCModule_Display:
-            DisplayRefresh_GetRate(&hz, false);
+            if(!IsHoag())
+                DisplayRefresh_GetRate(&hz, false);
+            else
+                hz = 60;
             return hz;
         default:
             ASSERT_ENUM_VALID(SysClkModule, module);
@@ -725,7 +739,8 @@ void Board::ResetToStockGpu()
 }
 
 void Board::ResetToStockDisplay() {
-    DisplayRefresh_SetRate(60);
+    if(!IsHoag())
+        DisplayRefresh_SetRate(60);
 }
 
 u8 Board::GetHighestDockedDisplayRate() {
@@ -1306,4 +1321,8 @@ u32 Board::CalculateTbreak(u32 table) {
         }
     }
 
+}
+
+bool Board::IsHoag() {
+    return Board::GetConsoleType() == HorizonOCConsoleType_Hoag;
 }

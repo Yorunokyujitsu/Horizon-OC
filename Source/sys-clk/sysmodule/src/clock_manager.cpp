@@ -495,6 +495,11 @@ void ClockManager::VRRThread(void* arg) {
             continue;
         }
 
+        if(Board::IsHoag()) { // don't do anything on lite
+            svcSleepThread(~0ULL);
+            continue;
+        }
+
         std::scoped_lock lock{mgr->contextMutex};
 
         u8 fps;
@@ -505,6 +510,7 @@ void ClockManager::VRRThread(void* arg) {
             svcSleepThread(~0ULL); // effectively disable the thread if SaltyNX isn't installed, as there's no point in it running
             continue;
         }
+
 
         if(fps == 254) {
             svcSleepThread(POLL_NS);
@@ -745,7 +751,7 @@ void ClockManager::HandleFreqReset(SysClkModule module, bool isBoost) {
         DVFSReset();
         break;
     case HorizonOCModule_Display:
-        if(this->config->GetConfigValue(HorizonOCConfigValue_OverwriteRefreshRate)) {
+        if(this->config->GetConfigValue(HorizonOCConfigValue_OverwriteRefreshRate) && !Board::IsHoag()) {
             Board::ResetToStockDisplay();
         }
         break;
@@ -791,16 +797,17 @@ void ClockManager::SetClocks(bool isBoost) {
 
         bool noCPU = isCpuGovernorEnabled;
         bool noGPU = isGpuGovernorEnabled;
-        bool noDisp = isVRREnabled;
+        if(!Board::IsHoag()) {
+            bool noDisp = isVRREnabled;
+            if(noDisp && module == HorizonOCModule_Display)
+                continue;
 
-        if(noDisp && module == HorizonOCModule_Display)
-            continue;
-
-        if(module == HorizonOCModule_Display && this->config->GetConfigValue(HorizonOCConfigValue_OverwriteRefreshRate)) {
-            if(targetHz)
-                Board::SetHz(HorizonOCModule_Display, targetHz);
-            else
-                Board::ResetToStockDisplay();
+            if(module == HorizonOCModule_Display && this->config->GetConfigValue(HorizonOCConfigValue_OverwriteRefreshRate)) {
+                if(targetHz)
+                    Board::SetHz(HorizonOCModule_Display, targetHz);
+                else
+                    Board::ResetToStockDisplay();
+            }
         }
 
         // Skip GPU and CPU if governors handle them
@@ -1005,20 +1012,20 @@ bool ClockManager::RefreshContext()
     }
 
     // this->context->maxDisplayFreq = Board::GetHighestDockedDisplayRate();
+    if(!Board::IsHoag()) {
+        u32 targetHz = this->context->overrideFreqs[HorizonOCModule_Display];
+        if (!targetHz)
+        {
+            targetHz = this->config->GetAutoClockHz(this->context->applicationId, HorizonOCModule_Display, this->context->profile, true);
+            if(!targetHz)
+                targetHz = this->config->GetAutoClockHz(GLOBAL_PROFILE_ID, HorizonOCModule_Display, this->context->profile, true);
+        }
 
-    u32 targetHz = this->context->overrideFreqs[HorizonOCModule_Display];
-    if (!targetHz)
-    {
-        targetHz = this->config->GetAutoClockHz(this->context->applicationId, HorizonOCModule_Display, this->context->profile, true);
-        if(!targetHz)
-            targetHz = this->config->GetAutoClockHz(GLOBAL_PROFILE_ID, HorizonOCModule_Display, this->context->profile, true);
-    }
+        if(targetHz && this->context->realFreqs[HorizonOCModule_Display] > targetHz && this->context->profile != SysClkProfile_Docked)
+            this->context->realFreqs[HorizonOCModule_Display] = targetHz; // clean up display real freqs, should probably be moved to the real freqs loop?
 
-    if(targetHz && this->context->realFreqs[HorizonOCModule_Display] > targetHz && this->context->profile != SysClkProfile_Docked)
-        this->context->realFreqs[HorizonOCModule_Display] = targetHz; // clean up display real freqs, should probably be moved to the real freqs loop?
-
-    if(Board::GetConsoleType() != HorizonOCConsoleType_Hoag)
         Board::SetDisplayRefreshDockedState(this->context->profile == SysClkProfile_Docked);
+    }
     if(this->context->isSaltyNXInstalled)
         this->context->fps = saltyNXIntegration->GetFPS();
     else

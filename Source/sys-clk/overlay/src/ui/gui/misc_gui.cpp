@@ -721,16 +721,82 @@ protected:
             false
         );
 
-        tsl::elm::ListItem* freqSubmenu = new tsl::elm::ListItem("RAM Frequency Editor");
-        freqSubmenu->setClickListener([](u64 keys) {
-            if (keys & HidNpadButton_A) {
-                tsl::changeTo<RamTableEditor>();
-                return true;
-            }
-            return false;
-        });
-        freqSubmenu->setValue(R_ARROW);
-        this->listElement->addItem(freqSubmenu);
+        if (IsErista()) {
+            tsl::elm::ListItem* freqSubmenu = new tsl::elm::ListItem("RAM Frequency Editor");
+            freqSubmenu->setClickListener([](u64 keys) {
+                if (keys & HidNpadButton_A) {
+                    tsl::changeTo<RamTableEditor>();
+                    return true;
+                }
+                return false;
+            });
+            freqSubmenu->setValue(R_ARROW);
+            this->listElement->addItem(freqSubmenu);
+        } else {
+            std::vector<NamedValue> marikoMaxEmcClock = {
+                NamedValue("Disabled", 1600000),
+                NamedValue("1633 MHz", 1633000),
+                NamedValue("1666 MHz", 1666000),
+                NamedValue("1700 MHz", 1700000),
+                NamedValue("1733 MHz", 1733000),
+                NamedValue("1766 MHz", 1766000),
+                NamedValue("1800 MHz", 1800000),
+                NamedValue("1833 MHz", 1833000),
+                NamedValue("1866 MHz", 1866000, "JEDEC."),
+                NamedValue("1900 MHz", 1900000),
+                NamedValue("1933 MHz", 1933000),
+                NamedValue("1966 MHz", 1966000),
+                NamedValue("1996 MHz", 1996800, "JEDEC."),
+                NamedValue("2000 MHz", 2000000),
+                NamedValue("2033 MHz", 2033000),
+                NamedValue("2066 MHz", 2066000),
+                NamedValue("2100 MHz", 2100000),
+                NamedValue("2133 MHz", 2133000, "JEDEC."),
+                NamedValue("2166 MHz", 2166000),
+                NamedValue("2200 MHz", 2200000),
+                NamedValue("2233 MHz", 2233000),
+                NamedValue("2266 MHz", 2266000),
+                NamedValue("2300 MHz", 2300000),
+                NamedValue("2333 MHz", 2333000),
+                NamedValue("2366 MHz", 2366000),
+                NamedValue("2400 MHz", 2400000, "JEDEC."),
+                NamedValue("2433 MHz", 2433000),
+                NamedValue("2466 MHz", 2466000),
+                NamedValue("2500 MHz", 2500000),
+                NamedValue("2533 MHz", 2533000),
+                NamedValue("2566 MHz", 2566000),
+                NamedValue("2600 MHz", 2600000),
+                NamedValue("2633 MHz", 2633000),
+                NamedValue("2666 MHz", 2666000, "JEDEC."),
+                NamedValue("2700 MHz", 2700000),
+                NamedValue("2733 MHz", 2733000),
+                NamedValue("2766 MHz", 2766000),
+                NamedValue("2800 MHz", 2800000),
+                NamedValue("2833 MHz", 2833000),
+                NamedValue("2866 MHz", 2866000),
+                NamedValue("2900 MHz", 2900000),
+                NamedValue("2933 MHz", 2933000, "JEDEC."),
+                NamedValue("2966 MHz", 2966000),
+                NamedValue("3000 MHz", 3000000),
+                NamedValue("3033 MHz", 3033000),
+                NamedValue("3066 MHz", 3066000),
+                NamedValue("3100 MHz", 3100000),
+                NamedValue("3133 MHz", 3133000),
+                NamedValue("3166 MHz", 3166000),
+                NamedValue("3200 MHz", 3200000, "JEDEC."),
+                NamedValue("3233 MHz", 3233000, "High speedo needed!"),
+                NamedValue("3266 MHz", 3266000, "High speedo needed!"),
+                NamedValue("3300 MHz", 3300000, "High speedo needed!"),
+                // NamedValue("3333MHz (Needs extreme Speedo/PLL)", 3333000),
+                // NamedValue("3366MHz (Needs extreme Speedo/PLL)", 3366000),
+                // NamedValue("3400MHz (Needs extreme Speedo/PLL)", 3400000),
+                // NamedValue("3433MHz (Needs ridiculous Speedo/PLL)", 3433000),
+                // NamedValue("3466MHz (Needs ridiculous Speedo/PLL)", 3466000),
+                // NamedValue("3500MHz (Needs ridiculous Speedo/PLL)", 3500000),
+            };
+
+            addConfigButton(KipConfigValue_marikoEmcMaxClock, "Ram Max Clock", ValueRange(0, 1, 1, "", 1), "Ram Max Clock", &thresholdsDisabled, {}, marikoMaxEmcClock, false);
+        }
 
         tsl::elm::ListItem* latenciesSubmenu = new tsl::elm::ListItem("RAM Latency Editor");
         latenciesSubmenu->setClickListener([](u64 keys) {
@@ -1070,146 +1136,68 @@ protected:
         this->listElement->addItem(new tsl::elm::CategoryHeader("RAM Frequency Editor"));
 
         ValueThresholds thresholdsDisabled(0, 0);
-        if(IsMariko()) {
-            tsl::elm::ListItem* ramItem1600 = new tsl::elm::ListItem("1600 MHz");
-            this->listElement->addItem(ramItem1600);
+        // 1600000, 1331200, 1065600, 800000, 665600, 408000, 204000
 
-            std::vector<NamedValue> marikoMaxEmcClock = {
-                NamedValue("Disabled", 1600000),
-                NamedValue("1633 MHz", 1633000),
-                NamedValue("1666 MHz", 1666000),
-                NamedValue("1700 MHz", 1700000),
-                NamedValue("1733 MHz", 1733000),
-                NamedValue("1766 MHz", 1766000),
-                NamedValue("1800 MHz", 1800000),
-                NamedValue("1833 MHz", 1833000),
-                NamedValue("1866 MHz", 1866000, "JEDEC."),
-                NamedValue("1900 MHz", 1900000),
-                NamedValue("1933 MHz", 1933000),
-                NamedValue("1966 MHz", 1966000),
-                NamedValue("1996 MHz", 1996800, "JEDEC."),
-                NamedValue("2000 MHz", 2000000),
-                NamedValue("2033 MHz", 2033000),
-                NamedValue("2066 MHz", 2066000),
-                NamedValue("2100 MHz", 2100000),
-                NamedValue("2133 MHz", 2133000, "JEDEC."),
-                NamedValue("2166 MHz", 2166000),
-                NamedValue("2200 MHz", 2200000),
-                NamedValue("2233 MHz", 2233000),
-                NamedValue("2266 MHz", 2266000),
-                NamedValue("2300 MHz", 2300000),
-                NamedValue("2333 MHz", 2333000),
-                NamedValue("2366 MHz", 2366000),
-                NamedValue("2400 MHz", 2400000, "JEDEC."),
-                NamedValue("2433 MHz", 2433000),
-                NamedValue("2466 MHz", 2466000),
-                NamedValue("2500 MHz", 2500000),
-                NamedValue("2533 MHz", 2533000),
-                NamedValue("2566 MHz", 2566000),
-                NamedValue("2600 MHz", 2600000),
-                NamedValue("2633 MHz", 2633000),
-                NamedValue("2666 MHz", 2666000, "JEDEC."),
-                NamedValue("2700 MHz", 2700000),
-                NamedValue("2733 MHz", 2733000),
-                NamedValue("2766 MHz", 2766000),
-                NamedValue("2800 MHz", 2800000),
-                NamedValue("2833 MHz", 2833000),
-                NamedValue("2866 MHz", 2866000),
-                NamedValue("2900 MHz", 2900000),
-                NamedValue("2933 MHz", 2933000, "JEDEC."),
-                NamedValue("2966 MHz", 2966000),
-                NamedValue("3000 MHz", 3000000),
-                NamedValue("3033 MHz", 3033000),
-                NamedValue("3066 MHz", 3066000),
-                NamedValue("3100 MHz", 3100000),
-                NamedValue("3133 MHz", 3133000),
-                NamedValue("3166 MHz", 3166000),
-                NamedValue("3200 MHz", 3200000, "JEDEC."),
-                NamedValue("3233 MHz", 3233000, "High speedo needed!"),
-                NamedValue("3266 MHz", 3266000, "High speedo needed!"),
-                NamedValue("3300 MHz", 3300000, "High speedo needed!"),
-                // NamedValue("3333MHz (Needs extreme Speedo/PLL)", 3333000),
-                // NamedValue("3366MHz (Needs extreme Speedo/PLL)", 3366000),
-                // NamedValue("3400MHz (Needs extreme Speedo/PLL)", 3400000),
-                // NamedValue("3433MHz (Needs ridiculous Speedo/PLL)", 3433000),
-                // NamedValue("3466MHz (Needs ridiculous Speedo/PLL)", 3466000),
-                // NamedValue("3500MHz (Needs ridiculous Speedo/PLL)", 3500000),
-            };
-            addConfigButtonS(
-                KipConfigValue_marikoEmcMaxClock,
-                "",
-                ValueRange(0, 1, 1, "", 1),
-                "",
-                &thresholdsDisabled,
-                {},
-                marikoMaxEmcClock,
-                false,
-                A_BTN
-            );
-        } else {
-            // 1600000, 1331200, 1065600, 800000, 665600, 408000, 204000
+        tsl::elm::ListItem* ramItem665 = new tsl::elm::ListItem("665 MHz");
+        this->listElement->addItem(ramItem665);
 
-            tsl::elm::ListItem* ramItem665 = new tsl::elm::ListItem("665 MHz");
-            this->listElement->addItem(ramItem665);
+        tsl::elm::ListItem* ramItem800 = new tsl::elm::ListItem("800 MHz");
+        this->listElement->addItem(ramItem800);
 
-            tsl::elm::ListItem* ramItem800 = new tsl::elm::ListItem("800 MHz");
-            this->listElement->addItem(ramItem800);
+        tsl::elm::ListItem* ramItem1065 = new tsl::elm::ListItem("1065 MHz");
+        this->listElement->addItem(ramItem1065);
 
-            tsl::elm::ListItem* ramItem1065 = new tsl::elm::ListItem("1065 MHz");
-            this->listElement->addItem(ramItem1065);
+        tsl::elm::ListItem* ramItem1331 = new tsl::elm::ListItem("1331 MHz");
+        this->listElement->addItem(ramItem1331);
 
-            tsl::elm::ListItem* ramItem1331 = new tsl::elm::ListItem("1331 MHz");
-            this->listElement->addItem(ramItem1331);
+        tsl::elm::ListItem* ramItem1600 = new tsl::elm::ListItem("1600 MHz");
+        this->listElement->addItem(ramItem1600);
 
-            tsl::elm::ListItem* ramItem1600 = new tsl::elm::ListItem("1600 MHz");
-            this->listElement->addItem(ramItem1600);
+        ValueThresholds eristaRamThresholds(2208000, 2304000);
 
-            ValueThresholds eristaRamThresholds(2208000, 2304000);
+        std::vector<NamedValue> eristaMaxEmcClock = {
+            NamedValue("Disabled", 1600000),
+            NamedValue("1633 MHz", 1633000),
+            NamedValue("1666 MHz", 1666000),
+            NamedValue("1700 MHz", 1700000),
+            NamedValue("1733 MHz", 1733000),
+            NamedValue("1766 MHz", 1766000),
+            NamedValue("1800 MHz", 1800000),
+            NamedValue("1833 MHz", 1833000),
+            NamedValue("1862 MHz", 1862400, "JEDEC."),
+            NamedValue("1881 MHz", 1881600),
+            NamedValue("1900 MHz", 1900800),
+            NamedValue("1920 MHz", 1920000),
+            NamedValue("1939 MHz", 1939200),
+            NamedValue("1958 MHz", 1958400),
+            NamedValue("1977 MHz", 1977600),
+            NamedValue("1996 MHz", 1996800, "JEDEC."),
+            NamedValue("2016 MHz", 2016000),
+            NamedValue("2035 MHz", 2035200),
+            NamedValue("2054 MHz", 2054400),
+            NamedValue("2073 MHz", 2073600),
+            NamedValue("2092 MHz", 2092800),
+            NamedValue("2112 MHz", 2112000),
+            NamedValue("2131 MHz", 2131200, "JEDEC."),
+            NamedValue("2150 MHz", 2150400),
+            NamedValue("2169 MHz", 2169600),
+            NamedValue("2188 MHz", 2188800),
+            NamedValue("2208 MHz", 2208000),
+            NamedValue("2227 MHz", 2227200),
+            NamedValue("2246 MHz", 2246400),
+            NamedValue("2265 MHz", 2265600),
+            NamedValue("2284 MHz", 2284800),
+            NamedValue("2304 MHz", 2304000),
+            NamedValue("2323 MHz", 2323200),
+            NamedValue("2342 MHz", 2342400),
+            NamedValue("2361 MHz", 2361600),
+            NamedValue("2380 MHz", 2380800),
+            NamedValue("2400 MHz", 2400000, "JEDEC."),
+        };
 
-            std::vector<NamedValue> eristaMaxEmcClock = {
-                NamedValue("Disabled", 1600000),
-                NamedValue("1633 MHz", 1633000),
-                NamedValue("1666 MHz", 1666000),
-                NamedValue("1700 MHz", 1700000),
-                NamedValue("1733 MHz", 1733000),
-                NamedValue("1766 MHz", 1766000),
-                NamedValue("1800 MHz", 1800000),
-                NamedValue("1833 MHz", 1833000),
-                NamedValue("1862 MHz", 1862400, "JEDEC."),
-                NamedValue("1881 MHz", 1881600),
-                NamedValue("1900 MHz", 1900800),
-                NamedValue("1920 MHz", 1920000),
-                NamedValue("1939 MHz", 1939200),
-                NamedValue("1958 MHz", 1958400),
-                NamedValue("1977 MHz", 1977600),
-                NamedValue("1996 MHz", 1996800, "JEDEC."),
-                NamedValue("2016 MHz", 2016000),
-                NamedValue("2035 MHz", 2035200),
-                NamedValue("2054 MHz", 2054400),
-                NamedValue("2073 MHz", 2073600),
-                NamedValue("2092 MHz", 2092800),
-                NamedValue("2112 MHz", 2112000),
-                NamedValue("2131 MHz", 2131200, "JEDEC."),
-                NamedValue("2150 MHz", 2150400),
-                NamedValue("2169 MHz", 2169600),
-                NamedValue("2188 MHz", 2188800),
-                NamedValue("2208 MHz", 2208000),
-                NamedValue("2227 MHz", 2227200),
-                NamedValue("2246 MHz", 2246400),
-                NamedValue("2265 MHz", 2265600),
-                NamedValue("2284 MHz", 2284800),
-                NamedValue("2304 MHz", 2304000),
-                NamedValue("2323 MHz", 2323200),
-                NamedValue("2342 MHz", 2342400),
-                NamedValue("2361 MHz", 2361600),
-                NamedValue("2380 MHz", 2380800),
-                NamedValue("2400 MHz", 2400000, "JEDEC."),
-            };
-
-            addConfigButtonS(KipConfigValue_eristaEmcMaxClock, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
-            addConfigButtonS(KipConfigValue_eristaEmcMaxClock1, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
-            addConfigButtonS(KipConfigValue_eristaEmcMaxClock2, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
-        }
+        addConfigButtonS(KipConfigValue_eristaEmcMaxClock, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
+        addConfigButtonS(KipConfigValue_eristaEmcMaxClock1, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
+        addConfigButtonS(KipConfigValue_eristaEmcMaxClock2, "", ValueRange(0, 1, 1, "", 1), "", &eristaRamThresholds, {}, eristaMaxEmcClock, false, A_BTN);
     };
 };
 

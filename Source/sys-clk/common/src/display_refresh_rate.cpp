@@ -213,8 +213,7 @@ static void _getDockedHighestRefreshRate(uint32_t fd_in) {
     uint8_t highestRefreshRate = 60;
     uint32_t fd = fd_in;
     
-    if (!fd) nvOpen(&fd, "/dev/nvdisp-disp1");
-
+    if(!fd) nvOpen(&fd, "/dev/nvdisp-disp1");
     NvdcModeDB2 db2 = {0};
     int rc = nvIoctl(fd, NVDISP_GET_MODE_DB2, &db2);
     
@@ -222,9 +221,11 @@ static void _getDockedHighestRefreshRate(uint32_t fd_in) {
         for (size_t i = 0; i < db2.num_modes; i++) {
             if (db2.modes[i].hActive < 1920 || db2.modes[i].vActive < 1080) 
                 continue;
+            
             uint32_t v_total = db2.modes[i].vActive + db2.modes[i].vSyncWidth + db2.modes[i].vFrontPorch + db2.modes[i].vBackPorch;
             uint32_t h_total = db2.modes[i].hActive + db2.modes[i].hSyncWidth + db2.modes[i].hFrontPorch + db2.modes[i].hBackPorch;
             double refreshRate = round((double)(db2.modes[i].pclkKHz * 1000) / (double)(v_total * h_total));
+            
             if (highestRefreshRate < (uint8_t)refreshRate) 
                 highestRefreshRate = (uint8_t)refreshRate;
         }
@@ -237,17 +238,17 @@ static void _getDockedHighestRefreshRate(uint32_t fd_in) {
         highestRefreshRate = g_dockedRefreshRates[numRates - 1];
     
     NvdcMode2 display_b = {0};
-    nvIoctl(fd, NVDISP_GET_MODE2, &display_b);
+    rc = nvIoctl(fd, NVDISP_GET_MODE2, &display_b);
     
-    struct {
+    struct dpaux_read_0x100 {
         uint32_t cmd;
         uint32_t addr;
         uint32_t size;
         struct {
             unsigned char link_rate;
-            unsigned char lane_count: 5;
-            unsigned char unk1: 2;
-            unsigned char isFramingEnhanced: 1;
+            unsigned int lane_count: 5;
+            unsigned int unk1: 2;
+            unsigned int isFramingEnhanced: 1;
             unsigned char downspread;
             unsigned char training_pattern;
             unsigned char lane_pattern[4];
@@ -256,8 +257,11 @@ static void _getDockedHighestRefreshRate(uint32_t fd_in) {
     } dpaux = {6, 0x100, 0x10};
     
     rc = nvIoctl(fd, NVDISP_GET_PANEL_DATA, &dpaux);
-    if (rc == 0)
+    if (rc == 0) {
         g_dockedLinkRate = dpaux.set.link_rate;
+        // if (display_b.hActive == 1920 && display_b.vActive == 1080 && highestRefreshRate > 75 && dpaux.set.link_rate < 20 && ) 
+        //     highestRefreshRate = 75;
+    }
     
     if (!fd_in) nvClose(fd);
     g_dockedHighestRefreshRate = highestRefreshRate;
@@ -543,28 +547,30 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
 
     uint32_t fd = 0;
     
-    if (g_config.isLite && g_config.isPossiblySpoofedRetro)
-        g_config.isRetroSUPER = false;
+    if (g_config.isLite && g_config.isPossiblySpoofedRetro) {
+        g_config.isRetroSUPER = false; // Would check flag file here in original, but i dont care lol
+    }
     
-    if (g_config.isRetroSUPER && !g_config.isDocked)
+    if (g_config.isRetroSUPER && !g_config.isDocked) {
         return _setNvDispHandheldRefreshRate(new_refreshRate);
-    
+    }
+
     else if ((!g_config.isRetroSUPER && g_config.isLite) || R_FAILED(nvOpen(&fd, "/dev/nvdisp-disp1"))) {
-        if (_setPLLDHandheldRefreshRate(new_refreshRate) == false)
+        if (_setPLLDHandheldRefreshRate(new_refreshRate) == false) 
             return false;
     }
     else {
-        struct {
+        struct dpaux_read {
             uint32_t cmd;
             uint32_t addr;
             uint32_t size;
             struct {
-                unsigned char rev_minor: 4;
-                unsigned char rev_major: 4;
+                unsigned int rev_minor : 4;
+                unsigned int rev_major : 4;
                 unsigned char link_rate;
-                unsigned char lane_count: 5;
-                unsigned char unk1: 2;
-                unsigned char isFramingEnhanced: 1;
+                unsigned int lane_count: 5;
+                unsigned int unk1: 2;
+                unsigned int isFramingEnhanced: 1;
                 unsigned char unk2[13];
             } DPCD;
         } dpaux = {6, 0, 0x10};
@@ -573,14 +579,15 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
         nvClose(fd);
         
         if (rc != 0) {
-            if (!g_config.isRetroSUPER)
-                return _setPLLDHandheldRefreshRate(new_refreshRate);
-            else
-                return _setNvDispHandheldRefreshRate(new_refreshRate);
+                if (!g_config.isRetroSUPER) {
+                    return _setPLLDHandheldRefreshRate(new_refreshRate);
+                } else {
+                    return _setNvDispHandheldRefreshRate(new_refreshRate);
+                }
         } else {
-            if (g_config.isDocked)
+            if(g_config.isDocked)
                 return _setNvDispDockedRefreshRate(new_refreshRate);
-            else
+            else 
                 return true;
         }
     }
@@ -589,7 +596,6 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
 
 bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
     if (!out_refreshRate || !g_initialized || !g_config.clkVirtAddr) return false;
-
     static uint32_t value = 60;
 
     if (g_config.isRetroSUPER && !g_config.isDocked) {
@@ -627,6 +633,7 @@ bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
         value = ((temp.PLLD_DIVN / temp.PLLD_DIVM) * 10) / 4;
         
         if (value == 0 || value == 80) {
+            // Docked mode
             if (g_config.isLite) return false;
             
             g_config.isDocked = true;
@@ -634,15 +641,15 @@ bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
             if (!g_canChangeRefreshRateDocked) {
                 uint32_t fd = 0;
                 if (!nvOpen(&fd, "/dev/nvdisp-disp1")) {
-                    struct {
+                    struct dpaux_read_0x100 {
                         uint32_t cmd;
                         uint32_t addr;
                         uint32_t size;
                         struct {
                             unsigned char link_rate;
-                            unsigned char lane_count: 5;
-                            unsigned char unk1: 2;
-                            unsigned char isFramingEnhanced: 1;
+                            unsigned int lane_count: 5;
+                            unsigned int unk1: 2;
+                            unsigned int isFramingEnhanced: 1;
                             unsigned char downspread;
                             unsigned char training_pattern;
                             unsigned char lane_pattern[4];
@@ -664,7 +671,10 @@ bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
                     return false;
                 }
             }
-
+            if(internal) {
+                *out_refreshRate = value;
+                return true;
+            }
             uint32_t fd = 0;
             if (!nvOpen(&fd, "/dev/nvdisp-disp1")) {
                 NvdcMode2 display_b = {0};
@@ -673,10 +683,12 @@ bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
                         nvClose(fd);
                         return false;
                     }
+                    
                     if (g_lastVActive != display_b.vActive) {
                         g_lastVActive = display_b.vActive;
                         _getDockedHighestRefreshRate(fd);
                     }
+                    
                     uint32_t h_total = display_b.hActive + display_b.hFrontPorch + display_b.hSyncWidth + display_b.hBackPorch;
                     uint32_t v_total = display_b.vActive + display_b.vFrontPorch + display_b.vSyncWidth + display_b.vBackPorch;
                     uint32_t pixelClock = display_b.pclkKHz * 1000 + 999;
@@ -690,8 +702,10 @@ bool DisplayRefresh_GetRate(uint32_t* out_refreshRate, bool internal) {
             }
         }
         else if (!g_config.isRetroSUPER) {
+            // Handheld mode
             g_config.isDocked = false;
             g_canChangeRefreshRateDocked = false;
+            
             uint32_t pixelClock = (9375 * ((4096 * ((2 * temp.PLLD_DIVN) + 1)) + misc.PLLD_SDM_DIN)) / (8 * temp.PLLD_DIVM);
             value = pixelClock / (DSI_CLOCK_HZ / 60);
         }

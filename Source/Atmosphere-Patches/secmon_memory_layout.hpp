@@ -123,7 +123,7 @@ namespace ams::secmon {
     constexpr inline const MemoryRegion MemoryRegionPhysicalIramBootCode = MemoryRegion(UINT64_C(0x40020000), 0x20000);
     static_assert(MemoryRegionPhysicalIram.Contains(MemoryRegionPhysicalIramBootCode));
 
-    constexpr inline const MemoryRegion MemoryRegionVirtualDevice = MemoryRegion(UINT64_C(0x1F0040000), UINT64_C(0x40000 + 0x2000));
+    constexpr inline const MemoryRegion MemoryRegionVirtualDevice = MemoryRegion(UINT64_C(0x1F0040000), UINT64_C(0x40000));
     static_assert(MemoryRegionVirtual.Contains(MemoryRegionVirtualDevice));
 
     constexpr inline const MemoryRegion MemoryRegionVirtualDeviceEmpty = MemoryRegion(MemoryRegionVirtualDevice.GetStartAddress(), 0);
@@ -155,9 +155,6 @@ namespace ams::secmon {
         HANDLER(Disp1,                                         Sdmmc, UINT64_C(0x54200000), UINT64_C(0x3000), true, ## __VA_ARGS__) \
         HANDLER(Dsi,                                           Disp1, UINT64_C(0x54300000), UINT64_C(0x1000), true, ## __VA_ARGS__) \
         HANDLER(MipiCal,                                         Dsi, UINT64_C(0x700E3000), UINT64_C(0x1000), true, ## __VA_ARGS__) \
-        HANDLER(Soctherm,                                    MipiCal, UINT64_C(0x700E2000), UINT64_C(0x1000), true, ## __VA_ARGS__) \
-        HANDLER(ExternalMemoryController1,                  Soctherm, UINT64_C(0x7001e000), UINT64_C(0x1000), true, ## __VA_ARGS__) \
-        HANDLER(ExternalMemoryController2, ExternalMemoryController1, UINT64_C(0x7001f000), UINT64_C(0x1000), true, ## __VA_ARGS__) \
 
     #define DEFINE_DEVICE_REGION(_NAME_, _PREV_, _ADDRESS_, _SIZE_, _SECURE_)                                                                                      \
         constexpr inline const MemoryRegion MemoryRegionVirtualDevice##_NAME_  = MemoryRegion(MemoryRegionVirtualDevice##_PREV_.GetEndAddress() + 0x1000, _SIZE_); \

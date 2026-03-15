@@ -101,7 +101,6 @@ namespace ams::secmon::smc {
         #include "secmon_define_emc_access_table.inc"
         #include "secmon_define_emc1_access_table.inc"
         #include "secmon_define_emc2_access_table.inc"
-        #include "secmon_define_soctherm_access_table.inc"
         #include "secmon_define_mc01_access_table.inc"
 
         constexpr const AccessTableEntry AccessTables[] = {
@@ -110,7 +109,6 @@ namespace ams::secmon::smc {
             { EmcAccessTable::ReducedAccessTable.data(),      MemoryRegionVirtualDeviceExternalMemoryController.GetAddress(),                     EmcAccessTable::Address,                                                             EmcAccessTable::Size,      },
             { EmcAccessTable1::ReducedAccessTable.data(),      MemoryRegionVirtualDeviceExternalMemoryController1.GetAddress(),                     EmcAccessTable1::Address,                                                             EmcAccessTable1::Size,      },
             { EmcAccessTable2::ReducedAccessTable.data(),      MemoryRegionVirtualDeviceExternalMemoryController2.GetAddress(),                     EmcAccessTable2::Address,                                                             EmcAccessTable2::Size,      },
-            { SocthermAccessTable::ReducedAccessTable.data(), MemoryRegionVirtualDeviceSoctherm.GetAddress(),                                     SocthermAccessTable::Address,                                                        SocthermAccessTable::Size, },
             { Mc01AccessTable::ReducedAccessTable.data(),     Mc01AccessTable::Address + MemoryRegionVirtualDeviceMemoryController0.GetAddress(), Mc01AccessTable::Address + MemoryRegionPhysicalDeviceMemoryController0.GetAddress(), Mc01AccessTable::Size,     },
             { Mc01AccessTable::ReducedAccessTable.data(),     Mc01AccessTable::Address + MemoryRegionVirtualDeviceMemoryController1.GetAddress(), Mc01AccessTable::Address + MemoryRegionPhysicalDeviceMemoryController1.GetAddress(), Mc01AccessTable::Size,     },
         };

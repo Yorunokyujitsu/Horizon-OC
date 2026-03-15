@@ -583,6 +583,7 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HorizonOCConfigValue_DVFSOffset:
         case HorizonOCConfigValue_GPUScheduling:
         case HorizonOCConfigValue_RAMVoltUsageDisplayMode:
+        case HorizonOCConfigValue_CpuGovernorMinimumFreq:
             return true;
         case HorizonOCConfigValue_BatteryChargeCurrent:
             return ((input >= 1024) && (input <= 3072)) || !input;

@@ -231,8 +231,7 @@ std::string AboutGui::formatRamModule() {
         case 2: return "WT:C";
 
         case 3:
-        case 5:
-        case 6: return "NEE";
+        case 5 ... 6: return "NEE";
 
         case 8:
         case 12: return "AM-MGCJ 4GB";
@@ -248,25 +247,18 @@ std::string AboutGui::formatRamModule() {
         case 17:
         case 19:
         case 24: return "AA-MGCL 4GB";
+
         case 18:
         case 23:
         case 28: return "AA-MGCL 8GB";
 
-        case 20:
-        case 21:
-        case 22: return "AB-MGCL 4GB";
+        case 20 ... 22: return "AB-MGCL 4GB";
 
-        case 25:
-        case 26:
-        case 27: return "WT:F";
+        case 25 ... 27: return "WT:F";
 
-        case 29:
-        case 30:
-        case 31: return "x267";
+        case 29 ... 31: return "x267";
 
-        case 32:
-        case 33:
-        case 34: return "WT:B";
+        case 32 ... 34: return "WT:B";
 
         default: return "Unknown";
     }

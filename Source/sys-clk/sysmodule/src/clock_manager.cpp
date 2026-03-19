@@ -623,15 +623,15 @@ void ClockManager::HandleGovernor(uint32_t targetHz) {
     isVRREnabled = newVrrGovernorState;
 
     if(newCpuGovernorState == false && lastCpuGovernorState == true) {
-        svcSleepThread(50'000'000); // thread syncing. probably a cleaner way to do this but hey, it works!
+        svcSleepThread(100'000'000); // thread syncing. probably a cleaner way to do this but hey, it works!
         Board::ResetToStockCpu();
     }
     if(newGpuGovernorState == false && lastGpuGovernorState == true) {
-        svcSleepThread(50'000'000);
+        svcSleepThread(100'000'000);
         Board::ResetToStockGpu();
     }
     if (newVrrGovernorState == false && lastVrrGovernorState == true) {
-        svcSleepThread(50'000'000);
+        svcSleepThread(100'000'000);
         Board::ResetToStockDisplay();
     }
     if(newCpuGovernorState != lastCpuGovernorState || newGpuGovernorState != lastGpuGovernorState || newVrrGovernorState != lastVrrGovernorState) {

@@ -32,6 +32,7 @@
 #include "board.hpp"
 #include "board_fuse.hpp"
 #include "board_load.hpp"
+#include "board_ram_oc_dvfs.hpp"
 
 namespace board {
 
@@ -68,7 +69,7 @@ namespace board {
         }
 
         if (gSocType == SysClkSocType_Mariko) {
-            CacheDvfsTable();
+            CacheGpuVoltTable();
         }
 
         gConsoleType = static_cast<HorizonOCConsoleType> sku;

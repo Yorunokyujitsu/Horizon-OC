@@ -112,7 +112,7 @@ namespace board {
 
         StartGpuLoad(nvCheck, fd);
         // threadCreate(&cpuCore3Thread, CheckCore, &idletick3, NULL, 0x1000, 0x10, 3);
-        threadCreate(&miscThread, miscThreadFunc, NULL, NULL, 0x1000, 0x10, 3);
+        // threadCreate(&miscThread, miscThreadFunc, NULL, NULL, 0x1000, 0x10, 3);
 
         threadStart(&miscThread);
         batteryInfoInitialize();

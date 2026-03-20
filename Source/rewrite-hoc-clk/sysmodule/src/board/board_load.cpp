@@ -49,7 +49,7 @@ namespace board {
     constexpr u64 CpuTimeOutNs = 500'000'000;
     constexpr double Systemtickfrequency = 19200000.0 * (static_cast<double>(CpuTimeOutNs) / 1'000'000'000.0);
 
-    void GpuLoadThread(Result *nvCheck) {
+    void GpuLoadThread(void *nvCheck) {
         constexpr u32 GpuSamples = 8;
         u32 gpu_load_array[GpuSamples] = {};
         size_t i = 0;

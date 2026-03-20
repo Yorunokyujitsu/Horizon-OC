@@ -24,12 +24,23 @@
  * --------------------------------------------------------------------------
  */
 
-#pragma once
 #include <sysclk.h>
 #include <switch.h>
+#include <nxExt.h>
 
 namespace board {
 
-    u32 GetTemperatureMilli(SysClkThermalSensor sensor);
+    u32 GetPowerMw(SysClkPowerSensor sensor) {
+        switch (sensor) {
+            case SysClkPowerSensor_Now:
+                return max17050PowerNow();
+            case SysClkPowerSensor_Avg:
+                return max17050PowerAvg();
+            default:
+                ASSERT_ENUM_VALID(SysClkPowerSensor, sensor);
+        }
+
+        return 0;
+    }
 
 }

@@ -38,6 +38,6 @@ namespace board {
     SysClkSocType GetSocType();
     HorizonOCConsoleType GetConsoleType();
     u8 GetDramID();
-    bool isIsDram8GB();
+    bool IsDram8GB();
 
 }

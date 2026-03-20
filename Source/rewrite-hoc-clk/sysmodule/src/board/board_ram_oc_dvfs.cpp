@@ -75,8 +75,6 @@ namespace board {
     }
 
     void CacheGpuVoltTable() {
-
-
         UnkRegulator reg = {
             .voltageMinUV = 600000,
             .voltageStep  = 12500,

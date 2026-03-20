@@ -186,4 +186,8 @@ namespace board {
         return gSocType;
     }
 
+    HorizonOCConsoleType GetConsoleType() {
+        return gConsoleType;
+    }
+
 }

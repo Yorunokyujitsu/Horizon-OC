@@ -263,7 +263,6 @@ void Board::Initialize()
 
     threadCreate(&gpuLThread, gpuLoadThread, NULL, NULL, 0x1000, 0x3F, -2);
 	threadStart(&gpuLThread);
-
     leventClear(&threadexit);
     threadCreate(&cpuCore0Thread, CheckCore, &idletick0, NULL, 0x1000, 0x10, 0);
     threadCreate(&cpuCore1Thread, CheckCore, &idletick1, NULL, 0x1000, 0x10, 1);

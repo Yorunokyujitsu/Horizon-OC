@@ -27,15 +27,12 @@
 #pragma once
 
 #include <switch.h>
-
-#define HOSSVC_HAS_CLKRST (hosversionAtLeast(8,0,0))
-#define HOSSVC_HAS_TC (hosversionAtLeast(5,0,0))
+#include <sysclk.h>
 
 namespace board {
 
-    void Initialize();
-    void Exit();
-    SysClkSocType GetSocType();
-    HorizonOCConsoleType GetConsoleType();
+    const char *GetModuleName(SysClkModule module, bool pretty);
+    const char *GetProfileName(SysClkProfile profile, bool pretty);
+    const char *GetThermalSensorName(SysClkThermalSensor sensor, bool pretty);
 
 }

@@ -137,7 +137,7 @@ namespace board {
 
     u32 GetRealHz(SysClkModule module) {
         u32 hz = 0;
-        switch(module) {
+        switch (module) {
             case SysClkModule_CPU:
                 return t210ClkCpuFreq();
             case SysClkModule_GPU:

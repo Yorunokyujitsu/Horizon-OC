@@ -25,7 +25,6 @@
  */
 
 #pragma once
-
 #include <switch.h>
 #include <sysclk.h>
 

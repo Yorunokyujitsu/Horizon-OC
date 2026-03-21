@@ -529,30 +529,32 @@ void ClockManager::VRRThread(void* arg) {
         if(targetHz) {
             maxDisplay = targetHz;
         } else {
-            if(Board::GetConsoleType() == HorizonOCConsoleType_Aula) {
-                maxDisplay = mgr->config->GetConfigValue(HorizonOCConfigValue_EnableUnsafeDisplayFreqs) ? 65 : 60;
-            } else {
-                maxDisplay = mgr->config->GetConfigValue(HorizonOCConfigValue_EnableUnsafeDisplayFreqs) ? 72 : 60;
-            }
+            maxDisplay = 60;
         }
 
         u8 minDisplay = Board::GetConsoleType() == HorizonOCConsoleType_Aula ? 45 : 40;
         if(maxDisplay == minDisplay)
             continue;
 
-        if(fps >= minDisplay && fps <= maxDisplay)
+        if(fps >= minDisplay && fps <= maxDisplay) {
             Board::SetHz(HorizonOCModule_Display, fps);
-        else {
+            mgr->context->freqs[HorizonOCModule_Display] = fps;
+            mgr->context->realFreqs[HorizonOCModule_Display] = fps;
+        } else {
             for(u32 i = 0; i < 10; i++) {
                 u32 compareHz = fps * i;
                 if(compareHz >= minDisplay && compareHz <= maxDisplay) {
                     Board::SetHz(HorizonOCModule_Display, compareHz);
+                    mgr->context->freqs[HorizonOCModule_Display] = compareHz;
+                    mgr->context->realFreqs[HorizonOCModule_Display] = compareHz;
                     break;
                 }
             }
         }
+
+
         if(++tick > 50) {
-            Board::ResetToStockDisplay();
+            Board::SetHz(HorizonOCModule_Display, maxDisplay);
             tick = 0;
             svcSleepThread(25'000'000);
         }
@@ -777,8 +779,12 @@ void ClockManager::SetClocks(bool isBoost) {
             continue;
 
         if(module == HorizonOCModule_Display && this->config->GetConfigValue(HorizonOCConfigValue_OverwriteRefreshRate) && !noDisp) {
-            if(targetHz)
+            if(targetHz) {
                 Board::SetHz(HorizonOCModule_Display, targetHz);
+                this->context->freqs[HorizonOCModule_Display] = targetHz;
+                this->context->realFreqs[HorizonOCModule_Display] = targetHz;
+            }
+
         }
 
         // Skip GPU and CPU if governors handle them

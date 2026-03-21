@@ -24,11 +24,39 @@
  * --------------------------------------------------------------------------
  */
 
+#pragma once
 #include <sysclk.h>
 #include <switch.h>
 #include <nxExt.h>
+#include <cmath.h>
+#include "board.hpp"
 
 namespace board {
+
+    u32 GetTemperatureMilli(SysClkThermalSensor sensor) {
+        u32 millis = 0;
+
+        if (sensor == SysClkThermalSensor_SOC) {
+            millis = tmp451TempSoc();
+        } else if (sensor == SysClkThermalSensor_PCB) {
+            millis = tmp451TempPcb();
+        } else if (sensor == SysClkThermalSensor_Skin) {
+            if (HOSSVC_HAS_TC) {
+                Result rc;
+                rc = tcGetSkinTemperatureMilliC(&millis);
+                ASSERT_RESULT_OK(rc, "tcGetSkinTemperatureMilliC");
+            }
+        } else if (sensor == HorizonOCThermalSensor_Battery) {
+            batteryInfoGetChargeInfo(&info);
+            millis = batteryInfoGetTemperatureMiliCelsius(&info);
+        /* } else if (sensor == HorizonOCThermalSensor_PMIC) {
+            millis = 50000; */
+        } else {
+            ASSERT_ENUM_VALID(SysClkThermalSensor, sensor);
+        }
+
+        return std::max(0, millis);
+    }
 
     u32 GetPowerMw(SysClkPowerSensor sensor) {
         switch (sensor) {

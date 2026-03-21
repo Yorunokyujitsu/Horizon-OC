@@ -543,10 +543,6 @@ bool DisplayRefresh_SetRate(uint32_t new_refreshRate) {
 
     uint32_t fd = 0;
     
-    if (g_config.isLite && g_config.isPossiblySpoofedRetro) {
-        g_config.isRetroSUPER = false; // Would check flag file here in original, but i dont care lol
-    }
-    
     if (g_config.isRetroSUPER && !g_config.isDocked) {
         return _setNvDispHandheldRefreshRate(new_refreshRate);
     }

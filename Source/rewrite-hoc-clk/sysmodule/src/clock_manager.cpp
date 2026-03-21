@@ -533,11 +533,7 @@ void ClockManager::VRRThread(void* arg) {
         if(targetHz) {
             maxDisplay = targetHz;
         } else {
-            if(Board::GetConsoleType() == HorizonOCConsoleType_Aula) {
-                maxDisplay = mgr->config->GetConfigValue(HorizonOCConfigValue_EnableUnsafeDisplayFreqs) ? 65 : 60;
-            } else {
-                maxDisplay = mgr->config->GetConfigValue(HorizonOCConfigValue_EnableUnsafeDisplayFreqs) ? 72 : 60;
-            }
+            maxDisplay = 60;
         }
 
         u8 minDisplay = Board::GetConsoleType() == HorizonOCConsoleType_Aula ? 45 : 40;

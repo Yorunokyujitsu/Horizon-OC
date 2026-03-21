@@ -54,7 +54,7 @@ typedef enum {
     HorizonOCConfigValue_BatteryChargeCurrent,
 
     HorizonOCConfigValue_OverwriteRefreshRate,
-    HorizonOCConfigValue_EnableUnsafeDisplayFreqs,
+    HorizonOCConfigValue_MaxDisplayClockH,
 
     HorizonOCConfigValue_DVFSMode,
     HorizonOCConfigValue_DVFSOffset,
@@ -227,8 +227,8 @@ static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pr
         case HorizonOCConfigValue_OverwriteRefreshRate:
             return pretty ? "Display Refresh Rate Changing" : "drr_changing";
 
-        case HorizonOCConfigValue_EnableUnsafeDisplayFreqs:
-            return pretty ? "Enable Unsafe Display Frequencies" : "drr_unsafe";
+        case HorizonOCConfigValue_MaxDisplayClockH:
+            return pretty ? "Max Display Clock (Handheld)" : "drr_max_clock";
 
         case HorizonOCConfigValue_DVFSMode:
             return pretty ? "DVFS Mode" : "dvfs_mode";
@@ -428,7 +428,6 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
         case HocClkConfigValue_OverwriteBoostMode:
         case HorizonOCConfigValue_BatteryChargeCurrent:
         case HorizonOCConfigValue_OverwriteRefreshRate:
-        case HorizonOCConfigValue_EnableUnsafeDisplayFreqs:
         case HorizonOCConfigValue_GPUScheduling:
         case HorizonOCConfigValue_LiveCpuUv:
         case HorizonOCConfigValue_GPUSchedulingMethod:
@@ -452,6 +451,8 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
             return 6400ULL; // 0.5C
         case HorizonOCConfigValue_CpuGovernorMinimumFreq:
             return 612000000ULL; // 612MHz
+        case HorizonOCConfigValue_MaxDisplayClockH:
+            return 60ULL;
         default:
             return 0ULL;
     }
@@ -467,6 +468,7 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HocClkConfigValue_HandheldTDPLimit:
         case HocClkConfigValue_LiteTDPLimit:
         case SysClkConfigValue_PollingIntervalMs:
+        case HorizonOCConfigValue_MaxDisplayClockH:
             return input > 0;
 
         case SysClkConfigValue_TempLogIntervalMs:
@@ -478,7 +480,6 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HocClkConfigValue_ThermalThrottle:
         case HocClkConfigValue_HandheldTDP:
         case HorizonOCConfigValue_OverwriteRefreshRate:
-        case HorizonOCConfigValue_EnableUnsafeDisplayFreqs:
         case HocClkConfigValue_IsFirstLoad:
         case HorizonOCConfigValue_EnableExperimentalSettings:
         case HorizonOCConfigValue_LiveCpuUv:

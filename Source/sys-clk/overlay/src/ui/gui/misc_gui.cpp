@@ -635,9 +635,17 @@ protected:
                 renderer->drawString("or damage to your display! ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
                 renderer->drawString("Proceed at your own risk!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
             });
+
             warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
             this->listElement->addItem(warningText);
-            addConfigToggle(HorizonOCConfigValue_EnableUnsafeDisplayFreqs, nullptr);
+            ValueThresholds displayThresholds(60, 65);
+            addConfigButton(
+                HorizonOCConfigValue_MaxDisplayClockH,
+                "Max Handheld Display",
+                ValueRange(60, IsAula() ? 65 : 75, 1, " Hz", 1),
+                "Display Clock",
+                &displayThresholds
+            );
         }
     }
 };

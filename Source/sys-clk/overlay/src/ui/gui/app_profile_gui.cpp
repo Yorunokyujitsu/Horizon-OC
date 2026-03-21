@@ -350,9 +350,11 @@ void AppProfileGui::addProfileUI(SysClkProfile profile)
     this->addModuleListItem(profile, SysClkModule_MEM);
     #if IS_MINIMAL == 0
         ValueThresholds lcdThresholds(60, 65);
+        ValueThresholds DThresholdsOLED(120, 500); // nothing is dangerous, past 120hz you can get applet crashes
+
         if(configList.values[HorizonOCConfigValue_OverwriteRefreshRate]) {
             if(profile != SysClkProfile_Docked) {
-                this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", IsAula() ? 45 : 40, configList.values[HorizonOCConfigValue_EnableUnsafeDisplayFreqs] ? IsAula() ? 65 : 75 : 60, 1, " Hz", 1, 0, lcdThresholds);
+                this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", IsAula() ? 45 : 40, configList.values[HorizonOCConfigValue_MaxDisplayClockH], 1, " Hz", 1, 0, lcdThresholds);
             } else {
                 if(IsAula() && this->context->isSysDockInstalled) {
                     std::vector<NamedValue> dockedFreqs = {
@@ -386,7 +388,7 @@ void AppProfileGui::addProfileUI(SysClkProfile profile)
                         NamedValue("240 Hz", 240)
                     };
                     
-                    this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 40, 240, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqs);
+                    this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 40, 240, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqs);
                 } else if (IsAula() && !this->context->isSysDockInstalled) {
                     std::vector<NamedValue> dockedFreqsLimited = {
                         NamedValue("50 Hz", 50),
@@ -398,7 +400,7 @@ void AppProfileGui::addProfileUI(SysClkProfile profile)
                         NamedValue("75 Hz", 75)
                     };
                     
-                    this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 50, 75, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqsLimited);
+                    this->addModuleListItemValue(profile, HorizonOCModule_Display, "Display", 50, 75, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqsLimited);
                 } else {
                     std::vector<NamedValue> dockedFreqsStandard = {
                         NamedValue("50 Hz", 50),

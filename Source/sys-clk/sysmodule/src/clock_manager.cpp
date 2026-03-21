@@ -573,8 +573,6 @@ void ClockManager::VRRThread(void* arg) {
     }
 }
 
-
-u8 cached_RR = 60;
 void ClockManager::HandleSafetyFeatures() {
     AppletOperationMode opMode = appletGetOperationMode();
     if(this->config->GetConfigValue(HocClkConfigValue_HandheldTDP) && opMode == AppletOperationMode_Handheld) {

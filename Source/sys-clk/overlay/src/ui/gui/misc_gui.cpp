@@ -1394,6 +1394,7 @@ protected:
                 NamedValue("-30 mV", 0xFFFFFFE2),
                 NamedValue("-25 mV", 0xFFFFFFE7),
                 NamedValue("-20 mV", 0xFFFFFFEC),
+                NamedValue("-15 mV", 0xFFFFFFF1),
                 NamedValue("-10 mV", 0xFFFFFFF6),
                 NamedValue(" -5 mV", 0xFFFFFFFB),
                 NamedValue("Disabled",        0),

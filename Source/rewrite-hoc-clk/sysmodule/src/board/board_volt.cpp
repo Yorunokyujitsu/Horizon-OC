@@ -254,7 +254,7 @@ namespace board {
 
     void PcvHijackGpuVolts(u32 vmin) {
         u32 table[192];
-        static_assert(sizeof(table) == sizeof(voltData.voltTable));
+        static_assert(sizeof(table) == sizeof(voltData.voltTable), "Invalid gpu voltage table size!");
         std::memcpy(table, voltData.voltTable, sizeof(voltData.voltTable));
 
         if (voltData.ramVmin == vmin) {

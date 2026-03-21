@@ -539,7 +539,7 @@ void ClockManager::VRRThread(void* arg) {
         if(targetHz) {
             maxDisplay = targetHz;
         } else {
-            maxDisplay = 60;
+            maxDisplay = 60; // don't assume display stuff!
         }
 
         u8 minDisplay = Board::GetConsoleType() == HorizonOCConsoleType_Aula ? 45 : 40;

@@ -7,10 +7,10 @@ SOURCE_DIR = os.path.join("overlay", "src", "ui", "gui")
 OUTPUT_FILE = os.path.join("overlay", "lang", "en.json")
 
 IGNORED_PREFIXES = (
-    "/", "\\",
-    "sysclk", "hocclk", "horizonoc",
-    "\\u",
+    "/",
+    "sysclk", "hocclk", "horizonoc"
 )
+
 
 UNTRANSLATABLE = {
     # Developers
@@ -108,8 +108,8 @@ def should_include(s: str) -> bool:
 
     stripped = s.strip()
 
-    # --- Skip strings 4 characters or less ---
-    if len(stripped) <= 4:
+    # --- Skip strings 5 characters or less ---
+    if len(stripped) <= 5:
         return False
 
     # --- Prefix filters ---

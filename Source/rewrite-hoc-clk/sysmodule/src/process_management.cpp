@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
 /* --------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
  * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
@@ -25,61 +25,63 @@
  */
 
 
-#include "process_management.h"
+#include "process_management.hpp"
 #include "file_utils.h"
 #include "errors.h"
-#define IS_QLAUNCH 0x20f
 
-void ProcessManagement::Initialize()
-{
-    Result rc = 0;
+namespace processManagement {
 
-    rc = pmdmntInitialize();
-    ASSERT_RESULT_OK(rc, "pmdmntInitialize");
-
-    rc = pminfoInitialize();
-    ASSERT_RESULT_OK(rc, "pminfoInitialize");
-}
-
-void ProcessManagement::WaitForQLaunch()
-{
-    Result rc = 0;
-    std::uint64_t pid = 0;
-    do
-    {
-        rc = pmdmntGetProcessId(&pid, PROCESS_MANAGEMENT_QLAUNCH_TID);
-        svcSleepThread(50 * 1000000ULL); // 50ms
-    } while (R_FAILED(rc));
-}
-
-std::uint64_t ProcessManagement::GetCurrentApplicationId()
-{
-    Result rc = 0;
-    std::uint64_t pid = 0;
-    std::uint64_t tid = 0;
-    rc = pmdmntGetApplicationProcessId(&pid);
-
-    if (rc == IS_QLAUNCH)
-    {
-        return PROCESS_MANAGEMENT_QLAUNCH_TID;
+    namespace {
+        constexpr u64 Qlaunch   = 0x0100000000001000ULL;
+        constexpr u32 IsQlaunch = 0x20f;
     }
 
-    ASSERT_RESULT_OK(rc, "pmdmntGetApplicationProcessId");
+    void Initialize() {
+        Result rc = 0;
 
-    rc = pminfoGetProgramId(&tid, pid);
+        rc = pmdmntInitialize();
+        ASSERT_RESULT_OK(rc, "pmdmntInitialize");
 
-    if (rc == IS_QLAUNCH)
-    {
-        return PROCESS_MANAGEMENT_QLAUNCH_TID;
+        rc = pminfoInitialize();
+        ASSERT_RESULT_OK(rc, "pminfoInitialize");
     }
 
-    ASSERT_RESULT_OK(rc, "pminfoGetProgramId");
+    void WaitForQLaunch() {
 
-    return tid;
-}
+        Result rc = 0;
+        u64 pid = 0;
+        do {
+            rc = pmdmntGetProcessId(&pid, Qlaunch);
+            svcSleepThread(50 * 1000000ULL); // 50ms
+        } while (R_FAILED(rc));
+    }
 
-void ProcessManagement::Exit()
-{
-    pmdmntExit();
-    pminfoExit();
+    u64 GetCurrentApplicationId() {
+        Result rc = 0;
+        u64 pid = 0;
+        u64 tid = 0;
+        rc = pmdmntGetApplicationProcessId(&pid);
+
+        if (rc == IsQlaunch) {
+            return Qlaunch;
+        }
+
+        ASSERT_RESULT_OK(rc, "pmdmntGetApplicationProcessId");
+
+        rc = pminfoGetProgramId(&tid, pid);
+
+        if (rc == IsQlaunch) {
+            return Qlaunch;
+        }
+
+        ASSERT_RESULT_OK(rc, "pminfoGetProgramId");
+
+        return tid;
+    }
+
+    void Exit() {
+        pmdmntExit();
+        pminfoExit();
+    }
+
 }

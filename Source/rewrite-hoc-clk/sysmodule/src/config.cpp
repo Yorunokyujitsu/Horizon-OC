@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
 /* --------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
  * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
@@ -215,9 +215,9 @@ bool Config::SetProfiles(std::uint64_t tid, SysClkTitleProfileList* profiles, bo
             {
                 numProfiles++;
 
-                std::string key = std::string(Board::GetProfileName((SysClkProfile)profile, false)) + 
-                                  "_" + 
-                                  Board::GetModuleName((SysClkModule)module, false);
+                std::string key = std::string(board::GetProfileName((SysClkProfile)profile, false)) +
+                                  "_" +
+                                  board::GetModuleName((SysClkModule)module, false);
                 std::string value = std::to_string(*mhz);
 
                 keys.push_back(key);
@@ -317,7 +317,7 @@ int Config::BrowseIniFunc(const char* section, const char* key, const char* valu
 
     for(unsigned int profile = 0; profile < SysClkProfile_EnumMax; profile++)
     {
-        const char* profileCode = Board::GetProfileName((SysClkProfile)profile, false);
+        const char* profileCode = board::GetProfileName((SysClkProfile)profile, false);
         size_t profileCodeLen = strlen(profileCode);
 
         if(!strncmp(key, profileCode, profileCodeLen) && key[profileCodeLen] == '_')
@@ -326,7 +326,7 @@ int Config::BrowseIniFunc(const char* section, const char* key, const char* valu
 
             for(unsigned int module = 0; module < SysClkModule_EnumMax; module++)
             {
-                const char* moduleCode = Board::GetModuleName((SysClkModule)module, false);
+                const char* moduleCode = board::GetModuleName((SysClkModule)module, false);
                 size_t moduleCodeLen = strlen(moduleCode);
                 if(!strncmp(subkey, moduleCode, moduleCodeLen) && subkey[moduleCodeLen] == '\0')
                 {
@@ -426,13 +426,13 @@ bool Config::SetConfigValues(SysClkConfigValueList* configValues, bool immediate
 
     std::vector<const char*> iniKeys;
     std::vector<std::string> iniValues;
-    
+
     iniKeys.reserve(SysClkConfigValue_EnumMax + 1);
     iniValues.reserve(SysClkConfigValue_EnumMax);
 
     for(unsigned int kval = 0; kval < SysClkConfigValue_EnumMax; kval++)
     {
-        if(!sysclkValidConfigValue((SysClkConfigValue)kval, configValues->values[kval]) || 
+        if(!sysclkValidConfigValue((SysClkConfigValue)kval, configValues->values[kval]) ||
            configValues->values[kval] == sysclkDefaultConfigValue((SysClkConfigValue)kval))
         {
             continue;
@@ -490,12 +490,12 @@ bool Config::ResetConfigValue(SysClkConfigValue kval)
 
     std::vector<const char*> iniKeys;
     std::vector<std::string> iniValues;
-    
+
     iniKeys.reserve(2);
     iniValues.reserve(1);
 
     const char* keyStr = sysclkFormatConfigValue(kval, false);
-    
+
     iniKeys.push_back(keyStr);
     iniValues.push_back("");
 
@@ -515,6 +515,6 @@ bool Config::ResetConfigValue(SysClkConfigValue kval)
 
     this->configValues[kval] = defaultValue;
     FileUtils::LogLine("[cfg] Reset config value %u to default: %llu", kval, defaultValue);
-    
+
     return true;
 }

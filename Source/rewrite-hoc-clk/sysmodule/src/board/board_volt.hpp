@@ -38,7 +38,7 @@ namespace board {
 
     /* TODO: Find out what component this actually targets. */
     struct UnkRegulator {
-        u32 voltageMinUV;
+        u32 voltageMin;
         u32 voltageStep;
         u32 voltageMax;
     };
@@ -53,8 +53,9 @@ namespace board {
        // u64 dvco_calibration_max;
     };
 
+    void SetDfllTunings(u32 levelLow, u32 levelHigh, u32 tbreakPoint);
     void CacheDfllData();
-    u32 CalculateTbreak();
+    u32 CalculateTbreak(u32 table);
     u32 GetVoltage(HocClkVoltage voltage);
     void CacheGpuVoltTable();
     void PcvHijackGpuVolts(u32 vmin);

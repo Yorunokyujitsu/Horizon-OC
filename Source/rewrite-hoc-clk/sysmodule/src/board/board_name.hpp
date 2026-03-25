@@ -33,5 +33,6 @@ namespace board {
     const char *GetModuleName(SysClkModule module, bool pretty);
     const char *GetProfileName(SysClkProfile profile, bool pretty);
     const char *GetThermalSensorName(SysClkThermalSensor sensor, bool pretty);
+    const char *GetPowerSensorName(SysClkPowerSensor sensor, bool pretty);
 
 }

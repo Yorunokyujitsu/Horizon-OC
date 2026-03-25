@@ -30,8 +30,10 @@
 #include <algorithm>
 #include <math.h>
 #include <numeric>
-#include "board_misc.hpp"
 #include <minIni.h>
+#include <battery.h>
+#include "board_misc.hpp"
+#include "board.hpp"
 
 namespace board {
 
@@ -42,7 +44,8 @@ namespace board {
     Thread cpuCore2Thread;
 
     u32 gpuLoad;
-    u32 _fd;
+    u32 _fd, _fd2;
+    Result nvCheckSched;
 
     u64 idletick0 = 0;
     u64 idletick1 = 0;
@@ -61,8 +64,8 @@ namespace board {
         if (R_SUCCEEDED(nvCheck)) do {
             u32 temp;
             if (R_SUCCEEDED(nvIoctl(_fd, NVGPU_GPU_IOCTL_PMU_GET_GPU_LOAD, &temp))) {
-                gpu_load_array[i++ % gpu_samples_average] = temp;
-                gpuLoad = std::accumulate(&gpu_load_array[0], &gpu_load_array[gpu_samples_average], 0) / gpu_samples_average;
+                gpu_load_array[i++ % GpuSamples] = temp;
+                gpuLoad = std::accumulate(&gpu_load_array[0], &gpu_load_array[GpuSamples], 0) / GpuSamples;
             }
             svcSleepThread(16'666'000); // wait a bit (this is the perfect amount of time to keep the reading accurate)
         } while(true);
@@ -80,10 +83,10 @@ namespace board {
         }
     }
 
-    void StartLoad() {
+    void StartLoad(Result nvCheck, u32 fd) {
         _fd = fd;
         threadCreate(&gpuThread, GpuLoadThread, &nvCheck, NULL, 0x1000, 0x3F, -2);
-        threadStart(&gpuThread)
+        threadStart(&gpuThread);
 
         leventClear(&threadexit);
         threadCreate(&cpuCore0Thread, CheckCore, &idletick0, NULL, 0x1000, 0x10, 0);
@@ -136,7 +139,7 @@ namespace board {
         constexpr u32 NVschedCtrlDisable = 0x00000602;
     }
 
-    void SetGpuSchedulingMode(GpuSchedulingMode mode, GpuSchedulingOverrideMethod method, Result nvCheckSched, u32 fd2) {
+    void SetGpuSchedulingMode(GpuSchedulingMode mode, GpuSchedulingOverrideMethod method) {
         if (R_FAILED(nvCheckSched) && method == GpuSchedulingOverrideMethod_NvService) {
             return;
         }
@@ -147,14 +150,14 @@ namespace board {
             case GpuSchedulingMode_DoNotOverride: break;
             case GpuSchedulingMode_Disabled:
                 if (method == GpuSchedulingOverrideMethod_NvService) {
-                    nvIoctl(fd2, NVschedCtrlDisable, &temp);
+                    nvIoctl(_fd2, NVschedCtrlDisable, &temp);
                 } else {
                     enabled = false;
                 }
                 break;
             case GpuSchedulingMode_Enabled:
                 if (method == GpuSchedulingOverrideMethod_NvService) {
-                    nvIoctl(fd2, NVschedCtrlEnable, &temp);
+                    nvIoctl(_fd2, NVschedCtrlEnable, &temp);
                 } else {
                     enabled = true;
                 }
@@ -172,6 +175,14 @@ namespace board {
 
             ini_puts(Section, Key, value, IniPath);
         }
+    }
+
+    void SchedSetFD2(u32 fd2) {
+        _fd2 = fd2;
+    }
+
+    void NvSchedSucceed(Result nvSched) {
+        nvCheckSched = nvSched;
     }
 
 }

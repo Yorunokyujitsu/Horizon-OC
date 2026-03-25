@@ -12,14 +12,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
 
 #include "integrations.h"
 #include <sys/stat.h>
 #include <SaltyNX.h>
-#include "process_management.h"
+#include "process_management.hpp"
 
 SysDockIntegration::SysDockIntegration() {
 }
@@ -42,10 +42,10 @@ bool SaltyNXIntegration::getCurrentSaltyNXState() {
     struct stat st = {0};
     return stat("sdmc:/atmosphere/contents/0000000000534C56/flags/boot2.flag", &st) == 0;
 }
- 
+
 bool SaltyNXIntegration::CheckPort() {
     Handle saltysd;
- 
+
     for (int i = 0; i < 67; i++) {
         if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
             svcCloseHandle(saltysd);
@@ -54,7 +54,7 @@ bool SaltyNXIntegration::CheckPort() {
         if (i == 66) return false;
         svcSleepThread(1'000'000);
     }
- 
+
     for (int i = 0; i < 67; i++) {
         if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
             svcCloseHandle(saltysd);
@@ -62,10 +62,10 @@ bool SaltyNXIntegration::CheckPort() {
         }
         svcSleepThread(1'000'000);
     }
- 
+
     return false;
 }
- 
+
 void SaltyNXIntegration::LoadSharedMemory() {
     if (SaltySD_Connect())
         return;
@@ -75,7 +75,7 @@ void SaltyNXIntegration::LoadSharedMemory() {
     if (!shmemMap(&_sharedmemory))
         SharedMemoryUsed = true;
 }
- 
+
 void SaltyNXIntegration::searchSharedMemoryBlock(uintptr_t base) {
     ptrdiff_t search_offset = 0;
     while (search_offset < 0x1000) {
@@ -86,38 +86,38 @@ void SaltyNXIntegration::searchSharedMemoryBlock(uintptr_t base) {
     }
     NxFps = 0;
 }
- 
+
 u64 prevTid = 0;
 
 u8 SaltyNXIntegration::GetFPS() {
     if (!SharedMemoryUsed)
         return 254;
- 
-    u64 tid = ProcessManagement::GetCurrentApplicationId();
+
+    u64 tid = processManagement::GetCurrentApplicationId();
     if (tid == 0)
         return 254;
- 
+
     if (prevTid != tid) {
         NxFps = 0;
         prevTid = tid;
     }
- 
+
     if (!NxFps) {
         uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
         searchSharedMemoryBlock(base);
     }
- 
+
     return NxFps ? NxFps->FPS : 254;
 }
 
 u16 SaltyNXIntegration::GetResolutionHeight() {
     if (!SharedMemoryUsed)
         return 0;
- 
-    u64 tid = ProcessManagement::GetCurrentApplicationId();
+
+    u64 tid = processManagement::GetCurrentApplicationId();
     if (tid == 0)
         return 0;
- 
+
     if (prevTid != tid) {
         NxFps = 0;
         prevTid = tid;
@@ -130,7 +130,7 @@ u16 SaltyNXIntegration::GetResolutionHeight() {
     if(NxFps) {
         NxFps->renderCalls[0].calls = 0xFFFF;
         svcSleepThread(10*1000);
-        
+
         return NxFps->renderCalls[0].height == 0 ? NxFps->viewportCalls[0].height : NxFps->renderCalls[0].height;
     }
     return 0;

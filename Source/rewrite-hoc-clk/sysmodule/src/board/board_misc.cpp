@@ -25,11 +25,15 @@
  */
 
 #include <switch.h>
+#include <pwm.h>
+#include <cmath>
+#include <rgltr.h>
 
 namespace board {
 
     Thread miscThread;
     u8 fanLevel = 0;
+    PwmChannelSession *_iCon;
 
     void MiscThreadFunc(void *pwmCheckPtr) {
         Result pwmCheck = *static_cast<Result *>(pwmCheckPtr);
@@ -38,7 +42,7 @@ namespace board {
 
         while (true) {
             if (R_SUCCEEDED(pwmCheck)) {
-                if (R_SUCCEEDED(pwmChannelSessionGetDutyCycle(&g_ICon, &temp))) {
+                if (R_SUCCEEDED(pwmChannelSessionGetDutyCycle(_iCon, &temp))) {
                     temp *= 10;
                     temp = trunc(temp);
                     temp /= 10;
@@ -46,7 +50,7 @@ namespace board {
                 }
             }
 
-            fanLevel = static_cast<u8>(Rotation_Duty);
+            fanLevel = static_cast<u8>(rotationDuty);
             svcSleepThread(300'000'000);
         }
     }
@@ -55,7 +59,8 @@ namespace board {
         return fanLevel;
     }
 
-    void StartMiscThread(Result pwmCheck) {
+    void StartMiscThread(Result pwmCheck, PwmChannelSession *iCon) {
+        _iCon = iCon;
         threadCreate(&miscThread, MiscThreadFunc, &pwmCheck, NULL, 0x1000, 0x10, 3);
         threadStart(&miscThread);
     }

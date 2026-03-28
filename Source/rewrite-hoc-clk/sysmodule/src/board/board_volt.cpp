@@ -29,6 +29,8 @@
 #include <memmem.h>
 #include <registers.h>
 #include <cstring>
+#include <rgltr.h>
+#include <battery.h>
 #include "board.hpp"
 #include "board_freq.hpp"
 #include "board_volt.hpp"
@@ -45,14 +47,14 @@ namespace board {
         struct EristaCpuUvEntry {
             u32 tune0;
             u32 tune1;
-        } EristaCpuUvEntry;
+        };
 
         struct MarikoCpuUvEntry {
             u32 tune0_low;
             u32 tune0_high;
             u32 tune1_low;
             u32 tune1_high;
-        } MarikoCpuUvEntry;
+        };
 
         EristaCpuUvEntry eristaCpuUvTable[5] = {
             {0xffff, 0x27007ff},
@@ -95,23 +97,23 @@ namespace board {
 
     void CacheDfllData() {
         u64 temp;
-        rc = svcQueryMemoryMapping(&cldvfs, &temp, CLDVFS_REGION_BASE, CLDVFS_REGION_SIZE);
+        Result rc = svcQueryMemoryMapping(&cldvfs, &temp, CLDVFS_REGION_BASE, CLDVFS_REGION_SIZE);
         ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (cldvfs)");
 
         if (GetSocType() == SysClkSocType_Erista) {
-            cachedTune.tune0Low = *static_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
-            cachedTune.tune1Low = *static_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
+            cachedTune.tune0Low = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
+            cachedTune.tune1Low = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
         } else {
             SetHz(SysClkModule_CPU, 1785000000);
-            cachedTune.tune0High = *static_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
+            cachedTune.tune0High = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
             ResetToStockCpu();
         }
     }
 
     /* TODO: clean up this code. */
     void SetDfllTunings(u32 levelLow, u32 levelHigh, u32 tbreakPoint) {
-        u32* tune0_ptr = static_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
-        u32* tune1_ptr = static_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
+        u32* tune0_ptr = reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
+        u32* tune1_ptr = reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
         if (GetSocType() == SysClkSocType_Mariko) {
             if (GetHz(SysClkModule_CPU) < tbreakPoint && (levelLow || levelHigh)) {
                 if (levelLow) {
@@ -253,10 +255,10 @@ namespace board {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77621_Gpu);
                 } else {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77812_Gpu);
-                    ASSERT_RESULT_OK(rc, "rgltrOpenSession")
-                    rgltrGetVoltage(&session, &out);
-                    rgltrCloseSession(&session);
                 }
+                ASSERT_RESULT_OK(rc, "rgltrOpenSession")
+                rgltrGetVoltage(&session, &out);
+                rgltrCloseSession(&session);
                 break;
             case HocClkVoltage_EMCVDDQ_MarikoOnly:
                 if (GetSocType() == SysClkSocType_Mariko) {
@@ -327,9 +329,9 @@ namespace board {
 
     void CacheGpuVoltTable() {
         UnkRegulator reg = {
-            .voltageMinUV = 600000,
-            .voltageStep  = 12500,
-            .voltageMax   = 1400000,
+            .voltageMin  = 600000,
+            .voltageStep = 12500,
+            .voltageMax  = 1400000,
         };
 
         Handle handle = GetPcvHandle();
@@ -417,7 +419,7 @@ namespace board {
             return;
         }
 
-        Result rc = svcWriteDebugProcessMemory(handle, table, voltData.dvfsAddress, sizeof(table));
+        Result rc = svcWriteDebugProcessMemory(handle, table, voltData.voltTableAddress, sizeof(table));
 
         if (R_SUCCEEDED(rc)) {
             voltData.ramVmin = vmin;
@@ -441,7 +443,7 @@ namespace board {
             return 0;
         }
 
-        for (u32 i = 0; i < std::size(gpuDvfsArray); ++i) {
+        for (u32 i = 0; i < std::size(gpuVoltArray); ++i) {
             if (freqMhz <= ramTable[bracket][i]) {
                 return gpuVoltArray[i];
             }

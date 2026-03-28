@@ -24,17 +24,19 @@
  * --------------------------------------------------------------------------
  */
 
-#pragma once
 #include <sysclk.h>
 #include <switch.h>
 #include <nxExt.h>
-#include <cmath.h>
+#include <cmath>
+#include <battery.h>
+#include <pwm.h>
 #include "board.hpp"
 
 namespace board {
 
     u32 GetTemperatureMilli(SysClkThermalSensor sensor) {
-        u32 millis = 0;
+        s32 millis = 0;
+        BatteryChargeInfo info;
 
         if (sensor == SysClkThermalSensor_SOC) {
             millis = tmp451TempSoc();

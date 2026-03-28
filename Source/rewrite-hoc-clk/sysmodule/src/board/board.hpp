@@ -27,6 +27,14 @@
 #pragma once
 
 #include <switch.h>
+#include <sysclk.h>
+#include "board_fuse.hpp"
+#include "board_load.hpp"
+#include "board_name.hpp"
+#include "board_freq.hpp"
+#include "board_sensor.hpp"
+#include "board_volt.hpp"
+#include "board_profile.hpp"
 
 #define HOSSVC_HAS_CLKRST (hosversionAtLeast(8,0,0))
 #define HOSSVC_HAS_TC (hosversionAtLeast(5,0,0))
@@ -38,7 +46,10 @@ namespace board {
     SysClkSocType GetSocType();
     HorizonOCConsoleType GetConsoleType();
     u8 GetDramID();
+    u8 GetGpuSpeedoBracket();
     bool IsDram8GB();
     void SetDisplayRefreshDockedState(bool docked);
+    FuseData *GetFuseData();
+    bool IsUsingRetroSuperDisplay();
 
 }

@@ -26,6 +26,7 @@
 
 #include <switch.h>
 #include <sysclk.h>
+#include "board.hpp"
 
 namespace board {
 
@@ -42,6 +43,11 @@ namespace board {
     const char *GetThermalSensorName(SysClkThermalSensor sensor, bool pretty) {
         ASSERT_ENUM_VALID(SysClkThermalSensor, sensor);
         return sysclkFormatThermalSensor(sensor, pretty);
+    }
+
+    const char *GetPowerSensorName(SysClkPowerSensor sensor, bool pretty) {
+        ASSERT_ENUM_VALID(SysClkPowerSensor, sensor);
+        return sysclkFormatPowerSensor(sensor, pretty);
     }
 
 }

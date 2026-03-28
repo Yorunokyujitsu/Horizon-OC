@@ -32,8 +32,8 @@
 
 #include "errors.h"
 #include "file_utils.h"
-#include "board.h"
-#include "process_management.h"
+#include "board/board.hpp"
+#include "process_management.hpp"
 #include "clock_manager.h"
 #include "ipc_service.h"
 #define INNER_HEAP_SIZE 0x40000
@@ -65,7 +65,7 @@ extern "C"
 
         fake_heap_start = (char*)addr;
         fake_heap_end = (char*)addr + size;
-        
+
         virtmemSetup();
     }
 
@@ -120,10 +120,10 @@ int main(int argc, char** argv)
 
     try
     {
-        Board::Initialize();
-        ProcessManagement::Initialize();
+        board::Initialize();
+        processManagement::Initialize();
 
-        ProcessManagement::WaitForQLaunch();
+        processManagement::WaitForQLaunch();
 
         ClockManager* clockMgr = new ClockManager();
         IpcService* ipcSrv = new IpcService(clockMgr);
@@ -147,8 +147,8 @@ int main(int argc, char** argv)
         ipcSrv->SetRunning(false);
         delete ipcSrv;
         delete clockMgr;
-        ProcessManagement::Exit();
-        Board::Exit();
+        processManagement::Exit();
+        board::Exit();
     }
     catch (const std::exception &ex)
     {

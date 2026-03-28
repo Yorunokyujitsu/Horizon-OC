@@ -28,10 +28,11 @@
 
 #include <switch.h>
 #include <sysclk.h>
+#include <pwm.h>
 
 namespace board {
 
-    void StartMiscThread(Result pwmCheck);
+    void StartMiscThread(Result pwmCheck, PwmChannelSession *iCon);
     void ExitMiscThread();
     u8 GetFanLevel();
 

@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
 /* --------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
  * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
@@ -28,7 +28,6 @@
 #include <sysclk.h>
 #include <switch.h>
 #include "config.h"
-#include "board.h"
 #include <nxExt/cpp/lockable_mutex.h>
 #include "integrations.h"
 
@@ -140,7 +139,7 @@ class ClockManager
      * @param isBoost Is in boost mode
      */
     void SetClocks(bool isBoost);
-    
+
     /**
      * Main function, runs every 5s in sleep mode, and a user specified amount when awake
      *

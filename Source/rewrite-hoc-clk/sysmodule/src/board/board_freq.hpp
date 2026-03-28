@@ -28,6 +28,7 @@
 #include <switch.h>
 #include <sysclk.h>
 #include <nxExt.h>
+#include "../errors.h"
 
 namespace board {
 
@@ -35,7 +36,7 @@ namespace board {
 
     u32 GetHz(SysClkModule module);
     u32 GetRealHz(SysClkModule module);
-    u32 GetFreqList(SysClkModule module, u32 *outList, u32 maxCount, u32 *outCount);
+    void GetFreqList(SysClkModule module, u32 *outList, u32 maxCount, u32 *outCount);
     u32 GetHighestDockedDisplayRate();
 
     void ResetToStock();

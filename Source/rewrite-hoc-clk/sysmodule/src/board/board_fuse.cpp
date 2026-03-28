@@ -25,23 +25,11 @@
  */
 
 #include <switch.h>
+#include <fuse.h>
 #include "board_fuse.hpp"
+#include <cstring>
 
 namespace board {
-
-    namespace {
-        constexpr u32 FuseCpuSpeedoCalib = 0x114;
-        // constexpr u32 FuseCpuSpeedo1Calib = 0x12C;
-        constexpr u32 FuseGpuSpeedoCalib = 0x130;
-
-        constexpr u32 FuseSocSpeedoCalib = 0x134;
-        // constexpr u32 FuseSocSpeedo1Calib = 0x138;
-        // constexpr u32 FuseSocSpeedo2Calib = 0x13C;
-
-        constexpr u32 FuseCpuIddqCalib = 0x118;
-        constexpr u32 FuseSocIddqCalib = 0x140;
-        constexpr u32 FuseGpuIddqCalib = 0x228;
-    }
 
     void SetGpuBracket(u8 speedo, u8 &gpuBracket) {
         if (speedo <= 1624) {
@@ -63,7 +51,7 @@ namespace board {
         gpuBracket = 3;
     }
 
-    FuseReadSpeedo(FuseSpeedoData &speedo) {
+    void ReadFuses(FuseData &speedo) {
         u64 pid = 0;
         constexpr u64 UsbID = 0x0100000000000006;
         if (R_FAILED(pmdmntGetProcessId(&pid, UsbID))) {
@@ -99,12 +87,15 @@ namespace board {
                         break;
                     }
 
-                    speedo.cpuSpeedo = *reinterpret_cast<u16*>(dump + FuseCpuSpeedoCalib);
-                    speedo.gpuSpeedo = *reinterpret_cast<u16*>(dump + FuseGpuSpeedoCalib);
-                    speedo.socSpeedo = *reinterpret_cast<u16*>(dump + FuseSocSpeedoCalib);
-                    speedo.cpuIDDQ   = *reinterpret_cast<u16*>(dump + FuseCpuIddqCalib);
-                    speedo.gpuIDDQ   = *reinterpret_cast<u16*>(dump + FuseSocIddqCalib);
-                    speedo.socIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_GPU_IDDQ_CALIB);
+                    speedo.cpuSpeedo = *reinterpret_cast<u16*>(dump + FUSE_CPU_SPEEDO_0_CALIB);
+                    speedo.gpuSpeedo = *reinterpret_cast<u16*>(dump + FUSE_CPU_SPEEDO_2_CALIB);
+                    speedo.socSpeedo = *reinterpret_cast<u16*>(dump + FUSE_SOC_SPEEDO_0_CALIB);
+
+                    speedo.cpuIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_CPU_IDDQ_CALIB) * 4;
+                    speedo.gpuIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_GPU_IDDQ_CALIB) * 5;
+                    speedo.socIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_SOC_IDDQ_CALIB) * 4;
+                    speedo.waferX    = *reinterpret_cast<u16*>(dump + FUSE_OPT_X_COORDINATE);
+                    speedo.waferY    = *reinterpret_cast<u16*>(dump + FUSE_OPT_Y_COORDINATE);
 
                     svcCloseHandle(debug);
                     return;

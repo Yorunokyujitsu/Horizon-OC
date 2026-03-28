@@ -27,19 +27,12 @@
 #include <switch.h>
 #include <sysclk.h>
 #include <nxExt.h>
+#include <display_refresh_rate.h>
 #include "board.hpp"
 #include "board_name.hpp"
-#include "../error.h"
+#include "../errors.h"
 
 namespace board {
-
-    PcvModuleId GetPcvModuleId(SysClkModule sysclkModule) {
-        PcvModuleId pcvModuleId;
-        Result rc = pcvGetModuleId(&pcvModuleId, GetPcvModule(sysclkModule));
-        ASSERT_RESULT_OK(rc, "pcvGetModuleId");
-
-        return pcvModuleId;
-    }
 
     PcvModule GetPcvModule(SysClkModule sysclkModule) {
         switch (sysclkModule) {
@@ -53,14 +46,22 @@ namespace board {
                 ASSERT_ENUM_VALID(SysClkModule, sysclkModule);
         }
 
-        return (PcvModule)0;
+        return static_cast<PcvModule>(0);
+    }
+
+    PcvModuleId GetPcvModuleId(SysClkModule sysclkModule) {
+        PcvModuleId pcvModuleId;
+        Result rc = pcvGetModuleId(&pcvModuleId, GetPcvModule(sysclkModule));
+        ASSERT_RESULT_OK(rc, "pcvGetModuleId");
+
+        return pcvModuleId;
     }
 
     void ClkrstSetHz(ClkrstSession &session, u32 hz) {
         ASSERT_RESULT_OK(clkrstSetClockRate(&session, hz), "clkrstSetClockRate");
     }
 
-    void PcvSetHz(PcvModuleId moduleID, u32 hz) {
+    void PcvSetHz(PcvModule moduleID, u32 hz) {
         ASSERT_RESULT_OK(pcvSetClockRate(moduleID, hz), "pcvSetClockRate");
     }
 
@@ -86,7 +87,7 @@ namespace board {
 
             /* Voltage bug workaround. */
             if (module == SysClkModule_CPU) {
-                svcSleepThread(200'000);
+                svcSleepThread(250'000);
                 ClkrstSetHz(session, hz);
             }
 
@@ -95,7 +96,7 @@ namespace board {
             PcvSetHz(GetPcvModule(module), hz);
 
             if (module == SysClkModule_CPU) {
-                svcSleepThread(200'000);
+                svcSleepThread(250'000);
                 PcvSetHz(GetPcvModule(module), hz);
             }
         }
@@ -114,7 +115,7 @@ namespace board {
         u32 hz = 0;
 
         if (module == HorizonOCModule_Display) {
-            return GetDisplayRate();
+            return GetDisplayRate(hz);
         }
 
         if (HOSSVC_HAS_CLKRST) {
@@ -145,7 +146,7 @@ namespace board {
             case SysClkModule_MEM:
                 return t210ClkMemFreq();
             case HorizonOCModule_Display:
-                return GetDisplayRate();
+                return GetDisplayRate(hz);
             return hz;
             default:
                 ASSERT_ENUM_VALID(SysClkModule, module);
@@ -192,6 +193,7 @@ namespace board {
     }
 
     void ResetToStock() {
+        Result rc;
         if (hosversionAtLeast(9,0,0)) {
             std::uint32_t confId = 0;
             rc = apmExtGetCurrentPerformanceConfiguration(&confId);
@@ -223,7 +225,7 @@ namespace board {
     }
 
     void ResetToStockDisplay() {
-        if (GetConsoleType != HorizonOCConsoleType_Hoag) {
+        if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
             DisplayRefresh_SetRate(60);
         }
     }

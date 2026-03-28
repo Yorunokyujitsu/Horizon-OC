@@ -24,17 +24,15 @@
  * --------------------------------------------------------------------------
  */
 
+
 #pragma once
 #include <switch.h>
-#include <sysclk.h>
 
-namespace board {
+namespace processManagement {
 
-    void StartLoad(Result nvCheck, u32 fd);
-    void ExitLoad();
-    u32 GetPartLoad(SysClkPartLoad loadSource);
-    void SetGpuSchedulingMode(GpuSchedulingMode mode, GpuSchedulingOverrideMethod method);
-    void SchedSetFD2(u32 fd2);
-    void NvSchedSucceed(Result nvSched);
+    void Initialize();
+    void WaitForQLaunch();
+    u64 GetCurrentApplicationId();
+    void Exit();
 
 }

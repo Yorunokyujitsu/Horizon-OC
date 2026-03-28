@@ -24,11 +24,13 @@
  * --------------------------------------------------------------------------
  */
 
+#pragma once
+
 #include <switch.h>
 
 namespace board {
 
-    struct FuseSpeedoData {
+    struct FuseData {
         u16 cpuSpeedo;
         u16 gpuSpeedo;
         u16 socSpeedo;
@@ -36,9 +38,12 @@ namespace board {
         u16 cpuIDDQ;
         u16 gpuIDDQ;
         u16 socIDDQ;
+
+        u16 waferX;
+        u16 waferY;
     };
 
-    FuseReadSpeedo(FuseSpeedoData speedo);
-    FuseSetGpuBracket(u8 gpuSpeedo, u8 &gpuBracket);
+    void ReadFuses(FuseData &speedo);
+    void SetGpuBracket(u8 gpuSpeedo, u8 &gpuBracket);
 
 }

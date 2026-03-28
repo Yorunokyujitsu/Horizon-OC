@@ -29,6 +29,10 @@
 #include <switch.h>
 #include <pwm.h>
 #include <registers.h>
+#include <battery.h>
+#include <display_refresh_rate.h>
+#include <rgltr.h>
+#include <notification.h>
 
 #include "board.hpp"
 #include "board_fuse.hpp"
@@ -41,14 +45,15 @@ namespace board {
     SysClkSocType gSocType;
     u8 gDramID;
     HorizonOCConsoleType gConsoleType = HorizonOCConsoleType_Iowa;
-    FuseSpeedoData gSpeedos;
+    FuseData fuseData;
     u8 speedoBracket;
-    Result nvCheck = 1;
-    u23 fd = 0, fd2 = 0;
+    PwmChannelSession iCon;
+
+    u32 fd = 0, fd2 = 0;
 
     void FetchHardwareInfos() {
-        FuseReadSpeedos(gSpeedos);
-        FuseSetGpuBracket(gSpeedos.gpuSpeedo, speedoBracket);
+        ReadFuses(fuseData);
+        SetGpuBracket(fuseData.gpuSpeedo, speedoBracket);
 
         u64 sku = 0, dramID = 0;
         Result rc = splInitialize();
@@ -74,8 +79,7 @@ namespace board {
             CacheGpuVoltTable();
         }
 
-        gConsoleType = static_cast<HorizonOCConsoleType> sku;
-        g_dramID     = dramID;
+        gConsoleType = static_cast<HorizonOCConsoleType>(sku);
     }
 
     /* TODO: Check for config */
@@ -90,6 +94,12 @@ namespace board {
             ASSERT_RESULT_OK(rc, "pcvInitialize");
         }
 
+        rc = apmExtInitialize();
+        ASSERT_RESULT_OK(rc, "apmExtInitialize");
+
+        rc = psmInitialize();
+        ASSERT_RESULT_OK(rc, "psmInitialize");
+
         if(HOSSVC_HAS_TC) {
             rc = tcInitialize();
             ASSERT_RESULT_OK(rc, "tcInitialize");
@@ -101,10 +111,16 @@ namespace board {
         rc = tmp451Initialize();
         ASSERT_RESULT_OK(rc, "tmp451Initialize");
 
-        nvInitialize_rc = nvInitialize();
-        if (R_SUCCEEDED(nvInitialize_rc)) {
+        Result nvCheck = 1;
+        if (R_SUCCEEDED(nvInitialize())) {
             nvCheck = nvOpen(&fd, "/dev/nvhost-ctrl-gpu");
-            nvCheck_sched = nvOpen(&fd2, "/dev/nvsched-ctrl");
+            Result nvCheck_sched = nvOpen(&fd2, "/dev/nvsched-ctrl");
+            /* This can be improved. */
+            NvSchedSucceed(nvCheck_sched);
+
+            if (R_SUCCEEDED(nvCheck_sched)) {
+                SchedSetFD2(fd2);
+            }
         }
 
         rc = rgltrInitialize();
@@ -113,19 +129,17 @@ namespace board {
         rc = pmdmntInitialize();
         ASSERT_RESULT_OK(rc, "pmdmntInitialize");
 
-        StartGpuLoad(nvCheck, fd);
-
-        StartMiscThread(pwmCheck)
+        StartLoad(nvCheck, fd);
 
         batteryInfoInitialize();
         FetchHardwareInfos();
 
         Result pwmCheck = 1;
         if (hosversionAtLeast(6,0,0) && R_SUCCEEDED(pwmInitialize())) {
-            pwmCheck = pwmOpenSession2(&g_ICon, 0x3D000001);
+            pwmCheck = pwmOpenSession2(&iCon, 0x3D000001);
         }
 
-        StartMiscThread(pwmCheck);
+        StartMiscThread(pwmCheck, &iCon);
 
         if (gConsoleType != HorizonOCConsoleType_Hoag) {
             u64 clkVirtAddr, dsiVirtAddr, outsize;
@@ -164,7 +178,7 @@ namespace board {
 
         ExitMiscThread();
 
-        pwmChannelSessionClose(&g_ICon);
+        pwmChannelSessionClose(&iCon);
         pwmExit();
         rgltrExit();
         batteryInfoExit();
@@ -185,7 +199,7 @@ namespace board {
     }
 
     u8 GetDramID() {
-        return dramID;
+        return gDramID;
     }
 
     bool IsDram8GB() {
@@ -207,6 +221,18 @@ namespace board {
         if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
             DisplayRefresh_SetDockedState(docked);
         }
+    }
+
+    FuseData *GetFuseData() {
+        return &fuseData;
+    }
+
+    u8 GetGpuSpeedoBracket() {
+        return speedoBracket;
+    }
+
+    bool IsUsingRetroSuperDisplay() {
+        return false; /* stub for now. */
     }
 
 }

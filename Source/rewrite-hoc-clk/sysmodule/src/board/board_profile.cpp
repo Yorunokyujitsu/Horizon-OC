@@ -27,6 +27,7 @@
 #include <switch.h>
 #include <sysclk.h>
 #include <nxExt.h>
+#include "board.hpp"
 
 namespace board {
 

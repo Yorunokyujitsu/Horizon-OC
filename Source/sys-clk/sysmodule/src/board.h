@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------
  */
 
+
 #pragma once
 #include <cstdint>
 #include <switch.h>
@@ -70,15 +71,10 @@ class Board
     static u32 CalculateTbreak(u32 table);
     static bool IsHoag();
     static bool IsUsingRetroSuperDisplay();
-    static bool IsDisplayClockActive();
-    static void SetPWMDimBrightness(u32 prevBrightness, u32 targetBrightness, bool applyAllChannels);
-    static void SetPWMDimEnabled(bool enabled);
-
   protected:
     static void FetchHardwareInfos();
     static PcvModule GetPcvModule(SysClkModule sysclkModule);
     static PcvModuleId GetPcvModuleId(SysClkModule sysclkModule);
-
   private:
     static void SetSpeedoBracket();
     static void CacheDvfsTable();

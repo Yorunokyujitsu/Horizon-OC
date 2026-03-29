@@ -66,7 +66,6 @@ typedef enum {
 
     HorizonOCConfigValue_RAMVoltUsageDisplayMode,
     HorizonOCConfigValue_CpuGovernorMinimumFreq,
-    HorizonOCConfigValue_PWMDimming,
 
     KipConfigValue_custRev,
     // KipConfigValue_mtcConf,
@@ -253,10 +252,6 @@ static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pr
             return pretty ? "RAM Voltage / Usage Display Mode" : "ram_volt_usage_display_mode";
         case HorizonOCConfigValue_CpuGovernorMinimumFreq:
             return pretty ? "CPU Governor Minimum Frequency" : "cpu_gov_min_freq";
-
-        case HorizonOCConfigValue_PWMDimming:
-            return pretty ? "PWM Dimming" : "pwm_dimming";
-
         // KIP config values
         case KipConfigValue_custRev:
             return pretty ? "Custom Revision" : "kip_cust_rev";
@@ -447,7 +442,6 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
         case HocClkConfigValue_HandheldTDP:
         case HocClkConfigValue_IsFirstLoad:
         case HorizonOCConfigValue_DVFSMode:
-        case HorizonOCConfigValue_PWMDimming:
             return 1ULL;
         case HocClkConfigValue_ThermalThrottleThreshold:
             return 70ULL;
@@ -490,7 +484,6 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HorizonOCConfigValue_EnableExperimentalSettings:
         case HorizonOCConfigValue_LiveCpuUv:
         case HorizonOCConfigValue_GPUSchedulingMethod:
-        case HorizonOCConfigValue_PWMDimming:
             return (input & 0x1) == input;
 
         case KipConfigValue_custRev:

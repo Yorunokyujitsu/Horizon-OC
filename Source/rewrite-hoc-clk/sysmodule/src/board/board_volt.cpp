@@ -34,7 +34,7 @@
 #include "board.hpp"
 #include "board_freq.hpp"
 #include "board_volt.hpp"
-#include "../file_utils.h"
+#include "../file_utils.hpp"
 
 namespace board {
 
@@ -336,7 +336,7 @@ namespace board {
 
         Handle handle = GetPcvHandle();
         if (handle == INVALID_HANDLE) {
-            FileUtils::LogLine("[dvfs] Invalid handle!");
+            fileUtils::LogLine("[dvfs] Invalid handle!");
             return;
         }
 
@@ -355,7 +355,7 @@ namespace board {
 
                 if (R_FAILED(resultProcessMemory) || !address) {
                     svcCloseHandle(handle);
-                    FileUtils::LogLine("[dvfs] Failed to get process data. %u", R_DESCRIPTION(resultProcessMemory));
+                    fileUtils::LogLine("[dvfs] Failed to get process data. %u", R_DESCRIPTION(resultProcessMemory));
                     handle = INVALID_HANDLE;
                     return;
                 }
@@ -415,7 +415,7 @@ namespace board {
 
         Handle handle = GetPcvHandle();
         if (handle == INVALID_HANDLE) {
-            FileUtils::LogLine("Invalid handle!");
+            fileUtils::LogLine("Invalid handle!");
             return;
         }
 
@@ -426,7 +426,7 @@ namespace board {
         }
 
         svcCloseHandle(handle);
-        FileUtils::LogLine("[dvfs] voltage set to %u mV", vmin);
+        fileUtils::LogLine("[dvfs] voltage set to %u mV", vmin);
     }
 
     u32 GetMinimumGpuVmin(u32 freqMhz, u32 bracket) {

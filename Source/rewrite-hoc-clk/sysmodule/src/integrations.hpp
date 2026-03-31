@@ -12,37 +12,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
+/* --------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
+ * wrote this file. As long as you retain this notice you can do whatever you
+ * want with this stuff. If you meet any of us some day, and you think this
+ * stuff is worth it, you can buy us a beer in return.  - The sys-clk authors
+ * --------------------------------------------------------------------------
+ */
 
 #pragma once
-#include <atomic>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <nxExt.h>
-#include <sysclk.h>
+
 #include <switch.h>
-#include "errors.h"
-#include "file_utils.h"
+#include <sysclk.h>
 
-#include "clock_manager.h"
-
-class SysDockIntegration {
-public:
-    SysDockIntegration();
-
-    bool getCurrentSysDockState();
-};
-
-class SaltyNXIntegration {
-public:
-    struct resolutionCalls {
-        uint16_t width;
-        uint16_t height;
-        uint16_t calls;
-    };
+namespace integrations {
 
     struct NxFpsSharedBlock {
         uint32_t MAGIC;
@@ -60,15 +47,18 @@ public:
         uint8_t ActiveBuffers;
         uint8_t SetActiveBuffers;
         union {
-           struct {
+            struct {
                 bool handheld: 1;
                 bool docked: 1;
                 unsigned int reserved: 6;
             } NX_PACKED ds;
             uint8_t general;
         } displaySync;
-        resolutionCalls renderCalls[8];
-        resolutionCalls viewportCalls[8];
+        struct resolutionCalls {
+            uint16_t width;
+            uint16_t height;
+            uint16_t calls;
+        } renderCalls[8], viewportCalls[8];
         bool forceOriginalRefreshRate;
         bool dontForce60InDocked;
         bool forceSuspend;
@@ -78,17 +68,10 @@ public:
         uint64_t frameNumber;
     } NX_PACKED;
 
-    NxFpsSharedBlock* NxFps = 0;
-    SharedMemory _sharedmemory = {};
-    bool SharedMemoryUsed = false;
-    Handle remoteSharedMemory = 1;
-    SaltyNXIntegration();
+    bool GetSysDockState();
+    bool GetSaltyNXState();
     void LoadSaltyNX();
-    bool getCurrentSaltyNXState();
+    u8 GetSaltyNXFPS();
+    u16 GetSaltyNXResolutionHeight();
 
-    bool CheckPort();
-    void LoadSharedMemory();
-    void searchSharedMemoryBlock(uintptr_t base);
-    u8 GetFPS();
-    u16 GetResolutionHeight();
-};
+}

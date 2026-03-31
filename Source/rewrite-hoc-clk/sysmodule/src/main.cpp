@@ -30,12 +30,13 @@
 
 #include <switch.h>
 
-#include "errors.h"
-#include "file_utils.h"
+#include "errors.hpp"
+#include "file_utils.hpp"
 #include "board/board.hpp"
 #include "process_management.hpp"
-#include "clock_manager.h"
-#include "ipc_service.h"
+#include "clock_manager.hpp"
+#include "ipc_service.hpp"
+#include "config.hpp"
 #define INNER_HEAP_SIZE 0x40000
 
 
@@ -111,7 +112,7 @@ extern "C"
 
 int main(int argc, char** argv)
 {
-    Result rc = FileUtils::Initialize();
+    Result rc = fileUtils::Initialize();
     if (R_FAILED(rc))
     {
         fatalThrow(rc);
@@ -125,44 +126,44 @@ int main(int argc, char** argv)
 
         processManagement::WaitForQLaunch();
 
-        ClockManager* clockMgr = new ClockManager();
-        IpcService* ipcSrv = new IpcService(clockMgr);
+        clockManager::Initialize();
+        ipcService::Initialize();
 
-        FileUtils::LogLine("Ready");
+        fileUtils::LogLine("Ready");
 
-        clockMgr->SetRunning(true);
-        clockMgr->GetConfig()->SetEnabled(true);
-        ipcSrv->SetRunning(true);
+        clockManager::SetRunning(true);
+        config::SetEnabled(true);
+        ipcService::SetRunning(true);
         // TemperaturePoint *table;
         // ReadConfigFile(&table);
         // InitFanController(table);
         // StartFanControllerThread();
 
-        while (clockMgr->Running())
+        while (clockManager::Running())
         {
-            clockMgr->Tick();
-            clockMgr->WaitForNextTick();
+            clockManager::Tick();
+            clockManager::WaitForNextTick();
         }
 
-        ipcSrv->SetRunning(false);
-        delete ipcSrv;
-        delete clockMgr;
+        ipcService::SetRunning(false);
+        ipcService::Exit();
+        clockManager::Exit();
         processManagement::Exit();
         board::Exit();
     }
     catch (const std::exception &ex)
     {
-        FileUtils::LogLine("[!] %s", ex.what());
+        fileUtils::LogLine("[!] %s", ex.what());
     }
     catch (...)
     {
         std::exception_ptr p = std::current_exception();
-        FileUtils::LogLine("[!?] %s", p ? p.__cxa_exception_type()->name() : "...");
+        fileUtils::LogLine("[!?] %s", p ? p.__cxa_exception_type()->name() : "...");
     }
 
-    FileUtils::LogLine("Exit");
+    fileUtils::LogLine("Exit");
     svcSleepThread(1000000ULL);
-    FileUtils::Exit();
+    fileUtils::Exit();
 
     return 0;
 }

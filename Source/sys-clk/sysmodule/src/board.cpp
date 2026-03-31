@@ -514,7 +514,7 @@ std::uint32_t Board::GetHz(SysClkModule module)
         ASSERT_RESULT_OK(rc, "clkrstOpenSession");
 
         rc = clkrstGetClockRate(&session, &hz);
-        ASSERT_RESULT_OK(rc, "clkrstSetClockRate");
+        ASSERT_RESULT_OK(rc, "clkrstGetClockRate");
 
         clkrstCloseSession(&session);
     }

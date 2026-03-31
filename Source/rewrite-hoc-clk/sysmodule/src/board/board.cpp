@@ -30,7 +30,7 @@
 #include <pwm.h>
 #include <registers.h>
 #include <battery.h>
-#include <display_refresh_rate.h>
+#include "display_refresh_rate.hpp"
 #include <rgltr.h>
 #include <notification.h>
 
@@ -141,18 +141,16 @@ namespace board {
 
         StartMiscThread(pwmCheck, &iCon);
 
-        if (gConsoleType != HorizonOCConsoleType_Hoag) {
-            u64 clkVirtAddr, dsiVirtAddr, outsize;
+        u64 clkVirtAddr, dsiVirtAddr, outsize;
 
-            rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
-            ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
+        rc = svcQueryMemoryMapping(&clkVirtAddr, &outsize, 0x60006000, 0x1000);
+        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (clk)");
 
-            rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
-            ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
+        rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
+        ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
 
-            DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
-            DisplayRefresh_Initialize(&cfg);
-        }
+        display::DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr};
+        display::Initialize(&cfg);
 
         CacheDfllData();
     }
@@ -185,9 +183,7 @@ namespace board {
         pmdmntExit();
         nvExit();
 
-        if (gConsoleType != HorizonOCConsoleType_Hoag) {
-            DisplayRefresh_Shutdown();
-        }
+        display::Shutdown();
     }
 
     SysClkSocType GetSocType() {
@@ -209,7 +205,7 @@ namespace board {
         svcCallSecureMonitor(&args);
 
         if (args.X[1] == (MC_REGISTER_BASE + MC_EMEM_CFG_0)) { // if param 1 is identical read failed
-            writeNotification("Horizon OC\nSecmon read failed!\n This may be a hardware issue!");
+            notification::writeNotification("Horizon OC\nSecmon read failed!\n This may be a hardware issue!");
             return false;
         }
 
@@ -219,7 +215,7 @@ namespace board {
     /* TODO: Put this into a different file. */
     void SetDisplayRefreshDockedState(bool docked) {
         if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
-            DisplayRefresh_SetDockedState(docked);
+            display::SetDockedState(docked);
         }
     }
 

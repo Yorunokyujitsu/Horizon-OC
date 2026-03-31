@@ -27,10 +27,10 @@
 #include <switch.h>
 #include <sysclk.h>
 #include <nxExt.h>
-#include <display_refresh_rate.h>
+#include "display_refresh_rate.hpp"
 #include "board.hpp"
 #include "board_name.hpp"
-#include "../errors.h"
+#include "../errors.hpp"
 
 namespace board {
 
@@ -70,8 +70,8 @@ namespace board {
         bool usesGovenor = module > SysClkModule_MEM;
 
 
-        if (module == HorizonOCModule_Display && HorizonOCConsoleType() != HorizonOCConsoleType_Hoag) {
-            DisplayRefresh_SetRate(hz);
+        if (module == HorizonOCModule_Display) {
+            display::SetRate(hz);
             return;
         }
 
@@ -103,11 +103,8 @@ namespace board {
     }
 
     u32 GetDisplayRate(u32 hz) {
-        if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
-            DisplayRefresh_GetRate(&hz, false);
-            return hz;
-        }
-        return 60;
+        display::GetRate(&hz, false);
+        return hz;
     }
 
     u32 GetHz(SysClkModule module) {
@@ -186,7 +183,7 @@ namespace board {
 
     u32 GetHighestDockedDisplayRate() {
         if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
-            return DisplayRefresh_GetDockedHighestAllowed();
+            return display::GetDockedHighestAllowed();
         }
 
         return 60;
@@ -226,7 +223,7 @@ namespace board {
 
     void ResetToStockDisplay() {
         if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
-            DisplayRefresh_SetRate(60);
+            display::SetRate(60);
         }
     }
 

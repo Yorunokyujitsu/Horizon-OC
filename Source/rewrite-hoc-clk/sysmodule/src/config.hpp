@@ -24,31 +24,19 @@
  * --------------------------------------------------------------------------
  */
 
-
 #pragma once
-#include <atomic>
-#include <ctime>
-#include <map>
-#include <mutex>
-#include <initializer_list>
-#include <string>
+
+#include <sysclk.h>
 #include <switch.h>
-#include <minIni.h>
-#include <nxExt.h>
-#include "board/board.hpp"
 
 #define CONFIG_VAL_SECTION "values"
 
-class Config
-{
-  public:
-    Config(std::string path);
-    virtual ~Config();
+namespace config {
 
-    static Config* CreateDefault();
+    void Initialize();
+    void Exit();
 
     bool Refresh();
-
     bool HasProfilesLoaded();
 
     std::uint8_t GetProfileCount(std::uint64_t tid);
@@ -66,26 +54,8 @@ class Config
     void GetConfigValues(SysClkConfigValueList* out_configValues);
     bool SetConfigValues(SysClkConfigValueList* configValues, bool immediate);
     bool ResetConfigValue(SysClkConfigValue kval);
-    bool SetInternalValues(bool immediate);
     bool SetConfigValue(SysClkConfigValue kval, std::uint64_t value, bool immediate = true);
 
-    uint64_t configValues[SysClkConfigValue_EnumMax];
-  protected:
-    void Load();
-    void Close();
-    bool kipOverride[SysClkConfigValue_EnumMax];
-    time_t CheckModificationTime();
-    std::uint32_t FindClockMHz(std::uint64_t tid, SysClkModule module, SysClkProfile profile);
-    std::uint32_t FindClockHzFromProfiles(std::uint64_t tid, SysClkModule module, std::initializer_list<SysClkProfile> profiles, u32 mhzMultiplier = 1000000);
-    static int BrowseIniFunc(const char* section, const char* key, const char* value, void* userdata);
+    extern uint64_t configValues[SysClkConfigValue_EnumMax];
 
-    std::map<std::tuple<std::uint64_t, SysClkProfile, SysClkModule>, std::uint32_t> profileMHzMap;
-    std::map<std::uint64_t, std::uint8_t> profileCountMap;
-    bool loaded;
-    std::string path;
-    time_t mtime;
-    LockableMutex configMutex;
-    LockableMutex overrideMutex;
-    std::atomic_bool enabled;
-    std::uint32_t overrideFreqs[SysClkModule_EnumMax];
-};
+}

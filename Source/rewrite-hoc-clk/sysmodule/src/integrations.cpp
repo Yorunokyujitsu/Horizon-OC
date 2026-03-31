@@ -15,123 +15,137 @@
  *
  */
 
+/* --------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
+ * wrote this file. As long as you retain this notice you can do whatever you
+ * want with this stuff. If you meet any of us some day, and you think this
+ * stuff is worth it, you can buy us a beer in return.  - The sys-clk authors
+ * --------------------------------------------------------------------------
+ */
 
-#include "integrations.h"
+#include "integrations.hpp"
 #include <sys/stat.h>
 #include <SaltyNX.h>
 #include "process_management.hpp"
 
-SysDockIntegration::SysDockIntegration() {
-}
+namespace integrations {
 
-bool SysDockIntegration::getCurrentSysDockState() {
-    struct stat st = {0};
-    return stat("sdmc:/atmosphere/contents/42000000000000A0/flags/boot2.flag", &st) == 0;
-}
+    namespace {
 
-SaltyNXIntegration::SaltyNXIntegration() {
-}
+        NxFpsSharedBlock* gNxFps = nullptr;
+        SharedMemory gSharedMemory = {};
+        bool gSharedMemoryUsed = false;
+        Handle gRemoteSharedMemory = 1;
+        u64 gPrevTid = 0;
 
-void SaltyNXIntegration::LoadSaltyNX() {
-    if (!CheckPort())
-        return;
-    LoadSharedMemory();
-}
+        bool CheckSaltyNXPort() {
+            Handle saltysd;
 
-bool SaltyNXIntegration::getCurrentSaltyNXState() {
-    struct stat st = {0};
-    return stat("sdmc:/atmosphere/contents/0000000000534C56/flags/boot2.flag", &st) == 0;
-}
+            for (int i = 0; i < 67; i++) {
+                if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
+                    svcCloseHandle(saltysd);
+                    break;
+                }
+                if (i == 66) return false;
+                svcSleepThread(1'000'000);
+            }
 
-bool SaltyNXIntegration::CheckPort() {
-    Handle saltysd;
+            for (int i = 0; i < 67; i++) {
+                if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
+                    svcCloseHandle(saltysd);
+                    return true;
+                }
+                svcSleepThread(1'000'000);
+            }
 
-    for (int i = 0; i < 67; i++) {
-        if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
-            svcCloseHandle(saltysd);
-            break;
+            return false;
         }
-        if (i == 66) return false;
-        svcSleepThread(1'000'000);
+
+        void SearchSharedMemoryBlock(uintptr_t base) {
+            ptrdiff_t search_offset = 0;
+            while (search_offset < 0x1000) {
+                gNxFps = (NxFpsSharedBlock*)(base + search_offset);
+                if (gNxFps->MAGIC == 0x465053)
+                    return;
+                search_offset += 4;
+            }
+            gNxFps = nullptr;
+        }
+
+        void LoadSharedMemory() {
+            if (SaltySD_Connect())
+                return;
+            SaltySD_GetSharedMemoryHandle(&gRemoteSharedMemory);
+            SaltySD_Term();
+            shmemLoadRemote(&gSharedMemory, gRemoteSharedMemory, 0x1000, Perm_Rw);
+            if (!shmemMap(&gSharedMemory))
+                gSharedMemoryUsed = true;
+        }
+
     }
 
-    for (int i = 0; i < 67; i++) {
-        if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
-            svcCloseHandle(saltysd);
-            return true;
-        }
-        svcSleepThread(1'000'000);
+    bool GetSysDockState() {
+        struct stat st = {0};
+        return stat("sdmc:/atmosphere/contents/42000000000000A0/flags/boot2.flag", &st) == 0;
     }
 
-    return false;
-}
+    bool GetSaltyNXState() {
+        struct stat st = {0};
+        return stat("sdmc:/atmosphere/contents/0000000000534C56/flags/boot2.flag", &st) == 0;
+    }
 
-void SaltyNXIntegration::LoadSharedMemory() {
-    if (SaltySD_Connect())
-        return;
-    SaltySD_GetSharedMemoryHandle(&remoteSharedMemory);
-    SaltySD_Term();
-    shmemLoadRemote(&_sharedmemory, remoteSharedMemory, 0x1000, Perm_Rw);
-    if (!shmemMap(&_sharedmemory))
-        SharedMemoryUsed = true;
-}
-
-void SaltyNXIntegration::searchSharedMemoryBlock(uintptr_t base) {
-    ptrdiff_t search_offset = 0;
-    while (search_offset < 0x1000) {
-        NxFps = (NxFpsSharedBlock*)(base + search_offset);
-        if (NxFps->MAGIC == 0x465053)
+    void LoadSaltyNX() {
+        if (!CheckSaltyNXPort())
             return;
-        search_offset += 4;
-    }
-    NxFps = 0;
-}
-
-u64 prevTid = 0;
-
-u8 SaltyNXIntegration::GetFPS() {
-    if (!SharedMemoryUsed)
-        return 254;
-
-    u64 tid = processManagement::GetCurrentApplicationId();
-    if (tid == 0)
-        return 254;
-
-    if (prevTid != tid) {
-        NxFps = 0;
-        prevTid = tid;
+        LoadSharedMemory();
     }
 
-    if (!NxFps) {
-        uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
-        searchSharedMemoryBlock(base);
+    u8 GetSaltyNXFPS() {
+        if (!gSharedMemoryUsed)
+            return 254;
+
+        u64 tid = processManagement::GetCurrentApplicationId();
+        if (tid == 0)
+            return 254;
+
+        if (gPrevTid != tid) {
+            gNxFps = nullptr;
+            gPrevTid = tid;
+        }
+
+        if (!gNxFps) {
+            uintptr_t base = (uintptr_t)shmemGetAddr(&gSharedMemory);
+            SearchSharedMemoryBlock(base);
+        }
+
+        return gNxFps ? gNxFps->FPS : 254;
     }
 
-    return NxFps ? NxFps->FPS : 254;
-}
+    u16 GetSaltyNXResolutionHeight() {
+        if (!gSharedMemoryUsed)
+            return 0;
 
-u16 SaltyNXIntegration::GetResolutionHeight() {
-    if (!SharedMemoryUsed)
+        u64 tid = processManagement::GetCurrentApplicationId();
+        if (tid == 0)
+            return 0;
+
+        if (gPrevTid != tid) {
+            gNxFps = nullptr;
+            gPrevTid = tid;
+        }
+
+        if (!gNxFps) {
+            uintptr_t base = (uintptr_t)shmemGetAddr(&gSharedMemory);
+            SearchSharedMemoryBlock(base);
+        }
+
+        if (gNxFps) {
+            gNxFps->renderCalls[0].calls = 0xFFFF;
+            svcSleepThread(10*1000);
+            return gNxFps->renderCalls[0].height == 0 ? gNxFps->viewportCalls[0].height : gNxFps->renderCalls[0].height;
+        }
         return 0;
-
-    u64 tid = processManagement::GetCurrentApplicationId();
-    if (tid == 0)
-        return 0;
-
-    if (prevTid != tid) {
-        NxFps = 0;
-        prevTid = tid;
     }
 
-    if (!NxFps) {
-        uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
-        searchSharedMemoryBlock(base);
-    }
-    if(NxFps) {
-        NxFps->renderCalls[0].calls = 0xFFFF;
-        svcSleepThread(10*1000);
-
-        return NxFps->renderCalls[0].height == 0 ? NxFps->viewportCalls[0].height : NxFps->renderCalls[0].height;
-    }
-    return 0;
 }

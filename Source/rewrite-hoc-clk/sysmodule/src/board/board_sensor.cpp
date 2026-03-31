@@ -34,7 +34,7 @@
 
 namespace board {
 
-    u32 GetTemperatureMilli(SysClkThermalSensor sensor) {
+    s32 GetTemperatureMilli(SysClkThermalSensor sensor) {
         s32 millis = 0;
         BatteryChargeInfo info;
 
@@ -60,7 +60,7 @@ namespace board {
         return std::max(0, millis);
     }
 
-    u32 GetPowerMw(SysClkPowerSensor sensor) {
+    s32 GetPowerMw(SysClkPowerSensor sensor) {
         switch (sensor) {
             case SysClkPowerSensor_Now:
                 return max17050PowerNow();

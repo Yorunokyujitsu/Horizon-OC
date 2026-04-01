@@ -563,12 +563,11 @@ protected:
         this->listElement->addItem(new tsl::elm::CategoryHeader("General Settings"));
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> ramVoltDispModes = {
-            NamedValue("VDD2 + VDDQ", RamDisplayMode_VDD2VDDQ),
-            NamedValue("VDD2 + Usage", RamDisplayMode_VDD2Usage),
-            NamedValue("VDDQ + Usage", RamDisplayMode_VDDQUsage),
+            NamedValue("VDD2", RamDisplayMode_VDD2),
+            NamedValue("VDDQ", RamDisplayMode_VDDQ),
         };
 
-        addConfigButton(HorizonOCConfigValue_RAMVoltUsageDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
+        addConfigButton(HorizonOCConfigValue_RAMVoltDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
 
         addConfigButton(
             SysClkConfigValue_PollingIntervalMs,

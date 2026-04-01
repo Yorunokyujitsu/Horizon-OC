@@ -77,7 +77,7 @@ namespace board {
                 break;
             }
             case HorizonOCThermalSensor_MEM: {
-                millis = temps.mem;
+                millis = board::GetSocType() == SysClkSocType_Mariko ? temps.pllx : temps.mem;
                 break;
             }
             case HorizonOCThermalSensor_PLLX: {

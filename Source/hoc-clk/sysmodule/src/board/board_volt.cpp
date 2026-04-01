@@ -260,7 +260,7 @@ namespace board {
                 rgltrGetVoltage(&session, &out);
                 rgltrCloseSession(&session);
                 break;
-            case HocClkVoltage_EMCVDDQ_MarikoOnly:
+            case HocClkVoltage_EMCVDDQ:
                 if (GetSocType() == SysClkSocType_Mariko) {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77812_Dram);
                     ASSERT_RESULT_OK(rc, "rgltrOpenSession")

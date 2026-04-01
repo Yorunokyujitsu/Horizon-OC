@@ -92,38 +92,42 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
     y += 38; // Direct assignment instead of += 38
 
     // === MAIN DATA SECTION ===
-    // renderer->drawRoundedRect(14, 106, 420, 156, 10.0f, renderer->aWithOpacity(tsl::tableBGColor));
-    renderer->drawRoundedRect(14, 106, 420, 136, 12.0f, renderer->aWithOpacity(tsl::tableBGColor));
+    renderer->drawRoundedRect(14, 106, 420, 156, 10.0f, renderer->aWithOpacity(tsl::tableBGColor));
+
     // === FREQUENCY SECTION ===
     // Labels first (better cache locality)
     renderer->drawString(labels[2], false, positions[2], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);
     renderer->drawString(labels[3], false, positions[3], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);
     renderer->drawString(labels[4], false, positions[4], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);
+    // Current frequencies - use pre-formatted strings
+    renderer->drawString(displayStrings[2], false, dataPositions[0], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // CPU
+    renderer->drawString(displayStrings[3], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU
+    renderer->drawString(displayStrings[4], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // MEM
+
+    y += 20; // Direct assignment (129 + 20)
+
 
     renderer->drawString(displayStrings[5], false, dataPositions[0], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // CPU real
     renderer->drawString(displayStrings[6], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU real
     renderer->drawString(displayStrings[7], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // MEM real
 
-    // Current frequencies - use pre-formatted strings
-    // renderer->drawString(displayStrings[2], false, dataPositions[0], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // CPU
-    // renderer->drawString(displayStrings[3], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU
-    // renderer->drawString(displayStrings[4], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // MEM
+    renderer->drawString(displayStrings[28], false, positions[2], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_CPU]);  // CPU Real Temp
+    renderer->drawString(displayStrings[29], false, positions[3], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_GPU]);  // GPU Real Temp
+    renderer->drawString(displayStrings[30], false, positions[4], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_MEM]);  // RAM Real Temp
 
-    y += 20; // Direct assignment (129 + 20)
-
-    renderer->drawString(displayStrings[19], false, positions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // CPU Usage
-    renderer->drawString(displayStrings[17], false, positions[3], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU Usage
-    if(configList.values[HorizonOCConfigValue_RAMVoltUsageDisplayMode] == RamDisplayMode_VDD2Usage || configList.values[HorizonOCConfigValue_RAMVoltUsageDisplayMode] == RamDisplayMode_VDDQUsage)
-        renderer->drawString(displayStrings[18], false, positions[4], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // RAM Usage
     // === REAL FREQUENCIES ===
 
-    // y += 20; // Direct assignment (149 + 20)
+    y += 20; // Direct assignment (149 + 20)
 
     // === VOLTAGES ===
     renderer->drawString(displayStrings[8], false, dataPositions[0], y, SMALL_TEXT_SIZE, tsl::infoTextColor);   // CPU voltage
     renderer->drawString(displayStrings[9], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);   // GPU voltage
 
-    renderer->drawStringWithColoredSections(displayStrings[10], false, {""}, configList.values[HorizonOCConfigValue_RAMVoltUsageDisplayMode] == RamDisplayMode_VDD2VDDQ ? dataPositions[5]-16 : dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor, tsl::separatorColor);
+    renderer->drawStringWithColoredSections(displayStrings[10], false, {""}, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor, tsl::separatorColor);
+
+    renderer->drawString(displayStrings[19], false, positions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // CPU Usage
+    renderer->drawString(displayStrings[17], false, positions[3], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU Usage
+    renderer->drawString(displayStrings[18], false, positions[4], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // RAM Usage
 
     y += 22; // Direct assignment (169 + 22)
 
@@ -242,15 +246,12 @@ void BaseMenuGui::refresh()
     sprintf(displayStrings[8], "%.1f mV", context->voltages[HocClkVoltage_CPU] / 1000.0);
     sprintf(displayStrings[9], "%.1f mV", context->voltages[HocClkVoltage_GPU] / 1000.0);
 
-    switch(configList.values[HorizonOCConfigValue_RAMVoltUsageDisplayMode]) {
-        case RamDisplayMode_VDD2VDDQ:
-            sprintf(displayStrings[10], "%u.%u%u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U, context->voltages[HocClkVoltage_EMCVDDQ_MarikoOnly] / 1000U);
-            break;
-        case RamDisplayMode_VDD2Usage:
+    switch(configList.values[HorizonOCConfigValue_RAMVoltDisplayMode]) {
+        case RamDisplayMode_VDD2:
             sprintf(displayStrings[10], "%u.%u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U);
             break;
-        case RamDisplayMode_VDDQUsage:
-            sprintf(displayStrings[10], "%u.%u mV", context->voltages[HocClkVoltage_EMCVDDQ_MarikoOnly] / 1000U, (context->voltages[HocClkVoltage_EMCVDDQ_MarikoOnly] % 1000U) / 100U);
+        case RamDisplayMode_VDDQ:
+            sprintf(displayStrings[10], "%u.%u mV", context->voltages[HocClkVoltage_EMCVDDQ] / 1000U, (context->voltages[HocClkVoltage_EMCVDDQ] % 1000U) / 100U);
             break;
         default:
             strcpy(displayStrings[10], "N/A");
@@ -309,13 +310,25 @@ void BaseMenuGui::refresh()
             sprintf(displayStrings[27], "%up", context->resolutionHeight);
         }
     }
-    
+
+    millis = context->temps[HorizonOCThermalSensor_CPU];
+    sprintf(displayStrings[28], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
+    tempColors[HorizonOCThermalSensor_CPU] = tsl::GradientColor(millis * 0.001f);
+
+    millis = context->temps[HorizonOCThermalSensor_GPU];
+    sprintf(displayStrings[29], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
+    tempColors[HorizonOCThermalSensor_GPU] = tsl::GradientColor(millis * 0.001f);
+
+    millis = context->temps[HorizonOCThermalSensor_MEM];
+    sprintf(displayStrings[30], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
+    tempColors[HorizonOCThermalSensor_MEM] = tsl::GradientColor(millis * 0.001f);
+
 }
 
 tsl::elm::Element* BaseMenuGui::baseUI()
 {
     auto* list = new tsl::elm::List();
-    list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer*, s32, s32, s32, s32) {}), 10); // add a bit of space
+    list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer*, s32, s32, s32, s32) {}), 35); // add a bit of space
     this->listElement = list;
     this->listUI();
 

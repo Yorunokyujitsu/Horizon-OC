@@ -64,7 +64,7 @@ typedef enum {
     HorizonOCConfigValue_GPUScheduling,
     HorizonOCConfigValue_GPUSchedulingMethod,
 
-    HorizonOCConfigValue_RAMVoltUsageDisplayMode,
+    HorizonOCConfigValue_RAMVoltDisplayMode,
     HorizonOCConfigValue_CpuGovernorMinimumFreq,
 
     KipConfigValue_custRev,
@@ -248,7 +248,7 @@ static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pr
         case HorizonOCConfigValue_EnableExperimentalSettings:
             return pretty ? "Enable Experimental Settings" : "enable_experimental_settings";
 
-        case HorizonOCConfigValue_RAMVoltUsageDisplayMode:
+        case HorizonOCConfigValue_RAMVoltDisplayMode:
             return pretty ? "RAM Voltage / Usage Display Mode" : "ram_volt_usage_display_mode";
         case HorizonOCConfigValue_CpuGovernorMinimumFreq:
             return pretty ? "CPU Governor Minimum Frequency" : "cpu_gov_min_freq";
@@ -583,7 +583,7 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HorizonOCConfigValue_DVFSMode:
         case HorizonOCConfigValue_DVFSOffset:
         case HorizonOCConfigValue_GPUScheduling:
-        case HorizonOCConfigValue_RAMVoltUsageDisplayMode:
+        case HorizonOCConfigValue_RAMVoltDisplayMode:
         case HorizonOCConfigValue_CpuGovernorMinimumFreq:
             return true;
         case HorizonOCConfigValue_BatteryChargeCurrent:

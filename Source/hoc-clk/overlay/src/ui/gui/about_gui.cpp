@@ -29,6 +29,8 @@ tsl::elm::ListItem* sysdockStatusItem = NULL;
 tsl::elm::ListItem* saltyNXStatusItem = NULL;
 tsl::elm::ListItem* RETROStatusItem = NULL;
 tsl::elm::ListItem* waferCordsItem = NULL;
+tsl::elm::ListItem* ramVoltItem = NULL;
+tsl::elm::ListItem* eristaPLLXItem = NULL;
 
 ImageElement* CatImage = NULL;
 HideableCategoryHeader* CatHeader = NULL;
@@ -49,6 +51,16 @@ void AboutGui::listUI()
     this->listElement->addItem(
         new tsl::elm::CategoryHeader("Information")
     );
+
+    ramVoltItem =
+        new tsl::elm::ListItem("RAM Voltage:");
+    this->listElement->addItem(ramVoltItem);
+
+    eristaPLLXItem =
+        new tsl::elm::ListItem("PLLX Temp:");
+    if(IsErista()) {
+        this->listElement->addItem(eristaPLLXItem);
+    }
 
     SpeedoItem =
         new tsl::elm::ListItem("Speedo:");
@@ -306,4 +318,14 @@ void AboutGui::refresh()
 
     sprintf(strings[2], "X: %u Y: %u", this->context->waferX, this->context->waferY);
     waferCordsItem->setValue(strings[2]);
+
+    if(IsErista()) {
+        u32 millis = context->temps[HorizonOCThermalSensor_PLLX];
+        sprintf(strings[3], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
+        eristaPLLXItem->setValue(strings[3]);
+    }
+
+    sprintf(strings[4], "%u.%u / %u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U, context->voltages[HocClkVoltage_EMCVDDQ] / 1000);
+    ramVoltItem->setValue(strings[4]);
+
 }

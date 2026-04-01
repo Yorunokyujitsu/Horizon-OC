@@ -583,7 +583,7 @@ void Misc(void*) {
             realCPU_mV = sysclkCTX.voltages[HocClkVoltage_CPU]; 
             realGPU_mV = sysclkCTX.voltages[HocClkVoltage_GPU]; 
             realVDD2_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDD2];
-            realVDDQ_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDDQ_MarikoOnly];
+            realVDDQ_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDDQ];
             realSOC_mV = sysclkCTX.voltages[HocClkVoltage_SOC];
         }
         

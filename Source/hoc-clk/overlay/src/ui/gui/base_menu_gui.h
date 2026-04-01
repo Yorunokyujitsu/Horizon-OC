@@ -86,6 +86,6 @@ class BaseMenuGui : public BaseGui
         virtual void listUI() = 0;
 
     private:
-        char displayStrings[32][32];  // Pre-formatted display strings
-        tsl::Color tempColors[7];     // Pre-computed temperature colors
+        char displayStrings[48][32];  // Pre-formatted display strings
+        tsl::Color tempColors[SysClkThermalSensor_EnumMax];  // Pre-computed temperature colors
 };

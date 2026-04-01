@@ -54,7 +54,7 @@ typedef enum {
     HocClkVoltage_EMCVDD2,
     HocClkVoltage_CPU,
     HocClkVoltage_GPU,
-    HocClkVoltage_EMCVDDQ_MarikoOnly,
+    HocClkVoltage_EMCVDDQ,
     HocClkVoltage_Display,
     HocClkVoltage_Battery,
     HocClkVoltage_EnumMax,
@@ -153,9 +153,8 @@ typedef enum {
     ComponentGovernor_EnumMax,
 } ComponentGovernorState;
 typedef enum {
-    RamDisplayMode_VDD2VDDQ = 0,
-    RamDisplayMode_VDD2Usage,
-    RamDisplayMode_VDDQUsage,
+    RamDisplayMode_VDD2 = 0,
+    RamDisplayMode_VDDQ,
     RamDisplayMode_EnumMax,
 } RamDisplayMode;
 
@@ -268,7 +267,7 @@ static inline const char* hocClkFormatVoltage(HocClkVoltage voltage, bool pretty
             return pretty ? "GPU" : "gpu";
         case HocClkVoltage_EMCVDD2:
             return pretty ? "VDD2" : "emcvdd2";
-        case HocClkVoltage_EMCVDDQ_MarikoOnly:
+        case HocClkVoltage_EMCVDDQ:
             return pretty ? "VDDQ" : "vddq";
         case HocClkVoltage_SOC:
             return pretty ? "SOC" : "soc";

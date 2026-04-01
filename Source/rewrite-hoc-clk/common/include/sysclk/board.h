@@ -90,6 +90,7 @@ typedef enum
     HorizonOCThermalSensor_CPU,
     HorizonOCThermalSensor_GPU,
     HorizonOCThermalSensor_MEM,
+    HorizonOCThermalSensor_PLLX,
     SysClkThermalSensor_EnumMax
 } SysClkThermalSensor;
 

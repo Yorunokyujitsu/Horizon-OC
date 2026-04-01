@@ -77,8 +77,11 @@ namespace board {
                 break;
             }
             case HorizonOCThermalSensor_MEM: {
-                millis = board::GetSocType() == SysClkSocType_Mariko ? temps.pllx : temps.mem;
+                millis = temps.mem;
                 break;
+            }
+            case HorizonOCThermalSensor_PLLX {
+                millis = temps.pllx;
             }
             default: {
                 ASSERT_ENUM_VALID(SysClkThermalSensor, sensor);

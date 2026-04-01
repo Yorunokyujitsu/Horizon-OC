@@ -80,7 +80,7 @@ namespace board {
                 millis = temps.mem;
                 break;
             }
-            case HorizonOCThermalSensor_PLLX {
+            case HorizonOCThermalSensor_PLLX: {
                 millis = temps.pllx;
             }
             default: {

@@ -32,7 +32,7 @@
 #pragma once
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 
 namespace soctherm {
 

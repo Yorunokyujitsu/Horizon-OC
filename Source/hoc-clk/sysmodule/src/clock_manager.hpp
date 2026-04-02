@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 #include <nxExt/cpp/lockable_mutex.h>
 
@@ -34,7 +34,7 @@ namespace clockManager {
 
     struct FreqTable {
         std::uint32_t count;
-        std::uint32_t list[SYSCLK_FREQ_LIST_MAX];
+        std::uint32_t list[HOCCLK_FREQ_LIST_MAX];
     };
 
 
@@ -43,8 +43,8 @@ namespace clockManager {
     // instance variables
     extern bool gRunning;
     extern LockableMutex gContextMutex;
-    extern SysClkContext gContext;
-    extern FreqTable gFreqTable[SysClkModule_EnumMax];
+    extern HocClkContext gContext;
+    extern FreqTable gFreqTable[HocClkModule_EnumMax];
     extern std::uint64_t gLastTempLogNs;
     extern std::uint64_t gLastFreqLogNs;
     extern std::uint64_t gLastPowerLogNs;
@@ -54,15 +54,15 @@ namespace clockManager {
     void Initialize();
     void Exit();
 
-    SysClkContext GetCurrentContext();
+    HocClkContext GetCurrentContext();
 
     void SetRunning(bool running);
     bool Running();
 
-    std::uint32_t GetMaxAllowedHz(SysClkModule module, SysClkProfile profile);
-    bool IsAssignableHz(SysClkModule module, std::uint32_t hz);
+    std::uint32_t GetMaxAllowedHz(HocClkModule module, HocClkProfile profile);
+    bool IsAssignableHz(HocClkModule module, std::uint32_t hz);
 
-    void GetFreqList(SysClkModule module, std::uint32_t* list, std::uint32_t maxCount, std::uint32_t* outCount);
+    void GetFreqList(HocClkModule module, std::uint32_t* list, std::uint32_t maxCount, std::uint32_t* outCount);
 
     void Tick();
     void WaitForNextTick();

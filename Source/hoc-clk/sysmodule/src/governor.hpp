@@ -1,5 +1,5 @@
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include "board/board.hpp"
 #include "clock_manager.hpp"
 #include <cstring>

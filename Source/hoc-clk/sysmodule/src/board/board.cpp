@@ -25,7 +25,7 @@
  */
 
 #include <nxExt.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 #include <pwm.h>
 #include <registers.h>
@@ -44,9 +44,9 @@
 #include "../file_utils.hpp"
 namespace board {
 
-    SysClkSocType gSocType;
+    HocClkSocType gSocType;
     u8 gDramID;
-    HorizonOCConsoleType gConsoleType = HorizonOCConsoleType_Iowa;
+    HocClkConsoleType gConsoleType = HocClkConsoleType_Iowa;
     FuseData fuseData;
     u8 speedoBracket;
     PwmChannelSession iCon;
@@ -71,17 +71,17 @@ namespace board {
 
         switch(sku) {
             case 2 ... 5:
-                gSocType = SysClkSocType_Mariko;
+                gSocType = HocClkSocType_Mariko;
                 break;
             default:
-                gSocType = SysClkSocType_Erista;
+                gSocType = HocClkSocType_Erista;
         }
 
-        if (gSocType == SysClkSocType_Mariko) {
+        if (gSocType == HocClkSocType_Mariko) {
             CacheGpuVoltTable();
         }
 
-        gConsoleType = static_cast<HorizonOCConsoleType>(sku);
+        gConsoleType = static_cast<HocClkConsoleType>(sku);
     }
 
     /* TODO: Check for config */
@@ -153,7 +153,7 @@ namespace board {
         rc = svcQueryMemoryMapping(&dsiVirtAddr, &outsize, 0x54300000, 0x40000);
         ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (dsi)");
 
-        display::DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr, .isLite = (GetConsoleType() == HorizonOCConsoleType_Hoag), .isRetroSUPER = integrations::GetRETROSuperStatus()};
+        display::DisplayRefreshConfig cfg = {.clkVirtAddr = clkVirtAddr, .dsiVirtAddr = dsiVirtAddr, .isLite = (GetConsoleType() == HocClkConsoleType_Hoag), .isRetroSUPER = integrations::GetRETROSuperStatus()};
         display::Initialize(&cfg);
 
         CacheDfllData();
@@ -189,11 +189,11 @@ namespace board {
         nvExit();
     }
 
-    SysClkSocType GetSocType() {
+    HocClkSocType GetSocType() {
         return gSocType;
     }
 
-    HorizonOCConsoleType GetConsoleType() {
+    HocClkConsoleType GetConsoleType() {
         return gConsoleType;
     }
 
@@ -217,7 +217,7 @@ namespace board {
 
     /* TODO: Put this into a different file. */
     void SetDisplayRefreshDockedState(bool docked) {
-        if (GetConsoleType() != HorizonOCConsoleType_Hoag) {
+        if (GetConsoleType() != HocClkConsoleType_Hoag) {
             display::SetDockedState(docked);
         }
     }

@@ -25,12 +25,12 @@
  */
 
 #pragma once
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 
 namespace board {
 
-    s32 GetTemperatureMilli(SysClkThermalSensor sensor);
-    s32 GetPowerMw(SysClkPowerSensor sensor);
+    s32 GetTemperatureMilli(HocClkThermalSensor sensor);
+    s32 GetPowerMw(HocClkPowerSensor sensor);
 
 }

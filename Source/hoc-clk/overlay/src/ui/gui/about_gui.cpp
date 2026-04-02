@@ -302,9 +302,9 @@ void AboutGui::refresh()
     if (!this->context)
         return;
     // Format strings once per refresh
-    sprintf(strings[0], "%u/%u/%u", this->context->speedos[HorizonOCSpeedo_CPU], this->context->speedos[HorizonOCSpeedo_GPU], this->context->speedos[HorizonOCSpeedo_SOC]);
+    sprintf(strings[0], "%u/%u/%u", this->context->speedos[HocClkSpeedo_CPU], this->context->speedos[HocClkSpeedo_GPU], this->context->speedos[HocClkSpeedo_SOC]);
     // This is how hekate does it
-    sprintf(strings[1], "%u/%u/%u", this->context->iddq[HorizonOCSpeedo_CPU], this->context->iddq[HorizonOCSpeedo_GPU], this->context->iddq[HorizonOCSpeedo_SOC]);
+    sprintf(strings[1], "%u/%u/%u", this->context->iddq[HocClkSpeedo_CPU], this->context->iddq[HocClkSpeedo_GPU], this->context->iddq[HocClkSpeedo_SOC]);
     SpeedoItem->setValue(strings[0]);
     IddqItem->setValue(strings[1]);
     DramModule->setValue(formatRamModule());
@@ -320,7 +320,7 @@ void AboutGui::refresh()
     waferCordsItem->setValue(strings[2]);
 
     if(IsErista()) {
-        u32 millis = context->temps[HorizonOCThermalSensor_PLLX];
+        u32 millis = context->temps[HocClkThermalSensor_PLLX];
         sprintf(strings[3], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
         eristaPLLXItem->setValue(strings[3]);
     }

@@ -27,7 +27,7 @@
 #pragma once
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include "board_fuse.hpp"
 #include "board_load.hpp"
 #include "board_name.hpp"
@@ -43,8 +43,8 @@ namespace board {
 
     void Initialize();
     void Exit();
-    SysClkSocType GetSocType();
-    HorizonOCConsoleType GetConsoleType();
+    HocClkSocType GetSocType();
+    HocClkConsoleType GetConsoleType();
     u8 GetDramID();
     u8 GetGpuSpeedoBracket();
     bool IsDram8GB();

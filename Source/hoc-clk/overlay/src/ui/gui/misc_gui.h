@@ -33,17 +33,17 @@ public:
     void refresh() override;
     
 protected:
-    SysClkConfigValueList* configList;
-    std::map<SysClkConfigValue, tsl::elm::ListItem*> configButtons;
-    std::map<SysClkConfigValue, ValueRange> configRanges;
-    std::map<SysClkConfigValue, std::vector<NamedValue>> configNamedValues;
-    std::map<SysClkConfigValue, tsl::elm::ToggleListItem*> configToggles;
-    std::map<SysClkConfigValue, std::tuple<tsl::elm::TrackBar*, tsl::elm::ListItem*, std::vector<uint64_t>>> configTrackbars;
-    std::set<SysClkConfigValue> configButtonSKeys;
-    std::map<SysClkConfigValue, std::string> configButtonSSubtext;
+    HocClkConfigValueList* configList;
+    std::map<HocClkConfigValue, tsl::elm::ListItem*> configButtons;
+    std::map<HocClkConfigValue, ValueRange> configRanges;
+    std::map<HocClkConfigValue, std::vector<NamedValue>> configNamedValues;
+    std::map<HocClkConfigValue, tsl::elm::ToggleListItem*> configToggles;
+    std::map<HocClkConfigValue, std::tuple<tsl::elm::TrackBar*, tsl::elm::ListItem*, std::vector<uint64_t>>> configTrackbars;
+    std::set<HocClkConfigValue> configButtonSKeys;
+    std::map<HocClkConfigValue, std::string> configButtonSSubtext;
     
-    void addConfigToggle(SysClkConfigValue configVal, const char* altName);
-    void addConfigButton(SysClkConfigValue configVal, 
+    void addConfigToggle(HocClkConfigValue configVal, const char* altName);
+    void addConfigButton(HocClkConfigValue configVal, 
         const char* altName, 
         const ValueRange& range,
         const std::string& categoryName,
@@ -52,7 +52,7 @@ protected:
         const std::vector<NamedValue>& namedValues = {},
         bool showDefaultValue = true);
         
-    void addConfigButtonS(SysClkConfigValue configVal, 
+    void addConfigButtonS(HocClkConfigValue configVal, 
         const char* altName, 
         const ValueRange& range,
         const std::string& categoryName,
@@ -61,9 +61,9 @@ protected:
         const std::vector<NamedValue>& namedValues = {},
         bool showDefaultValue = true,
         const char* subText = nullptr);
-    void addFreqButton(SysClkConfigValue configVal,
+    void addFreqButton(HocClkConfigValue configVal,
                             const char* altName,
-                            SysClkModule module,
+                            HocClkModule module,
                             const std::map<uint32_t, std::string>& labels = {});
     void updateConfigToggles();
     

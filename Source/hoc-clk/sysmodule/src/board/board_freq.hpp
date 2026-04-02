@@ -26,24 +26,24 @@
 
 #pragma once
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include <nxExt.h>
 #include "../errors.hpp"
 
 namespace board {
 
-    void SetHz(SysClkModule module, u32 hz);
+    void SetHz(HocClkModule module, u32 hz);
 
-    u32 GetHz(SysClkModule module);
-    u32 GetRealHz(SysClkModule module);
-    void GetFreqList(SysClkModule module, u32 *outList, u32 maxCount, u32 *outCount);
+    u32 GetHz(HocClkModule module);
+    u32 GetRealHz(HocClkModule module);
+    void GetFreqList(HocClkModule module, u32 *outList, u32 maxCount, u32 *outCount);
     u32 GetHighestDockedDisplayRate();
 
     void ResetToStock();
     void ResetToStockDisplay();
 
     template <typename Getter>
-    void ResetToStockModule(Getter getHzFunc, SysClkModule module) {
+    void ResetToStockModule(Getter getHzFunc, HocClkModule module) {
         Result rc = 0;
 
         if (hosversionAtLeast(9, 0, 0)) {
@@ -51,11 +51,11 @@ namespace board {
             rc = apmExtGetCurrentPerformanceConfiguration(&confId);
             ASSERT_RESULT_OK(rc, "apmExtGetCurrentPerformanceConfiguration");
 
-            SysClkApmConfiguration* apmConfiguration = nullptr;
-            for (size_t i = 0; sysclk_g_apm_configurations[i].id; ++i) {
+            HocClkApmConfiguration* apmConfiguration = nullptr;
+            for (size_t i = 0; hocclk_g_apm_configurations[i].id; ++i) {
 
-                if (sysclk_g_apm_configurations[i].id == confId) {
-                    apmConfiguration = &sysclk_g_apm_configurations[i];
+                if (hocclk_g_apm_configurations[i].id == confId) {
+                    apmConfiguration = &hocclk_g_apm_configurations[i];
                     break;
                 }
             }
@@ -76,15 +76,15 @@ namespace board {
     }
 
     inline void ResetToStockCpu() {
-        ResetToStockModule([](const SysClkApmConfiguration& cfg) {return cfg.cpu_hz; }, SysClkModule_CPU);
+        ResetToStockModule([](const HocClkApmConfiguration& cfg) {return cfg.cpu_hz; }, HocClkModule_CPU);
     }
 
     inline void ResetToStockGpu() {
-        ResetToStockModule([](const SysClkApmConfiguration& cfg){ return cfg.gpu_hz; }, SysClkModule_GPU);
+        ResetToStockModule([](const HocClkApmConfiguration& cfg){ return cfg.gpu_hz; }, HocClkModule_GPU);
     }
 
     inline void ResetToStockMem() {
-        ResetToStockModule([](const SysClkApmConfiguration& cfg){ return cfg.mem_hz; }, SysClkModule_MEM);
+        ResetToStockModule([](const HocClkApmConfiguration& cfg){ return cfg.mem_hz; }, HocClkModule_MEM);
     }
 
 }

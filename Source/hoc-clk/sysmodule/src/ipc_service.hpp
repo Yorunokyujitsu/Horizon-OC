@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 
 namespace ipcService {

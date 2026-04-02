@@ -30,7 +30,7 @@
  */
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include "soctherm.hpp"
 #include "board/board.hpp"
 #include "file_utils.hpp"
@@ -551,7 +551,7 @@ namespace soctherm {
         temps.gpu  = TranslateTemp(ReadReg(socthermVa, SENSOR_TEMP1) & SENSOR_TEMP1_GPU_TEMP_MASK);
         temps.pllx = TranslateTemp(ReadReg(socthermVa, SENSOR_TEMP2) & SENSOR_TEMP2_PLLX_TEMP_MASK);
 
-        if (board::GetSocType() == SysClkSocType_Erista) {
+        if (board::GetSocType() == HocClkSocType_Erista) {
             temps.mem = TranslateTemp(ReadReg(socthermVa, SENSOR_TEMP2) >> 16);
         } else {
             temps.mem = -1;
@@ -617,7 +617,7 @@ namespace soctherm {
     }
 
     void Initialize() {
-        isMariko = board::GetSocType() == SysClkSocType_Mariko;
+        isMariko = board::GetSocType() == HocClkSocType_Mariko;
 
         constexpr u64 SocthermPa = 0x700E2000, FusePa = 0x7000F000, CarPa = 0x60006000;
         R_UNLESS(MapAddress(socthermVa, SocthermPa, "soctherm"));

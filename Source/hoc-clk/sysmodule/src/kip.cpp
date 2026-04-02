@@ -34,7 +34,7 @@ namespace kip {
     void SetKipData()
     {
         // TODO: figure out if this REALLY causes issues (i doubt it)
-        // if(board::GetSocType() == SysClkSocType_Mariko) {
+        // if(board::GetSocType() == HocClkSocType_Mariko) {
         //     if(R_FAILED(I2c_BuckConverter_SetMvOut(&I2c_Mariko_DRAM_VDDQ, config::GetConfigValue(KipConfigValue_marikoEmcVddqVolt) / 1000))) {
         //         fileUtils::LogLine("[clock_manager] Failed set i2c vddq");
         //         notification::writeNotification("Horizon OC\nFailed to write I2C\nwhile setting vddq");
@@ -108,11 +108,11 @@ namespace kip {
         CUST_WRITE_FIELD_BATCH(&table, gpuSpeedo, config::GetConfigValue(KipConfigValue_gpuSpeedo));
 
         for (int i = 0; i < 24; i++) {
-            table.marikoGpuVoltArray[i] = config::GetConfigValue((SysClkConfigValue)(KipConfigValue_g_volt_76800 + i));
+            table.marikoGpuVoltArray[i] = config::GetConfigValue((HocClkConfigValue)(KipConfigValue_g_volt_76800 + i));
         }
 
         for (int i = 0; i < 27; i++) {
-            table.eristaGpuVoltArray[i] = config::GetConfigValue((SysClkConfigValue)(KipConfigValue_g_volt_e_76800 + i));
+            table.eristaGpuVoltArray[i] = config::GetConfigValue((HocClkConfigValue)(KipConfigValue_g_volt_e_76800 + i));
         }
 
         CUST_WRITE_FIELD_BATCH(&table, t6_tRTW_fine_tune, config::GetConfigValue(KipConfigValue_t6_tRTW_fine_tune));
@@ -123,7 +123,7 @@ namespace kip {
             notification::writeNotification("Horizon OC\nKip write failed");
         }
 
-        SysClkConfigValueList configValues;
+        HocClkConfigValueList configValues;
         config::GetConfigValues(&configValues);
 
         configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip"); // write checksum
@@ -153,7 +153,7 @@ namespace kip {
                 fclose(fp);
             }
 
-            SysClkConfigValueList configValues;
+            HocClkConfigValueList configValues;
             config::GetConfigValues(&configValues);
 
             CustomizeTable table;
@@ -236,7 +236,7 @@ namespace kip {
             // if(cust_get_cust_rev(&table) == KIP_CUST_REV)
             //     return;
 
-            if (sizeof(SysClkConfigValueList) <= sizeof(configValues)) {
+            if (sizeof(HocClkConfigValueList) <= sizeof(configValues)) {
                 if (config::SetConfigValues(&configValues, false)) {
                     fileUtils::LogLine("[clock_manager] Successfully loaded KIP data into config");
                 } else {

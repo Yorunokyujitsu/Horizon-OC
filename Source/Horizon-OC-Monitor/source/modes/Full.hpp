@@ -236,7 +236,7 @@ public:
                     else if (realRAM_Hz && settings.showDeltas && (settings.showRealFreqs || settings.showTargetFreqs)) {
                         renderer->drawString(DeltaRAM_c, false, COMMON_MARGIN +  deltaOffset, height_offset, 15, (settings.textColor));
                     }
-                    if (R_SUCCEEDED(sysclkCheck)) {
+                    if (R_SUCCEEDED(hocclkCheck)) {
                         static std::vector<std::string> partLoadColoredChars = {"CPU", "GPU"};
                         //static auto loadLabelWidth = renderer->getTextDimensions("Load: ", false, 15).first;
                         renderer->drawString("Load", false, COMMON_MARGIN, height_offset+15, 15, (settings.catColor2));
@@ -483,12 +483,12 @@ public:
             RAMPct_systemunsafe
         );
         
-        if (R_SUCCEEDED(sysclkCheck)) {
-            const int RAM_GPU_Load = partLoad[SysClkPartLoad_EMC] - partLoad[SysClkPartLoad_EMCCpu];
+        if (R_SUCCEEDED(hocclkCheck)) {
+            const int RAM_GPU_Load = partLoad[HocClkPartLoad_EMC] - partLoad[HocClkPartLoad_EMCCpu];
             snprintf(RAM_load_c, sizeof RAM_load_c, 
                 "%u.%u%%    CPU  %u.%u%%   GPU  %u.%u%%",
-                partLoad[SysClkPartLoad_EMC] / 10, partLoad[SysClkPartLoad_EMC] % 10,
-                partLoad[SysClkPartLoad_EMCCpu] / 10, partLoad[SysClkPartLoad_EMCCpu] % 10,
+                partLoad[HocClkPartLoad_EMC] / 10, partLoad[HocClkPartLoad_EMC] % 10,
+                partLoad[HocClkPartLoad_EMCCpu] / 10, partLoad[HocClkPartLoad_EMCCpu] % 10,
                 RAM_GPU_Load / 10, RAM_GPU_Load % 10);
         }
         ///Thermal

@@ -25,19 +25,19 @@
  */
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include <nxExt.h>
 #include "board.hpp"
 
 namespace board {
 
-    SysClkProfile GetProfile() {
+    HocClkProfile GetProfile() {
         u32 mode = 0;
         Result rc = apmExtGetPerformanceMode(&mode);
         ASSERT_RESULT_OK(rc, "apmExtGetPerformanceMode");
 
         if (mode) {
-            return SysClkProfile_Docked;
+            return HocClkProfile_Docked;
         }
 
         PsmChargerType chargerType;
@@ -46,12 +46,12 @@ namespace board {
         ASSERT_RESULT_OK(rc, "psmGetChargerType");
 
         if (chargerType == PsmChargerType_EnoughPower) {
-            return SysClkProfile_HandheldChargingOfficial;
+            return HocClkProfile_HandheldChargingOfficial;
         } else if (chargerType == PsmChargerType_LowPower) {
-            return SysClkProfile_HandheldChargingUSB;
+            return HocClkProfile_HandheldChargingUSB;
         }
 
-        return SysClkProfile_Handheld;
+        return HocClkProfile_Handheld;
     }
 
 }

@@ -28,15 +28,15 @@
 #include "base_menu_gui.h"
 #include "freq_choice_gui.h"
 #include "value_choice_gui.h"
-#define SYSCLK_GLOBAL_PROFILE_TID       0xA111111111111111
+#define HOCCLK_GLOBAL_PROFILE_TID       0xA111111111111111
 class AppProfileGui : public BaseMenuGui
 {
     protected:
         std::uint64_t applicationId;
-        SysClkTitleProfileList* profileList;
-        void openFreqChoiceGui(tsl::elm::ListItem* listItem, SysClkProfile profile, SysClkModule module);
-        void addModuleListItem(SysClkProfile profile, SysClkModule module);
-        void addModuleListItemToggle(SysClkProfile profile, SysClkModule module);
+        HocClkTitleProfileList* profileList;
+        void openFreqChoiceGui(tsl::elm::ListItem* listItem, HocClkProfile profile, HocClkModule module);
+        void addModuleListItem(HocClkProfile profile, HocClkModule module);
+        void addModuleListItemToggle(HocClkProfile profile, HocClkModule module);
         void openValueChoiceGui(
             tsl::elm::ListItem* listItem,
             std::uint32_t currentValue,
@@ -57,8 +57,8 @@ class AppProfileGui : public BaseMenuGui
             int decimalPlaces
         );
         void addModuleListItemValue(
-            SysClkProfile profile,
-            SysClkModule module,
+            HocClkProfile profile,
+            HocClkModule module,
             const std::string& categoryName,
             std::uint32_t min,
             std::uint32_t max,
@@ -70,10 +70,10 @@ class AppProfileGui : public BaseMenuGui
             std::vector<NamedValue> namedValues = {},
             bool showDefaultValue = true
         );
-        void addGovernorSection(SysClkProfile profile);
-        void addProfileUI(SysClkProfile profile);
+        void addGovernorSection(HocClkProfile profile);
+        void addProfileUI(HocClkProfile profile);
     public:
-        AppProfileGui(std::uint64_t applicationId, SysClkTitleProfileList* profileList);
+        AppProfileGui(std::uint64_t applicationId, HocClkTitleProfileList* profileList);
         ~AppProfileGui();
         void listUI() override;
         static void changeTo(std::uint64_t applicationId);

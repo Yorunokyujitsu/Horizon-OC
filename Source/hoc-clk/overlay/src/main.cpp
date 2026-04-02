@@ -43,7 +43,7 @@ class AppOverlay : public tsl::Overlay
 
         virtual void exitServices() override {
             rgltrExit();
-            sysclkIpcExit();
+            hocclkIpcExit();
         }
 
         virtual std::unique_ptr<tsl::Gui> loadInitialGui() override
@@ -53,7 +53,7 @@ class AppOverlay : public tsl::Overlay
 
             tsl::hlp::ScopeGuard smGuard([] { smExit(); });
 
-            if(!sysclkIpcRunning())
+            if(!hocclkIpcRunning())
             {
                 return initially<FatalGui>(
                     "hoc-clk is not running.\n\n"
@@ -64,7 +64,7 @@ class AppOverlay : public tsl::Overlay
                 );
             }
 
-            if(R_FAILED(sysclkIpcInitialize()) || R_FAILED(sysclkIpcGetAPIVersion(&apiVersion)))
+            if(R_FAILED(hocclkIpcInitialize()) || R_FAILED(hocclkIpcGetAPIVersion(&apiVersion)))
             {
                 return initially<FatalGui>(
                     "Could not connect to hoc-clk.\n\n"
@@ -75,7 +75,7 @@ class AppOverlay : public tsl::Overlay
                 );
             }
 
-            if(SYSCLK_IPC_API_VERSION != apiVersion)
+            if(HOCCLK_IPC_API_VERSION != apiVersion)
             {
                 return initially<FatalGui>(
                     "Overlay not compatible with\n\n"

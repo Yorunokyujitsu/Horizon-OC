@@ -24,7 +24,7 @@
  * --------------------------------------------------------------------------
  */
 
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 #include <nxExt.h>
 #include <cmath>
@@ -35,7 +35,7 @@
 
 namespace board {
 
-    s32 GetTemperatureMilli(SysClkThermalSensor sensor) {
+    s32 GetTemperatureMilli(HocClkThermalSensor sensor) {
         s32 millis = 0;
         BatteryChargeInfo info;
 
@@ -43,15 +43,15 @@ namespace board {
         soctherm::ReadSensors(temps);
 
         switch(sensor) {
-            case SysClkThermalSensor_SOC: {
+            case HocClkThermalSensor_SOC: {
                 millis = tmp451TempSoc();
                 break;
             }
-            case SysClkThermalSensor_PCB: {
+            case HocClkThermalSensor_PCB: {
                 millis = tmp451TempPcb();
                 break;
             }
-            case SysClkThermalSensor_Skin: {
+            case HocClkThermalSensor_Skin: {
                 if (HOSSVC_HAS_TC) {
                     Result rc;
                     rc = tcGetSkinTemperatureMilliC(&millis);
@@ -59,46 +59,46 @@ namespace board {
                 }
                 break;
             }
-            case HorizonOCThermalSensor_Battery: {
+            case HocClkThermalSensor_Battery: {
                 batteryInfoGetChargeInfo(&info);
                 millis = batteryInfoGetTemperatureMiliCelsius(&info);
                 break;
             }
-            case HorizonOCThermalSensor_PMIC: {
+            case HocClkThermalSensor_PMIC: {
                 millis = 50000;
                 break;
             }
-            case HorizonOCThermalSensor_CPU: {
+            case HocClkThermalSensor_CPU: {
                 millis = temps.cpu;
                 break;
             }
-            case HorizonOCThermalSensor_GPU: {
+            case HocClkThermalSensor_GPU: {
                 millis = temps.gpu;
                 break;
             }
-            case HorizonOCThermalSensor_MEM: {
-                millis = board::GetSocType() == SysClkSocType_Mariko ? temps.pllx : temps.mem;
+            case HocClkThermalSensor_MEM: {
+                millis = board::GetSocType() == HocClkSocType_Mariko ? temps.pllx : temps.mem;
                 break;
             }
-            case HorizonOCThermalSensor_PLLX: {
+            case HocClkThermalSensor_PLLX: {
                 millis = temps.pllx;
             }
             default: {
-                ASSERT_ENUM_VALID(SysClkThermalSensor, sensor);
+                ASSERT_ENUM_VALID(HocClkThermalSensor, sensor);
             }
         }
 
         return std::max(0, millis);
     }
 
-    s32 GetPowerMw(SysClkPowerSensor sensor) {
+    s32 GetPowerMw(HocClkPowerSensor sensor) {
         switch (sensor) {
-            case SysClkPowerSensor_Now:
+            case HocClkPowerSensor_Now:
                 return max17050PowerNow();
-            case SysClkPowerSensor_Avg:
+            case HocClkPowerSensor_Avg:
                 return max17050PowerAvg();
             default:
-                ASSERT_ENUM_VALID(SysClkPowerSensor, sensor);
+                ASSERT_ENUM_VALID(HocClkPowerSensor, sensor);
         }
 
         return 0;

@@ -25,29 +25,29 @@
  */
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include "board.hpp"
 
 namespace board {
 
-    const char *GetModuleName(SysClkModule module, bool pretty) {
-        ASSERT_ENUM_VALID(SysClkModule, module);
-        return sysclkFormatModule(module, pretty);
+    const char *GetModuleName(HocClkModule module, bool pretty) {
+        ASSERT_ENUM_VALID(HocClkModule, module);
+        return hocclkFormatModule(module, pretty);
     }
 
-    const char *GetProfileName(SysClkProfile profile, bool pretty) {
-        ASSERT_ENUM_VALID(SysClkProfile, profile);
-        return sysclkFormatProfile(profile, pretty);
+    const char *GetProfileName(HocClkProfile profile, bool pretty) {
+        ASSERT_ENUM_VALID(HocClkProfile, profile);
+        return hocclkFormatProfile(profile, pretty);
     }
 
-    const char *GetThermalSensorName(SysClkThermalSensor sensor, bool pretty) {
-        ASSERT_ENUM_VALID(SysClkThermalSensor, sensor);
-        return sysclkFormatThermalSensor(sensor, pretty);
+    const char *GetThermalSensorName(HocClkThermalSensor sensor, bool pretty) {
+        ASSERT_ENUM_VALID(HocClkThermalSensor, sensor);
+        return hocclkFormatThermalSensor(sensor, pretty);
     }
 
-    const char *GetPowerSensorName(SysClkPowerSensor sensor, bool pretty) {
-        ASSERT_ENUM_VALID(SysClkPowerSensor, sensor);
-        return sysclkFormatPowerSensor(sensor, pretty);
+    const char *GetPowerSensorName(HocClkPowerSensor sensor, bool pretty) {
+        ASSERT_ENUM_VALID(HocClkPowerSensor, sensor);
+        return hocclkFormatPowerSensor(sensor, pretty);
     }
 
 }

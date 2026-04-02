@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  */
-
+ 
 /* --------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
  * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
@@ -26,30 +26,14 @@
 
 
 #pragma once
-#include <cstdint>
-#include <switch.h> // include libnx
-#ifdef __cplusplus
-#include "cpp_util.hpp"
-extern "C" {
-#endif
 
-// typedef std::uint32_t Result;
-// typedef std::uint32_t u32;
-// typedef std::int32_t s32;
-// typedef std::uint64_t u64;
-// typedef std::int64_t s64;
-// typedef std::uint8_t u8;
-// typedef std::int16_t s16;
-// typedef std::uint16_t u16;
+#define HOCCLK_ERROR_MODULE 388
+#define HOCCLK_ERROR(desc) ((HOCCLK_ERROR_MODULE & 0x1FF) | (HocClkError_##desc & 0x1FFF)<<9)
 
-#include "sysclk/ipc.h"
-#include "sysclk/board.h"
-#include "sysclk/clock_manager.h"
-#include "sysclk/apm.h"
-#include "sysclk/config.h"
-#include "sysclk/errors.h"
-#include "sysclk/psm_ext.h"
-
-#ifdef __cplusplus
-}
-#endif
+typedef enum
+{
+    HocClkError_Generic = 0,
+    HocClkError_ConfigNotLoaded = 1,
+    HocClkError_ConfigSaveFailed = 2,
+    // HocClkError_SocThermFail = 3,
+} HocClkError;

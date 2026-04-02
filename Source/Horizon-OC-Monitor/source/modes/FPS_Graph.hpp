@@ -527,8 +527,8 @@ public:
         snprintf(CPU_Load_c, sizeof(CPU_Load_c), "%.1f%%", cpu_usageM);
         snprintf(GPU_Load_c, sizeof(GPU_Load_c), "%d.%d%%", GPU_Load_u / 10, GPU_Load_u % 10);
         snprintf(RAM_Load_c, sizeof(RAM_Load_c), "%hu.%hhu%%",
-                 partLoad[SysClkPartLoad_EMC] / 10,
-                 partLoad[SysClkPartLoad_EMC] % 10);
+                 partLoad[HocClkPartLoad_EMC] / 10,
+                 partLoad[HocClkPartLoad_EMC] % 10);
         
         mutexUnlock(&mutex_Misc);
     

@@ -33,7 +33,7 @@
 FreqChoiceGui::FreqChoiceGui(std::uint32_t selectedHz,
                              std::uint32_t* hzList,
                              std::uint32_t hzCount,
-                             SysClkModule module,
+                             HocClkModule module,
                              FreqChoiceListener listener,
                              bool checkMax,
                              std::map<uint32_t, std::string> labels)
@@ -45,7 +45,7 @@ FreqChoiceGui::FreqChoiceGui(std::uint32_t selectedHz,
     this->listener = listener;
     this->checkMax = checkMax;
     this->labels = labels;
-    this->configList = new SysClkConfigValueList {};
+    this->configList = new HocClkConfigValueList {};
 }
 
 FreqChoiceGui::~FreqChoiceGui()
@@ -106,10 +106,10 @@ tsl::elm::ListItem* FreqChoiceGui::createFreqListItem(std::uint32_t hz, bool sel
 
 void FreqChoiceGui::listUI()
 {
-    sysclkIpcGetConfigValues(this->configList);
+    hocclkIpcGetConfigValues(this->configList);
 
     // Header based on CPU/GPU/MEM module
-    std::string moduleName = sysclkFormatModule(this->module, false);
+    std::string moduleName = hocclkFormatModule(this->module, false);
     this->listElement->addItem(new tsl::elm::CategoryHeader(moduleName));
 
     // Default option

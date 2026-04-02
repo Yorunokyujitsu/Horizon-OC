@@ -33,13 +33,13 @@
 class GlobalOverrideGui : public BaseMenuGui
 {
     protected:
-        std::map<SysClkModule, std::tuple<std::string, std::uint32_t, int>> customFormatModules;
-        tsl::elm::ListItem* listItems[SysClkModule_EnumMax];
-        std::uint32_t listHz[SysClkModule_EnumMax];
-        void openFreqChoiceGui(SysClkModule module);
+        std::map<HocClkModule, std::tuple<std::string, std::uint32_t, int>> customFormatModules;
+        tsl::elm::ListItem* listItems[HocClkModule_EnumMax];
+        std::uint32_t listHz[HocClkModule_EnumMax];
+        void openFreqChoiceGui(HocClkModule module);
         void addGovernorSection();
-        void addModuleListItem(SysClkModule module);
-        void addModuleToggleItem(SysClkModule module);
+        void addModuleListItem(HocClkModule module);
+        void addModuleToggleItem(HocClkModule module);
         void openValueChoiceGui(
             tsl::elm::ListItem* listItem,
             std::uint32_t currentValue,
@@ -53,7 +53,7 @@ class GlobalOverrideGui : public BaseMenuGui
             bool showDefaultValue
         );
         void addModuleListItemValue(
-            SysClkModule module,
+            HocClkModule module,
             const std::string& categoryName,
             std::uint32_t min,
             std::uint32_t max,
@@ -70,5 +70,5 @@ class GlobalOverrideGui : public BaseMenuGui
         ~GlobalOverrideGui() {}
         void listUI() override;
         void refresh() override;
-        void setModuleCustomFormat(SysClkModule module, const std::string& suffix, std::uint32_t divisor, int decimalPlaces);
+        void setModuleCustomFormat(HocClkModule module, const std::string& suffix, std::uint32_t divisor, int decimalPlaces);
 };

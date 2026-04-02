@@ -25,7 +25,7 @@
  */
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include <memmem.h>
 #include <registers.h>
 #include <cstring>
@@ -100,11 +100,11 @@ namespace board {
         Result rc = svcQueryMemoryMapping(&cldvfs, &temp, CLDVFS_REGION_BASE, CLDVFS_REGION_SIZE);
         ASSERT_RESULT_OK(rc, "svcQueryMemoryMapping (cldvfs)");
 
-        if (GetSocType() == SysClkSocType_Erista) {
+        if (GetSocType() == HocClkSocType_Erista) {
             cachedTune.tune0Low = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
             cachedTune.tune1Low = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
         } else {
-            SetHz(SysClkModule_CPU, 1785000000);
+            SetHz(HocClkModule_CPU, 1785000000);
             cachedTune.tune0High = *reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
             ResetToStockCpu();
         }
@@ -114,8 +114,8 @@ namespace board {
     void SetDfllTunings(u32 levelLow, u32 levelHigh, u32 tbreakPoint) {
         u32* tune0_ptr = reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE0_0);
         u32* tune1_ptr = reinterpret_cast<u32 *>(cldvfs + CL_DVFS_TUNE1_0);
-        if (GetSocType() == SysClkSocType_Mariko) {
-            if (GetHz(SysClkModule_CPU) < tbreakPoint && (levelLow || levelHigh)) {
+        if (GetSocType() == HocClkSocType_Mariko) {
+            if (GetHz(HocClkModule_CPU) < tbreakPoint && (levelLow || levelHigh)) {
                 if (levelLow) {
                     *tune0_ptr = marikoCpuUvLow[levelLow-1].tune0_low;
                     *tune1_ptr = marikoCpuUvLow[levelLow-1].tune1_low;
@@ -132,17 +132,17 @@ namespace board {
                 }
                 return;
             }
-            if (GetHz(SysClkModule_CPU) < tbreakPoint || (!levelLow)) { // account for tbreak
+            if (GetHz(HocClkModule_CPU) < tbreakPoint || (!levelLow)) { // account for tbreak
                 *tune0_ptr = 0xCFFF;
                 *tune1_ptr = 0xFF072201;
                 return;
-            } else if (GetHz(SysClkModule_CPU) >= tbreakPoint || (!levelHigh)) {
+            } else if (GetHz(HocClkModule_CPU) >= tbreakPoint || (!levelHigh)) {
                 *tune0_ptr = cachedTune.tune0High; // per console?
                 *tune1_ptr = 0xFFF7FF3F;
                 return;
             }
         } else {
-            if (GetHz(SysClkModule_CPU) < tbreakPoint || (!levelLow)) { // account for tbreak
+            if (GetHz(HocClkModule_CPU) < tbreakPoint || (!levelLow)) { // account for tbreak
                 *tune0_ptr = cachedTune.tune0Low; // I think each erista has a different tune0/tune1?
                 *tune1_ptr = cachedTune.tune1Low;
                 return;
@@ -167,7 +167,7 @@ namespace board {
     };
     */
     u32 CalculateTbreak(u32 table) {
-        if (GetSocType() == SysClkSocType_Erista) {
+        if (GetSocType() == HocClkSocType_Erista) {
             return 1581000000;
         } else {
             switch (table) {
@@ -241,7 +241,7 @@ namespace board {
                 rgltrCloseSession(&session);
                 break;
             case HocClkVoltage_CPU:
-                if (GetSocType() == SysClkSocType_Mariko) {
+                if (GetSocType() == HocClkSocType_Mariko) {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77621_Cpu);
                 } else {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77812_Cpu);
@@ -251,7 +251,7 @@ namespace board {
                 rgltrCloseSession(&session);
                 break;
             case HocClkVoltage_GPU:
-                if (GetSocType() == SysClkSocType_Mariko) {
+                if (GetSocType() == HocClkSocType_Mariko) {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77621_Gpu);
                 } else {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77812_Gpu);
@@ -261,7 +261,7 @@ namespace board {
                 rgltrCloseSession(&session);
                 break;
             case HocClkVoltage_EMCVDDQ:
-                if (GetSocType() == SysClkSocType_Mariko) {
+                if (GetSocType() == HocClkSocType_Mariko) {
                     rc = rgltrOpenSession(&session, PcvPowerDomainId_Max77812_Dram);
                     ASSERT_RESULT_OK(rc, "rgltrOpenSession")
                     rgltrGetVoltage(&session, &out);

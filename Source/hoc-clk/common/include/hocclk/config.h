@@ -31,11 +31,11 @@
 #include <stddef.h>
 
 typedef enum {
-    SysClkConfigValue_PollingIntervalMs = 0,
-    SysClkConfigValue_TempLogIntervalMs,
-    SysClkConfigValue_FreqLogIntervalMs,
-    SysClkConfigValue_PowerLogIntervalMs,
-    SysClkConfigValue_CsvWriteIntervalMs,
+    HocClkConfigValue_PollingIntervalMs = 0,
+    HocClkConfigValue_TempLogIntervalMs,
+    HocClkConfigValue_FreqLogIntervalMs,
+    HocClkConfigValue_PowerLogIntervalMs,
+    HocClkConfigValue_CsvWriteIntervalMs,
 
     HocClkConfigValue_UncappedClocks,
     HocClkConfigValue_OverwriteBoostMode,
@@ -51,21 +51,21 @@ typedef enum {
 
     HocClkConfigValue_LiteTDPLimit,
 
-    HorizonOCConfigValue_BatteryChargeCurrent,
+    HocClkConfigValue_BatteryChargeCurrent,
 
-    HorizonOCConfigValue_OverwriteRefreshRate,
-    HorizonOCConfigValue_MaxDisplayClockH,
+    HocClkConfigValue_OverwriteRefreshRate,
+    HocClkConfigValue_MaxDisplayClockH,
 
-    HorizonOCConfigValue_DVFSMode,
-    HorizonOCConfigValue_DVFSOffset,
-    HorizonOCConfigValue_LiveCpuUv,
-    HorizonOCConfigValue_EnableExperimentalSettings,
+    HocClkConfigValue_DVFSMode,
+    HocClkConfigValue_DVFSOffset,
+    HocClkConfigValue_LiveCpuUv,
+    HocClkConfigValue_EnableExperimentalSettings,
 
-    HorizonOCConfigValue_GPUScheduling,
-    HorizonOCConfigValue_GPUSchedulingMethod,
+    HocClkConfigValue_GPUScheduling,
+    HocClkConfigValue_GPUSchedulingMethod,
 
-    HorizonOCConfigValue_RAMVoltDisplayMode,
-    HorizonOCConfigValue_CpuGovernorMinimumFreq,
+    HocClkConfigValue_RAMVoltDisplayMode,
+    HocClkConfigValue_CpuGovernorMinimumFreq,
 
     KipConfigValue_custRev,
     // KipConfigValue_mtcConf,
@@ -173,26 +173,26 @@ typedef enum {
 
     KipCrc32,
     HocClkConfigValue_IsFirstLoad,
-    SysClkConfigValue_EnumMax,
-} SysClkConfigValue;
+    HocClkConfigValue_EnumMax,
+} HocClkConfigValue;
 
 typedef struct {
-    uint64_t values[SysClkConfigValue_EnumMax];
-} SysClkConfigValueList;
+    uint64_t values[HocClkConfigValue_EnumMax];
+} HocClkConfigValueList;
 
-static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pretty)
+static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pretty)
 {
     switch(val)
     {
-        case SysClkConfigValue_PollingIntervalMs:
+        case HocClkConfigValue_PollingIntervalMs:
             return pretty ? "Polling Interval (ms)" : "poll_interval_ms";
-        case SysClkConfigValue_TempLogIntervalMs:
+        case HocClkConfigValue_TempLogIntervalMs:
             return pretty ? "Temperature logging interval (ms)" : "temp_log_interval_ms";
-        case SysClkConfigValue_FreqLogIntervalMs:
+        case HocClkConfigValue_FreqLogIntervalMs:
             return pretty ? "Frequency logging interval (ms)" : "freq_log_interval_ms";
-        case SysClkConfigValue_PowerLogIntervalMs:
+        case HocClkConfigValue_PowerLogIntervalMs:
             return pretty ? "Power logging interval (ms)" : "power_log_interval_ms";
-        case SysClkConfigValue_CsvWriteIntervalMs:
+        case HocClkConfigValue_CsvWriteIntervalMs:
             return pretty ? "CSV write interval (ms)" : "csv_write_interval_ms";
 
         case HocClkConfigValue_UncappedClocks:
@@ -221,36 +221,36 @@ static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pr
         case HocClkConfigValue_LiteTDPLimit:
             return pretty ? "Handheld TDP Limit" : "tdp_limit_l";
 
-        case HorizonOCConfigValue_BatteryChargeCurrent:
+        case HocClkConfigValue_BatteryChargeCurrent:
             return pretty ? "Battery Charge Current" : "bat_charge_current";
 
-        case HorizonOCConfigValue_OverwriteRefreshRate:
+        case HocClkConfigValue_OverwriteRefreshRate:
             return pretty ? "Display Refresh Rate Changing" : "drr_changing";
 
-        case HorizonOCConfigValue_MaxDisplayClockH:
+        case HocClkConfigValue_MaxDisplayClockH:
             return pretty ? "Max Display Clock (Handheld)" : "drr_max_clock";
 
-        case HorizonOCConfigValue_DVFSMode:
+        case HocClkConfigValue_DVFSMode:
             return pretty ? "DVFS Mode" : "dvfs_mode";
 
-        case HorizonOCConfigValue_DVFSOffset:
+        case HocClkConfigValue_DVFSOffset:
             return pretty ? "DVFS Offset" : "dvfs_offset";
 
-        case HorizonOCConfigValue_GPUScheduling:
+        case HocClkConfigValue_GPUScheduling:
             return pretty ? "GPU Scheduling" : "gpu_scheduling";
 
-        case HorizonOCConfigValue_GPUSchedulingMethod:
+        case HocClkConfigValue_GPUSchedulingMethod:
             return pretty ? "GPU Scheduling Method" : "gpu_sched_method";
 
-        case HorizonOCConfigValue_LiveCpuUv:
+        case HocClkConfigValue_LiveCpuUv:
             return pretty ? "Live CPU Undervolt" : "live_cpu_uv";
 
-        case HorizonOCConfigValue_EnableExperimentalSettings:
+        case HocClkConfigValue_EnableExperimentalSettings:
             return pretty ? "Enable Experimental Settings" : "enable_experimental_settings";
 
-        case HorizonOCConfigValue_RAMVoltDisplayMode:
+        case HocClkConfigValue_RAMVoltDisplayMode:
             return pretty ? "RAM Voltage / Usage Display Mode" : "ram_volt_usage_display_mode";
-        case HorizonOCConfigValue_CpuGovernorMinimumFreq:
+        case HocClkConfigValue_CpuGovernorMinimumFreq:
             return pretty ? "CPU Governor Minimum Frequency" : "cpu_gov_min_freq";
         // KIP config values
         case KipConfigValue_custRev:
@@ -414,23 +414,23 @@ static inline const char* sysclkFormatConfigValue(SysClkConfigValue val, bool pr
     }
 }
 
-static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
+static inline uint64_t hocclkDefaultConfigValue(HocClkConfigValue val)
 {
     switch(val)
     {
-        case SysClkConfigValue_PollingIntervalMs:
+        case HocClkConfigValue_PollingIntervalMs:
             return 300ULL;
-        case SysClkConfigValue_TempLogIntervalMs:
-        case SysClkConfigValue_FreqLogIntervalMs:
-        case SysClkConfigValue_PowerLogIntervalMs:
-        case SysClkConfigValue_CsvWriteIntervalMs:
+        case HocClkConfigValue_TempLogIntervalMs:
+        case HocClkConfigValue_FreqLogIntervalMs:
+        case HocClkConfigValue_PowerLogIntervalMs:
+        case HocClkConfigValue_CsvWriteIntervalMs:
         case HocClkConfigValue_UncappedClocks:
         case HocClkConfigValue_OverwriteBoostMode:
-        case HorizonOCConfigValue_BatteryChargeCurrent:
-        case HorizonOCConfigValue_OverwriteRefreshRate:
-        case HorizonOCConfigValue_GPUScheduling:
-        case HorizonOCConfigValue_LiveCpuUv:
-        case HorizonOCConfigValue_GPUSchedulingMethod:
+        case HocClkConfigValue_BatteryChargeCurrent:
+        case HocClkConfigValue_OverwriteRefreshRate:
+        case HocClkConfigValue_GPUScheduling:
+        case HocClkConfigValue_LiveCpuUv:
+        case HocClkConfigValue_GPUSchedulingMethod:
             return 0ULL;
         case HocClkConfigValue_EristaMaxCpuClock:
             return 1785ULL;
@@ -441,7 +441,7 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
         case HocClkConfigValue_ThermalThrottle:
         case HocClkConfigValue_HandheldTDP:
         case HocClkConfigValue_IsFirstLoad:
-        case HorizonOCConfigValue_DVFSMode:
+        case HocClkConfigValue_DVFSMode:
             return 1ULL;
         case HocClkConfigValue_ThermalThrottleThreshold:
             return 70ULL;
@@ -449,16 +449,16 @@ static inline uint64_t sysclkDefaultConfigValue(SysClkConfigValue val)
             return 9600ULL; // 8600mW will trigger on erista stock, so raise it a bit
         case HocClkConfigValue_LiteTDPLimit:
             return 6400ULL; // 0.5C
-        case HorizonOCConfigValue_CpuGovernorMinimumFreq:
+        case HocClkConfigValue_CpuGovernorMinimumFreq:
             return 612000000ULL; // 612MHz
-        case HorizonOCConfigValue_MaxDisplayClockH:
+        case HocClkConfigValue_MaxDisplayClockH:
             return 60ULL;
         default:
             return 0ULL;
     }
 }
 
-static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t input)
+static inline uint64_t hocclkValidConfigValue(HocClkConfigValue val, uint64_t input)
 {
     switch(val)
     {
@@ -467,23 +467,23 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case HocClkConfigValue_ThermalThrottleThreshold:
         case HocClkConfigValue_HandheldTDPLimit:
         case HocClkConfigValue_LiteTDPLimit:
-        case SysClkConfigValue_PollingIntervalMs:
-        case HorizonOCConfigValue_MaxDisplayClockH:
+        case HocClkConfigValue_PollingIntervalMs:
+        case HocClkConfigValue_MaxDisplayClockH:
             return input > 0;
 
-        case SysClkConfigValue_TempLogIntervalMs:
-        case SysClkConfigValue_FreqLogIntervalMs:
-        case SysClkConfigValue_PowerLogIntervalMs:
-        case SysClkConfigValue_CsvWriteIntervalMs:
+        case HocClkConfigValue_TempLogIntervalMs:
+        case HocClkConfigValue_FreqLogIntervalMs:
+        case HocClkConfigValue_PowerLogIntervalMs:
+        case HocClkConfigValue_CsvWriteIntervalMs:
         case HocClkConfigValue_UncappedClocks:
         case HocClkConfigValue_OverwriteBoostMode:
         case HocClkConfigValue_ThermalThrottle:
         case HocClkConfigValue_HandheldTDP:
-        case HorizonOCConfigValue_OverwriteRefreshRate:
+        case HocClkConfigValue_OverwriteRefreshRate:
         case HocClkConfigValue_IsFirstLoad:
-        case HorizonOCConfigValue_EnableExperimentalSettings:
-        case HorizonOCConfigValue_LiveCpuUv:
-        case HorizonOCConfigValue_GPUSchedulingMethod:
+        case HocClkConfigValue_EnableExperimentalSettings:
+        case HocClkConfigValue_LiveCpuUv:
+        case HocClkConfigValue_GPUSchedulingMethod:
             return (input & 0x1) == input;
 
         case KipConfigValue_custRev:
@@ -580,13 +580,13 @@ static inline uint64_t sysclkValidConfigValue(SysClkConfigValue val, uint64_t in
         case KipConfigValue_t6_tRTW_fine_tune:
         case KipConfigValue_t7_tWTR_fine_tune:
         case KipCrc32:
-        case HorizonOCConfigValue_DVFSMode:
-        case HorizonOCConfigValue_DVFSOffset:
-        case HorizonOCConfigValue_GPUScheduling:
-        case HorizonOCConfigValue_RAMVoltDisplayMode:
-        case HorizonOCConfigValue_CpuGovernorMinimumFreq:
+        case HocClkConfigValue_DVFSMode:
+        case HocClkConfigValue_DVFSOffset:
+        case HocClkConfigValue_GPUScheduling:
+        case HocClkConfigValue_RAMVoltDisplayMode:
+        case HocClkConfigValue_CpuGovernorMinimumFreq:
             return true;
-        case HorizonOCConfigValue_BatteryChargeCurrent:
+        case HocClkConfigValue_BatteryChargeCurrent:
             return ((input >= 1024) && (input <= 3072)) || !input;
         default:
             return false;

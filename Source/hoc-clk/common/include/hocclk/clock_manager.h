@@ -33,16 +33,16 @@
 typedef struct
 {
     uint64_t applicationId;
-    SysClkProfile profile;
-    uint32_t freqs[SysClkModule_EnumMax];
-    uint32_t realFreqs[SysClkModule_EnumMax];
-    uint32_t overrideFreqs[SysClkModule_EnumMax];
-    uint32_t temps[SysClkThermalSensor_EnumMax];
-    int32_t power[SysClkPowerSensor_EnumMax];
-    uint32_t partLoad[SysClkPartLoad_EnumMax];
+    HocClkProfile profile;
+    uint32_t freqs[HocClkModule_EnumMax];
+    uint32_t realFreqs[HocClkModule_EnumMax];
+    uint32_t overrideFreqs[HocClkModule_EnumMax];
+    uint32_t temps[HocClkThermalSensor_EnumMax];
+    int32_t power[HocClkPowerSensor_EnumMax];
+    uint32_t partLoad[HocClkPartLoad_EnumMax];
     uint32_t voltages[HocClkVoltage_EnumMax];
-    u16 speedos[HorizonOCSpeedo_EnumMax];
-    u16 iddq[HorizonOCSpeedo_EnumMax];
+    u16 speedos[HocClkSpeedo_EnumMax];
+    u16 iddq[HocClkSpeedo_EnumMax];
     u16 waferX;
     u16 waferY;
 
@@ -58,16 +58,16 @@ typedef struct
     // FPS / Resolution
     u8 fps;
     u16 resolutionHeight;
-} SysClkContext;
+} HocClkContext;
 
 typedef struct
 {
     union {
-        uint32_t mhz[+SysClkProfile_EnumMax * +SysClkModule_EnumMax];
-        uint32_t mhzMap[+SysClkProfile_EnumMax][+SysClkModule_EnumMax];
+        uint32_t mhz[+HocClkProfile_EnumMax * +HocClkModule_EnumMax];
+        uint32_t mhzMap[+HocClkProfile_EnumMax][+HocClkModule_EnumMax];
     };
-} SysClkTitleProfileList;
+} HocClkTitleProfileList;
 
-#define SYSCLK_FREQ_LIST_MAX 32
+#define HOCCLK_FREQ_LIST_MAX 32
 
 #define GLOBAL_PROFILE_ID 0xA111111111111111

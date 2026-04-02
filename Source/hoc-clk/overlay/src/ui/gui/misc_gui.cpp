@@ -45,7 +45,7 @@ class RamTableEditor;
 
 MiscGui::MiscGui()
 {
-    this->configList = new SysClkConfigValueList {};
+    this->configList = new HocClkConfigValueList {};
 }
 
 MiscGui::~MiscGui()
@@ -57,14 +57,14 @@ MiscGui::~MiscGui()
     this->configRanges.clear();
 }
 
-void MiscGui::addConfigToggle(SysClkConfigValue configVal, const char* altName) {
-    const char* configName = altName ? altName : sysclkFormatConfigValue(configVal, true);
+void MiscGui::addConfigToggle(HocClkConfigValue configVal, const char* altName) {
+    const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
     tsl::elm::ToggleListItem* toggle = new tsl::elm::ToggleListItem(configName, this->configList->values[configVal]);
     toggle->setStateChangedListener([this, configVal](bool state) {
         this->configList->values[configVal] = uint64_t(state);
-        Result rc = sysclkIpcSetConfigValues(this->configList);
+        Result rc = hocclkIpcSetConfigValues(this->configList);
         if (R_FAILED(rc))
-            FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+            FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
         this->lastContextUpdate = armGetSystemTick();
     });
     this->listElement->addItem(toggle);
@@ -72,7 +72,7 @@ void MiscGui::addConfigToggle(SysClkConfigValue configVal, const char* altName) 
 }
 
 
-void MiscGui::addConfigButton(SysClkConfigValue configVal,
+void MiscGui::addConfigButton(HocClkConfigValue configVal,
     const char* altName,
     const ValueRange& range,
     const std::string& categoryName,
@@ -81,7 +81,7 @@ void MiscGui::addConfigButton(SysClkConfigValue configVal,
     const std::vector<NamedValue>& namedValues,
     bool showDefaultValue)
 {
-    const char* configName = altName ? altName : sysclkFormatConfigValue(configVal, true);
+    const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
 
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem(configName);
 
@@ -128,9 +128,9 @@ void MiscGui::addConfigButton(SysClkConfigValue configVal,
                     categoryName,
                     [this, configVal](std::uint32_t value) {
                         this->configList->values[configVal] = value;
-                        Result rc = sysclkIpcSetConfigValues(this->configList);
+                        Result rc = hocclkIpcSetConfigValues(this->configList);
                         if (R_FAILED(rc)) {
-                            FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+                            FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                             return false;
                         }
                         this->lastContextUpdate = armGetSystemTick();
@@ -150,9 +150,9 @@ void MiscGui::addConfigButton(SysClkConfigValue configVal,
                     categoryName,
                     [this, configVal](std::uint32_t value) {
                         this->configList->values[configVal] = value;
-                        Result rc = sysclkIpcSetConfigValues(this->configList);
+                        Result rc = hocclkIpcSetConfigValues(this->configList);
                         if (R_FAILED(rc)) {
-                            FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+                            FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                             return false;
                         }
                         this->lastContextUpdate = armGetSystemTick();
@@ -175,7 +175,7 @@ void MiscGui::addConfigButton(SysClkConfigValue configVal,
     this->configNamedValues[configVal] = namedValues;
 }
 
-void MiscGui::addConfigButtonS(SysClkConfigValue configVal,
+void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
     const char* altName,
     const ValueRange& range,
     const std::string& categoryName,
@@ -232,9 +232,9 @@ void MiscGui::addConfigButtonS(SysClkConfigValue configVal,
                     categoryName,
                     [this, configVal](std::uint32_t value) {
                         this->configList->values[configVal] = value;
-                        Result rc = sysclkIpcSetConfigValues(this->configList);
+                        Result rc = hocclkIpcSetConfigValues(this->configList);
                         if (R_FAILED(rc)) {
-                            FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+                            FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                             return false;
                         }
                         this->lastContextUpdate = armGetSystemTick();
@@ -254,9 +254,9 @@ void MiscGui::addConfigButtonS(SysClkConfigValue configVal,
                     categoryName,
                     [this, configVal](std::uint32_t value) {
                         this->configList->values[configVal] = value;
-                        Result rc = sysclkIpcSetConfigValues(this->configList);
+                        Result rc = hocclkIpcSetConfigValues(this->configList);
                         if (R_FAILED(rc)) {
-                            FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+                            FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                             return false;
                         }
                         this->lastContextUpdate = armGetSystemTick();
@@ -289,12 +289,12 @@ void MiscGui::updateConfigToggles() {
     }
 }
 
-void MiscGui::addFreqButton(SysClkConfigValue configVal,
+void MiscGui::addFreqButton(HocClkConfigValue configVal,
                             const char* altName,
-                            SysClkModule module,
+                            HocClkModule module,
                             const std::map<uint32_t, std::string>& labels)
 {
-    const char* configName = altName ? altName : sysclkFormatConfigValue(configVal, true);
+    const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
 
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem(configName);
 
@@ -309,12 +309,12 @@ void MiscGui::addFreqButton(SysClkConfigValue configVal,
             if ((keys & HidNpadButton_A) == 0)
                 return false;
 
-            std::uint32_t hzList[SYSCLK_FREQ_LIST_MAX];
+            std::uint32_t hzList[HOCCLK_FREQ_LIST_MAX];
             std::uint32_t hzCount;
 
-            Result rc = sysclkIpcGetFreqList(module, hzList, SYSCLK_FREQ_LIST_MAX, &hzCount);
+            Result rc = hocclkIpcGetFreqList(module, hzList, HOCCLK_FREQ_LIST_MAX, &hzCount);
             if (R_FAILED(rc)) {
-                FatalGui::openWithResultCode("sysclkIpcGetFreqList", rc);
+                FatalGui::openWithResultCode("hocclkIpcGetFreqList", rc);
                 return false;
             }
 
@@ -330,9 +330,9 @@ void MiscGui::addFreqButton(SysClkConfigValue configVal,
                     uint64_t mhz = hz / 1'000'000;
                     this->configList->values[configVal] = mhz;
 
-                    Result rc = sysclkIpcSetConfigValues(this->configList);
+                    Result rc = hocclkIpcSetConfigValues(this->configList);
                     if (R_FAILED(rc)) {
-                        FatalGui::openWithResultCode("sysclkIpcSetConfigValues", rc);
+                        FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                         return false;
                     }
 
@@ -354,9 +354,9 @@ void MiscGui::addFreqButton(SysClkConfigValue configVal,
 
 void MiscGui::listUI()
 {
-    Result rc = sysclkIpcGetConfigValues(configList);
+    Result rc = hocclkIpcGetConfigValues(configList);
     if (R_FAILED(rc)) [[unlikely]] {
-        FatalGui::openWithResultCode("sysclkIpcGetConfigValues", rc);
+        FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
         return;
     }
 
@@ -471,16 +471,16 @@ void MiscGui::listUI()
         //     NamedValue("2816mA", 2816),
         //     NamedValue("3072mA", 3072),
         // };
-        if(this->configList->values[HorizonOCConfigValue_EnableExperimentalSettings]) {
+        if(this->configList->values[HocClkConfigValue_EnableExperimentalSettings]) {
             this->listElement->addItem(new tsl::elm::CategoryHeader("Experimental"));
 
-            addConfigToggle(HorizonOCConfigValue_LiveCpuUv, nullptr);
+            addConfigToggle(HocClkConfigValue_LiveCpuUv, nullptr);
             std::vector<NamedValue> gpuSchedMethodValues = {
                 NamedValue("INI", GpuSchedulingOverrideMethod_Ini),
                 NamedValue("NV Service", GpuSchedulingOverrideMethod_NvService),
             };
             addConfigButton(
-                HorizonOCConfigValue_GPUSchedulingMethod,
+                HocClkConfigValue_GPUSchedulingMethod,
                 "GPU Scheduling Override Method",
                 ValueRange(0, 0, 1, "", 0),
                 "GPU Scheduling Override Method",
@@ -514,7 +514,7 @@ void MiscGui::listUI()
                     ValueThresholds chargerThresholds(2048, 2049);
 
                     addConfigButton(
-                        HorizonOCConfigValue_BatteryChargeCurrent,
+                        HocClkConfigValue_BatteryChargeCurrent,
                         "Charge Current Override",
                         ValueRange(0, 0, 1, "", 0),
                         "Charge Current Override",
@@ -539,7 +539,7 @@ void MiscGui::listUI()
                 ValueThresholds chargerThresholds(1792, 1793);
 
                 addConfigButton(
-                    HorizonOCConfigValue_BatteryChargeCurrent,
+                    HocClkConfigValue_BatteryChargeCurrent,
                     "Charge Current Override",
                     ValueRange(0, 0, 1, "", 0),
                     "Charge Current Override",
@@ -567,10 +567,10 @@ protected:
             NamedValue("VDDQ", RamDisplayMode_VDDQ),
         };
 
-        addConfigButton(HorizonOCConfigValue_RAMVoltDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
+        addConfigButton(HocClkConfigValue_RAMVoltDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode", &thresholdsDisabled, {}, ramVoltDispModes, false);
 
         addConfigButton(
-            SysClkConfigValue_PollingIntervalMs,
+            HocClkConfigValue_PollingIntervalMs,
             "Polling Interval",
             ValueRange(50, 1000, 50, "ms", 1),
             "Polling Interval",
@@ -601,7 +601,7 @@ protected:
         };
 
         addConfigButton(
-            HorizonOCConfigValue_CpuGovernorMinimumFreq,
+            HocClkConfigValue_CpuGovernorMinimumFreq,
             "CPU Governor Minimum Frequency",
             ValueRange(0, 0, 1, "", 0),
             "CPU Governor Minimum Frequency",
@@ -626,7 +626,7 @@ protected:
             return;
 
         this->listElement->addItem(new tsl::elm::CategoryHeader("Display Settings"));
-        addConfigToggle(HorizonOCConfigValue_OverwriteRefreshRate, nullptr);
+        addConfigToggle(HocClkConfigValue_OverwriteRefreshRate, nullptr);
         if(!this->context->isUsingRetroSuper) {
             tsl::elm::CustomDrawer* warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
                 renderer->drawString("\uE150 Usage of unsafe display", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
@@ -639,7 +639,7 @@ protected:
             this->listElement->addItem(warningText);
             ValueThresholds displayThresholds(60, 65);
             addConfigButton(
-                HorizonOCConfigValue_MaxDisplayClockH,
+                HocClkConfigValue_MaxDisplayClockH,
                 "Max Handheld Display",
                 ValueRange(60, IsAula() ? 65 : 75, 1, " Hz", 1),
                 "Display Clock",
@@ -958,9 +958,9 @@ public:
 
 protected:
     void listUI() override {
-        Result rc = sysclkIpcGetConfigValues(this->configList); // populate config list early otherwise wont work
+        Result rc = hocclkIpcGetConfigValues(this->configList); // populate config list early otherwise wont work
         if (R_FAILED(rc)) [[unlikely]] {
-            FatalGui::openWithResultCode("sysclkIpcGetConfigValues", rc);
+            FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
 
@@ -1369,7 +1369,7 @@ protected:
         };
 
         addConfigButton(
-            HorizonOCConfigValue_GPUScheduling,
+            HocClkConfigValue_GPUScheduling,
             "GPU Scheduling Override",
             ValueRange(0, 0, 1, "", 0),
             "GPU Scheduling Override",
@@ -1410,7 +1410,7 @@ protected:
             };
 
             addConfigButton(
-                HorizonOCConfigValue_DVFSMode,
+                HocClkConfigValue_DVFSMode,
                 "GPU DVFS Mode",
                 ValueRange(0, 0, 1, "", 0),
                 "GPU DVFS Mode",
@@ -1420,7 +1420,7 @@ protected:
                 false
             );
 
-            addConfigButton(HorizonOCConfigValue_DVFSOffset, "GPU DVFS Offset", ValueRange(0, 12, 1, "", 0), "GPU DVFS Offset", &thresholdsDisabled, {}, dvfsOffset, false);
+            addConfigButton(HocClkConfigValue_DVFSOffset, "GPU DVFS Offset", ValueRange(0, 12, 1, "", 0), "GPU DVFS Offset", &thresholdsDisabled, {}, dvfsOffset, false);
         }
 
         tsl::elm::ListItem* customTableSubmenu = new tsl::elm::ListItem("GPU Voltage Table");
@@ -1443,9 +1443,9 @@ public:
 protected:
     void listUI() override {
 
-        Result rc = sysclkIpcGetConfigValues(this->configList); // populate config list early otherwise wont work
+        Result rc = hocclkIpcGetConfigValues(this->configList); // populate config list early otherwise wont work
         if (R_FAILED(rc)) [[unlikely]] {
-            FatalGui::openWithResultCode("sysclkIpcGetConfigValues", rc);
+            FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
 
@@ -1696,9 +1696,9 @@ void MiscGui::refresh() {
     if (this->context && ++frameCounter >= 60) {
         frameCounter = 0;
 
-        Result rc = sysclkIpcGetConfigValues(this->configList);
+        Result rc = hocclkIpcGetConfigValues(this->configList);
         if (R_FAILED(rc)) [[unlikely]] {
-            FatalGui::openWithResultCode("sysclkIpcGetConfigValues", rc);
+            FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
         updateConfigToggles();

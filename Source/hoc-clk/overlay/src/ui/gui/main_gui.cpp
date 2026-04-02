@@ -37,10 +37,10 @@ void MainGui::listUI()
 {
     // this->enabledToggle = new tsl::elm::ToggleListItem("Enable", false);
     // enabledToggle->setStateChangedListener([this](bool state) {
-    //     Result rc = sysclkIpcSetEnabled(state);
+    //     Result rc = hocclkIpcSetEnabled(state);
     //     if(R_FAILED(rc))
     //     {
-    //         FatalGui::openWithResultCode("sysclkIpcSetEnabled", rc);
+    //         FatalGui::openWithResultCode("hocclkIpcSetEnabled", rc);
     //     }
 
     //     this->lastContextUpdate = armGetSystemTick();
@@ -65,7 +65,7 @@ void MainGui::listUI()
     globalProfileItem->setClickListener([this](u64 keys) {
         if((keys & HidNpadButton_A) == HidNpadButton_A && this->context)
         {
-            AppProfileGui::changeTo(SYSCLK_GLOBAL_PROFILE_TID);
+            AppProfileGui::changeTo(HOCCLK_GLOBAL_PROFILE_TID);
             return true;
         }
 

@@ -441,13 +441,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemoryAndRefreshRate();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -468,8 +468,8 @@ public:
 
     virtual void exitServices() override {
         CloseThreads();
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         shmemClose(&_sharedmemory);
         //Exit services
@@ -525,13 +525,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemory();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -552,8 +552,8 @@ public:
     virtual void exitServices() override {
         CloseThreads();
         shmemClose(&_sharedmemory);
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         //Exit services
         clkrstExit();
@@ -612,13 +612,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemory();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -640,8 +640,8 @@ public:
     virtual void exitServices() override {
         CloseThreads();
         shmemClose(&_sharedmemory);
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         // Exit services
         clkrstExit();
@@ -702,13 +702,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemoryAndRefreshRate();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -729,8 +729,8 @@ public:
     virtual void exitServices() override {
         CloseThreads();
         shmemClose(&_sharedmemory);
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         clkrstExit();
         pcvExit();
@@ -785,13 +785,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemoryAndRefreshRate();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -812,8 +812,8 @@ public:
     virtual void exitServices() override {
         CloseThreads();
         shmemClose(&_sharedmemory);
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         clkrstExit();
         pcvExit();
@@ -868,13 +868,13 @@ public:
             if (SaltySD) {
                 LoadSharedMemoryAndRefreshRate();
             }
-            if (sysclkIpcRunning() && R_SUCCEEDED(sysclkIpcInitialize())) {
-                uint32_t sysClkApiVer = 0;
-                sysclkIpcGetAPIVersion(&sysClkApiVer);
-                if (sysClkApiVer != SYSCLK_IPC_API_VERSION) {
-                    sysclkIpcExit();
+            if (hocclkIpcRunning() && R_SUCCEEDED(hocclkIpcInitialize())) {
+                uint32_t hocClkApiVer = 0;
+                hocclkIpcGetAPIVersion(&hocClkApiVer);
+                if (hocClkApiVer != HOCCLK_IPC_API_VERSION) {
+                    hocclkIpcExit();
                 }
-                else sysclkCheck = 0;
+                else hocclkCheck = 0;
             }
             if (R_SUCCEEDED(splInitialize())) {
                 u64 sku = 0;
@@ -895,8 +895,8 @@ public:
     virtual void exitServices() override {
         CloseThreads();
         shmemClose(&_sharedmemory);
-        if (R_SUCCEEDED(sysclkCheck)) {
-            sysclkIpcExit();
+        if (R_SUCCEEDED(hocclkCheck)) {
+            hocclkIpcExit();
         }
         clkrstExit();
         pcvExit();

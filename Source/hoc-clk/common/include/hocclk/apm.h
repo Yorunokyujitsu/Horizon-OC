@@ -27,31 +27,13 @@
 
 #pragma once
 
-#include "types.h"
-#include "../config.h"
-#include "../board.h"
-#include "../ipc.h"
+#include "board.h"
 
-bool sysclkIpcRunning();
-Result sysclkIpcInitialize(void);
-void sysclkIpcExit(void);
+typedef struct {
+    uint32_t id;
+    uint32_t cpu_hz;
+    uint32_t gpu_hz;
+    uint32_t mem_hz;
+} HocClkApmConfiguration;
 
-Result sysclkIpcGetAPIVersion(u32* out_ver);
-Result sysclkIpcGetVersionString(char* out, size_t len);
-Result sysclkIpcGetCurrentContext(SysClkContext* out_context);
-Result sysclkIpcGetProfileCount(u64 tid, u8* out_count);
-Result sysclkIpcSetEnabled(bool enabled);
-Result sysclkIpcExitCmd();
-Result sysclkIpcSetOverride(SysClkModule module, u32 hz);
-Result sysclkIpcGetProfiles(u64 tid, SysClkTitleProfileList* out_profiles);
-Result sysclkIpcSetProfiles(u64 tid, SysClkTitleProfileList* profiles);
-Result sysclkIpcGetConfigValues(SysClkConfigValueList* out_configValues);
-Result sysclkIpcSetConfigValues(SysClkConfigValueList* configValues);
-Result sysclkIpcGetFreqList(SysClkModule module, u32* list, u32 maxCount, u32* outCount);
-Result hocClkIpcSetKipData();
-Result hocClkIpcGetKipData();
-
-static inline Result sysclkIpcRemoveOverride(SysClkModule module)
-{
-    return sysclkIpcSetOverride(module, 0);
-}
+extern HocClkApmConfiguration hocclk_g_apm_configurations[];

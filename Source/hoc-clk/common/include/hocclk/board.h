@@ -33,21 +33,21 @@
 #include <switch/types.h>
 typedef enum
 {
-    SysClkSocType_Erista = 0,
-    SysClkSocType_Mariko,
-    SysClkSocType_EnumMax
-} SysClkSocType;
+    HocClkSocType_Erista = 0,
+    HocClkSocType_Mariko,
+    HocClkSocType_EnumMax
+} HocClkSocType;
 
 typedef enum
 {
-    HorizonOCConsoleType_Icosa = 0,
-    HorizonOCConsoleType_Copper,
-    HorizonOCConsoleType_Hoag,
-    HorizonOCConsoleType_Iowa,
-    HorizonOCConsoleType_Calcio,
-    HorizonOCConsoleType_Aula,
-    HorizonOCConsoleType_EnumMax,
-} HorizonOCConsoleType;
+    HocClkConsoleType_Icosa = 0,
+    HocClkConsoleType_Copper,
+    HocClkConsoleType_Hoag,
+    HocClkConsoleType_Iowa,
+    HocClkConsoleType_Calcio,
+    HocClkConsoleType_Aula,
+    HocClkConsoleType_EnumMax,
+} HocClkConsoleType;
 
 typedef enum {
     HocClkVoltage_SOC = 0,
@@ -62,62 +62,62 @@ typedef enum {
 
 typedef enum
 {
-    SysClkProfile_Handheld = 0,
-    SysClkProfile_HandheldCharging,
-    SysClkProfile_HandheldChargingUSB,
-    SysClkProfile_HandheldChargingOfficial,
-    SysClkProfile_Docked,
-    SysClkProfile_EnumMax
-} SysClkProfile;
+    HocClkProfile_Handheld = 0,
+    HocClkProfile_HandheldCharging,
+    HocClkProfile_HandheldChargingUSB,
+    HocClkProfile_HandheldChargingOfficial,
+    HocClkProfile_Docked,
+    HocClkProfile_EnumMax
+} HocClkProfile;
 
 typedef enum
 {
-    SysClkModule_CPU = 0,
-    SysClkModule_GPU,
-    SysClkModule_MEM,
-    HorizonOCModule_Governor,
-    HorizonOCModule_Display,
-    SysClkModule_EnumMax,
-} SysClkModule;
+    HocClkModule_CPU = 0,
+    HocClkModule_GPU,
+    HocClkModule_MEM,
+    HocClkModule_Governor,
+    HocClkModule_Display,
+    HocClkModule_EnumMax,
+} HocClkModule;
 
 typedef enum
 {
-    SysClkThermalSensor_SOC = 0,
-    SysClkThermalSensor_PCB,
-    SysClkThermalSensor_Skin,
-    HorizonOCThermalSensor_Battery,
-    HorizonOCThermalSensor_PMIC,
-    HorizonOCThermalSensor_CPU,
-    HorizonOCThermalSensor_GPU,
-    HorizonOCThermalSensor_MEM,
-    HorizonOCThermalSensor_PLLX,
-    SysClkThermalSensor_EnumMax
-} SysClkThermalSensor;
+    HocClkThermalSensor_SOC = 0,
+    HocClkThermalSensor_PCB,
+    HocClkThermalSensor_Skin,
+    HocClkThermalSensor_Battery,
+    HocClkThermalSensor_PMIC,
+    HocClkThermalSensor_CPU,
+    HocClkThermalSensor_GPU,
+    HocClkThermalSensor_MEM,
+    HocClkThermalSensor_PLLX,
+    HocClkThermalSensor_EnumMax
+} HocClkThermalSensor;
 
 typedef enum
 {
-    SysClkPowerSensor_Now = 0,
-    SysClkPowerSensor_Avg,
-    SysClkPowerSensor_EnumMax
-} SysClkPowerSensor;
+    HocClkPowerSensor_Now = 0,
+    HocClkPowerSensor_Avg,
+    HocClkPowerSensor_EnumMax
+} HocClkPowerSensor;
 
 typedef enum
 {
-    SysClkPartLoad_EMC = 0,
-    SysClkPartLoad_EMCCpu,
+    HocClkPartLoad_EMC = 0,
+    HocClkPartLoad_EMCCpu,
     HocClkPartLoad_GPU,
     HocClkPartLoad_CPUMax,
     HocClkPartLoad_BAT,
     HocClkPartLoad_FAN,
-    SysClkPartLoad_EnumMax
-} SysClkPartLoad;
+    HocClkPartLoad_EnumMax
+} HocClkPartLoad;
 
 typedef enum {
-    HorizonOCSpeedo_CPU = 0,
-    HorizonOCSpeedo_GPU,
-    HorizonOCSpeedo_SOC,
-    HorizonOCSpeedo_EnumMax,
-} HorizonOCSpeedo;
+    HocClkSpeedo_CPU = 0,
+    HocClkSpeedo_GPU,
+    HocClkSpeedo_SOC,
+    HocClkSpeedo_EnumMax,
+} HocClkSpeedo;
 
 typedef enum {
     GPUUVLevel_NoUV = 0,
@@ -158,7 +158,7 @@ typedef enum {
     RamDisplayMode_EnumMax,
 } RamDisplayMode;
 
-#define SYSCLK_ENUM_VALID(n, v) ((v) < n##_EnumMax)
+#define HOCCLK_ENUM_VALID(n, v) ((v) < n##_EnumMax)
 
 // Packed u32
 // Bits 0-7 - CPU
@@ -179,77 +179,77 @@ inline u8 GovernorStateVrr(u32 p) {
     return (u8)((p >> 16) & 0xFF);
 }
 
-static inline const char* sysclkFormatModule(SysClkModule module, bool pretty)
+static inline const char* hocclkFormatModule(HocClkModule module, bool pretty)
 {
     switch(module)
     {
-        case SysClkModule_CPU:
+        case HocClkModule_CPU:
             return pretty ? "CPU" : "cpu";
-        case SysClkModule_GPU:
+        case HocClkModule_GPU:
             return pretty ? "GPU" : "gpu";
-        case SysClkModule_MEM:
+        case HocClkModule_MEM:
             return pretty ? "Memory" : "mem";
-        case HorizonOCModule_Display:
+        case HocClkModule_Display:
             return pretty ? "Display" : "display";
-        case HorizonOCModule_Governor:
+        case HocClkModule_Governor:
             return pretty ? "Governor" : "governor";
         default:
             return "null";
     }
 }
 
-static inline const char* sysclkFormatThermalSensor(SysClkThermalSensor thermSensor, bool pretty)
+static inline const char* hocclkFormatThermalSensor(HocClkThermalSensor thermSensor, bool pretty)
 {
     switch(thermSensor) {
-        case SysClkThermalSensor_SOC:
+        case HocClkThermalSensor_SOC:
             return pretty ? "SOC" : "soc";
-        case SysClkThermalSensor_PCB:
+        case HocClkThermalSensor_PCB:
             return pretty ? "PCB" : "pcb";
-        case SysClkThermalSensor_Skin:
+        case HocClkThermalSensor_Skin:
             return pretty ? "Skin" : "skin";
-        case HorizonOCThermalSensor_Battery:
+        case HocClkThermalSensor_Battery:
             return pretty ? "BAT" : "battery";
-        case HorizonOCThermalSensor_PMIC:
+        case HocClkThermalSensor_PMIC:
             return pretty ? "PMIC" : "pmic";
-        case HorizonOCThermalSensor_CPU:
+        case HocClkThermalSensor_CPU:
             return pretty ? "CPU" : "cpu";
-        case HorizonOCThermalSensor_GPU:
+        case HocClkThermalSensor_GPU:
             return pretty ? "GPU" : "gpu";
-        case HorizonOCThermalSensor_MEM:
+        case HocClkThermalSensor_MEM:
             return pretty ? "MEM" : "mem";
-        case HorizonOCThermalSensor_PLLX:
+        case HocClkThermalSensor_PLLX:
             return pretty ? "PLLX" : "pllx";
         default:
             return NULL;
     }
 }
 
-static inline const char* sysclkFormatPowerSensor(SysClkPowerSensor powSensor, bool pretty)
+static inline const char* hocclkFormatPowerSensor(HocClkPowerSensor powSensor, bool pretty)
 {
     switch(powSensor)
     {
-        case SysClkPowerSensor_Now:
+        case HocClkPowerSensor_Now:
             return pretty ? "Now" : "now";
-        case SysClkPowerSensor_Avg:
+        case HocClkPowerSensor_Avg:
             return pretty ? "Avg" : "avg";
         default:
             return NULL;
     }
 }
 
-static inline const char* sysclkFormatProfile(SysClkProfile profile, bool pretty)
+static inline const char* hocclkFormatProfile(HocClkProfile profile, bool pretty)
 {
     switch(profile)
     {
-        case SysClkProfile_Docked:
+        case HocClkProfile_Docked:
             return pretty ? "Docked" : "docked";
-        case SysClkProfile_Handheld:
+        case HocClkProfile_Handheld:
             return pretty ? "Handheld" : "handheld";
-        case SysClkProfile_HandheldCharging:
+        case HocClkProfile_HandheldCharging:
             return pretty ? "Charging" : "handheld_charging";
-        case SysClkProfile_HandheldChargingUSB:
+        case HocClkProfile_HandheldChargingUSB:
             return pretty ? "USB Charger" : "handheld_charging_usb";
-        case SysClkProfile_HandheldChargingOfficial:
+        case HocClkProfile_HandheldChargingOfficial:
             return pretty ? "PD Charger" : "handheld_charging_official";
         default:
             return NULL;

@@ -37,11 +37,11 @@ using FreqChoiceListener = std::function<bool(std::uint32_t hz)>;
 class FreqChoiceGui : public BaseMenuGui
 {
 protected:
-    SysClkConfigValueList* configList;
+    HocClkConfigValueList* configList;
     std::uint32_t selectedHz;
     std::uint32_t* hzList;
     std::uint32_t hzCount;
-    SysClkModule module;
+    HocClkModule module;
     FreqChoiceListener listener;
     bool checkMax;
 
@@ -53,7 +53,7 @@ public:
     FreqChoiceGui(std::uint32_t selectedHz,
                   std::uint32_t* hzList,
                   std::uint32_t hzCount,
-                  SysClkModule module,
+                  HocClkModule module,
                   FreqChoiceListener listener,
                   bool checkMax = true,
                   std::map<uint32_t, std::string> labels = {});

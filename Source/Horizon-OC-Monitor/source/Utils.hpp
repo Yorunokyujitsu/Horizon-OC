@@ -24,7 +24,7 @@ extern "C"
 {
 #endif
 
-#include <sysclk/client/ipc.h>
+#include <hocclk/client/ipc.h>
 
 #if defined(__cplusplus)
 }
@@ -83,7 +83,7 @@ Result nvdecCheck = 1;
 Result nvencCheck = 1;
 Result nvjpgCheck = 1;
 Result nifmCheck = 1;
-Result sysclkCheck = 1;
+Result hocclkCheck = 1;
 Result pwmDutyCycleCheck = 1;
 
 //Wi-Fi
@@ -222,7 +222,7 @@ uint64_t lastFrameNumber = 0;
 uint32_t realCPU_Hz = 0;
 uint32_t realGPU_Hz = 0;
 uint32_t realRAM_Hz = 0;
-uint32_t partLoad[SysClkPartLoad_EnumMax];
+uint32_t partLoad[HocClkPartLoad_EnumMax];
 uint32_t realCPU_mV = 0; 
 uint32_t realGPU_mV = 0; 
 uint32_t realRAM_mV = 0; 
@@ -512,7 +512,7 @@ void gpuLoadThread(void*) {
 
 std::string getVersionString() {
     char buf[0x100] = "";  // 256 bytes — safe for any expected version string
-    Result rc = sysclkIpcGetVersionString(buf, sizeof(buf));
+    Result rc = hocclkIpcGetVersionString(buf, sizeof(buf));
     if (R_FAILED(rc) || buf[0] == '\0') {
         return "unknown";
     }
@@ -575,24 +575,24 @@ void Misc(void*) {
         }
         
         // Get sys-clk data
-        if (R_SUCCEEDED(sysclkCheck)) {
-            SysClkContext sysclkCTX;
-            if (R_SUCCEEDED(sysclkIpcGetCurrentContext(&sysclkCTX))) {
-                realCPU_Hz = sysclkCTX.realFreqs[SysClkModule_CPU];
-                realGPU_Hz = sysclkCTX.realFreqs[SysClkModule_GPU];
-                realRAM_Hz = sysclkCTX.realFreqs[SysClkModule_MEM];
-                partLoad[SysClkPartLoad_EMC] = sysclkCTX.partLoad[SysClkPartLoad_EMC];
-                partLoad[SysClkPartLoad_EMCCpu] = sysclkCTX.partLoad[SysClkPartLoad_EMCCpu];
-				realCPU_Temp = sysclkCTX.temps[HorizonOCThermalSensor_CPU];
-				realGPU_Temp = sysclkCTX.temps[HorizonOCThermalSensor_GPU];
-				realRAM_Temp = sysclkCTX.temps[HorizonOCThermalSensor_MEM];
+        if (R_SUCCEEDED(hocclkCheck)) {
+            HocClkContext hocclkCTX;
+            if (R_SUCCEEDED(hocclkIpcGetCurrentContext(&hocclkCTX))) {
+                realCPU_Hz = hocclkCTX.realFreqs[HocClkModule_CPU];
+                realGPU_Hz = hocclkCTX.realFreqs[HocClkModule_GPU];
+                realRAM_Hz = hocclkCTX.realFreqs[HocClkModule_MEM];
+                partLoad[HocClkPartLoad_EMC] = hocclkCTX.partLoad[HocClkPartLoad_EMC];
+                partLoad[HocClkPartLoad_EMCCpu] = hocclkCTX.partLoad[HocClkPartLoad_EMCCpu];
+				realCPU_Temp = hocclkCTX.temps[HocClkThermalSensor_CPU];
+				realGPU_Temp = hocclkCTX.temps[HocClkThermalSensor_GPU];
+				realRAM_Temp = hocclkCTX.temps[HocClkThermalSensor_MEM];
                 
-                realCPU_mV = sysclkCTX.voltages[HocClkVoltage_CPU]; 
-                realGPU_mV = sysclkCTX.voltages[HocClkVoltage_GPU]; 
-                realRAM_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDD2]; 
-                realSOC_mV = sysclkCTX.voltages[HocClkVoltage_SOC];
-                const u32 vdd2_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDD2] / 1000;  // µV to mV
-                const u32 vddq_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDDQ] / 1000;  // µV to mV
+                realCPU_mV = hocclkCTX.voltages[HocClkVoltage_CPU]; 
+                realGPU_mV = hocclkCTX.voltages[HocClkVoltage_GPU]; 
+                realRAM_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDD2]; 
+                realSOC_mV = hocclkCTX.voltages[HocClkVoltage_SOC];
+                const u32 vdd2_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDD2] / 1000;  // µV to mV
+                const u32 vddq_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDDQ] / 1000;  // µV to mV
                 realRAM_mV = vdd2_mV * 100000 + vddq_mV * 10;
 
             }
@@ -711,22 +711,22 @@ void Misc3(void*) {
         mutexLock(&mutex_Misc);
         
         // Get sys-clk data
-        if (R_SUCCEEDED(sysclkCheck)) {
-            SysClkContext sysclkCTX;
-            if (R_SUCCEEDED(sysclkIpcGetCurrentContext(&sysclkCTX))) {
-                partLoad[SysClkPartLoad_EMC] = sysclkCTX.partLoad[SysClkPartLoad_EMC];
-                partLoad[SysClkPartLoad_EMCCpu] = sysclkCTX.partLoad[SysClkPartLoad_EMCCpu];
+        if (R_SUCCEEDED(hocclkCheck)) {
+            HocClkContext hocclkCTX;
+            if (R_SUCCEEDED(hocclkIpcGetCurrentContext(&hocclkCTX))) {
+                partLoad[HocClkPartLoad_EMC] = hocclkCTX.partLoad[HocClkPartLoad_EMC];
+                partLoad[HocClkPartLoad_EMCCpu] = hocclkCTX.partLoad[HocClkPartLoad_EMCCpu];
 				
-				realCPU_Temp = sysclkCTX.temps[HorizonOCThermalSensor_CPU];
-				realGPU_Temp = sysclkCTX.temps[HorizonOCThermalSensor_GPU];
-				realRAM_Temp = sysclkCTX.temps[HorizonOCThermalSensor_MEM];
+				realCPU_Temp = hocclkCTX.temps[HocClkThermalSensor_CPU];
+				realGPU_Temp = hocclkCTX.temps[HocClkThermalSensor_GPU];
+				realRAM_Temp = hocclkCTX.temps[HocClkThermalSensor_MEM];
                 
-                realCPU_mV = sysclkCTX.voltages[HocClkVoltage_CPU]; 
-                realGPU_mV = sysclkCTX.voltages[HocClkVoltage_GPU]; 
-                realRAM_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDD2]; 
-                realSOC_mV = sysclkCTX.voltages[HocClkVoltage_SOC];
-                const u32 vdd2_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDD2] / 1000;  // µV to mV
-                const u32 vddq_mV = sysclkCTX.voltages[HocClkVoltage_EMCVDDQ] / 1000;  // µV to mV
+                realCPU_mV = hocclkCTX.voltages[HocClkVoltage_CPU]; 
+                realGPU_mV = hocclkCTX.voltages[HocClkVoltage_GPU]; 
+                realRAM_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDD2]; 
+                realSOC_mV = hocclkCTX.voltages[HocClkVoltage_SOC];
+                const u32 vdd2_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDD2] / 1000;  // µV to mV
+                const u32 vddq_mV = hocclkCTX.voltages[HocClkVoltage_EMCVDDQ] / 1000;  // µV to mV
                 realRAM_mV = vdd2_mV * 100000 + vddq_mV * 10;
 
             }

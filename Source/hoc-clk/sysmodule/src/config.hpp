@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <sysclk.h>
+#include <hocclk.h>
 #include <switch.h>
 
 #define CONFIG_VAL_SECTION "values"
@@ -40,22 +40,22 @@ namespace config {
     bool HasProfilesLoaded();
 
     std::uint8_t GetProfileCount(std::uint64_t tid);
-    void GetProfiles(std::uint64_t tid, SysClkTitleProfileList* out_profiles);
-    bool SetProfiles(std::uint64_t tid, SysClkTitleProfileList* profiles, bool immediate);
-    std::uint32_t GetAutoClockHz(std::uint64_t tid, SysClkModule module, SysClkProfile profile, bool returnRaw);
+    void GetProfiles(std::uint64_t tid, HocClkTitleProfileList* out_profiles);
+    bool SetProfiles(std::uint64_t tid, HocClkTitleProfileList* profiles, bool immediate);
+    std::uint32_t GetAutoClockHz(std::uint64_t tid, HocClkModule module, HocClkProfile profile, bool returnRaw);
 
     void SetEnabled(bool enabled);
     bool Enabled();
-    void SetOverrideHz(SysClkModule module, std::uint32_t hz);
-    std::uint32_t GetOverrideHz(SysClkModule module);
+    void SetOverrideHz(HocClkModule module, std::uint32_t hz);
+    std::uint32_t GetOverrideHz(HocClkModule module);
 
-    std::uint64_t GetConfigValue(SysClkConfigValue val);
-    const char* GetConfigValueName(SysClkConfigValue val, bool pretty);
-    void GetConfigValues(SysClkConfigValueList* out_configValues);
-    bool SetConfigValues(SysClkConfigValueList* configValues, bool immediate);
-    bool ResetConfigValue(SysClkConfigValue kval);
-    bool SetConfigValue(SysClkConfigValue kval, std::uint64_t value, bool immediate = true);
+    std::uint64_t GetConfigValue(HocClkConfigValue val);
+    const char* GetConfigValueName(HocClkConfigValue val, bool pretty);
+    void GetConfigValues(HocClkConfigValueList* out_configValues);
+    bool SetConfigValues(HocClkConfigValueList* configValues, bool immediate);
+    bool ResetConfigValue(HocClkConfigValue kval);
+    bool SetConfigValue(HocClkConfigValue kval, std::uint64_t value, bool immediate = true);
 
-    extern uint64_t configValues[SysClkConfigValue_EnumMax];
+    extern uint64_t configValues[HocClkConfigValue_EnumMax];
 
 }

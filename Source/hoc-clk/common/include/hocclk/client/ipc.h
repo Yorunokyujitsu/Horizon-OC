@@ -27,46 +27,31 @@
 
 #pragma once
 
-#include <stdint.h>
-#include "board.h"
-#include "clock_manager.h"
+#include "types.h"
+#include "../config.h"
+#include "../board.h"
+#include "../ipc.h"
 
-#define SYSCLK_IPC_API_VERSION 1
-#define SYSCLK_IPC_SERVICE_NAME "hoc:clk"
+bool hocclkIpcRunning();
+Result hocclkIpcInitialize(void);
+void hocclkIpcExit(void);
 
-enum SysClkIpcCmd
+Result hocclkIpcGetAPIVersion(u32* out_ver);
+Result hocclkIpcGetVersionString(char* out, size_t len);
+Result hocclkIpcGetCurrentContext(HocClkContext* out_context);
+Result hocclkIpcGetProfileCount(u64 tid, u8* out_count);
+Result hocclkIpcSetEnabled(bool enabled);
+Result hocclkIpcExitCmd();
+Result hocclkIpcSetOverride(HocClkModule module, u32 hz);
+Result hocclkIpcGetProfiles(u64 tid, HocClkTitleProfileList* out_profiles);
+Result hocclkIpcSetProfiles(u64 tid, HocClkTitleProfileList* profiles);
+Result hocclkIpcGetConfigValues(HocClkConfigValueList* out_configValues);
+Result hocclkIpcSetConfigValues(HocClkConfigValueList* configValues);
+Result hocclkIpcGetFreqList(HocClkModule module, u32* list, u32 maxCount, u32* outCount);
+Result hocClkIpcSetKipData();
+Result hocClkIpcGetKipData();
+
+static inline Result hocclkIpcRemoveOverride(HocClkModule module)
 {
-    SysClkIpcCmd_GetApiVersion = 0,
-    SysClkIpcCmd_GetVersionString = 1,
-    SysClkIpcCmd_GetCurrentContext = 2,
-    SysClkIpcCmd_Exit = 3,
-    SysClkIpcCmd_GetProfileCount = 4,
-    SysClkIpcCmd_GetProfiles = 5,
-    SysClkIpcCmd_SetProfiles = 6,
-    SysClkIpcCmd_SetEnabled = 7,
-    SysClkIpcCmd_SetOverride = 8,
-    SysClkIpcCmd_GetConfigValues = 9,
-    SysClkIpcCmd_SetConfigValues = 10,
-    SysClkIpcCmd_GetFreqList = 11,
-    HocClkIpcCmd_SetKipData = 12,
-    HocClkIpcCmd_GetKipData = 13,
-};
-
-
-typedef struct
-{
-    uint64_t tid;
-    SysClkTitleProfileList profiles;
-} SysClkIpc_SetProfiles_Args;
-
-typedef struct
-{
-    SysClkModule module;
-    uint32_t hz;
-} SysClkIpc_SetOverride_Args;
-
-typedef struct
-{
-    SysClkModule module;
-    uint32_t maxCount;
-} SysClkIpc_GetFreqList_Args;
+    return hocclkIpcSetOverride(module, 0);
+}

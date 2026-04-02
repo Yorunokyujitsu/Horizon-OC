@@ -25,7 +25,7 @@
  */
 
 #include <switch.h>
-#include <sysclk.h>
+#include <hocclk.h>
 #include <nxExt.h>
 #include <algorithm>
 #include <math.h>
@@ -104,11 +104,11 @@ namespace board {
         return std::round(std::max({cpuUsage0, cpuUsage1, cpuUsage2}));
     }
 
-    u32 GetPartLoad(SysClkPartLoad loadSource) {
+    u32 GetPartLoad(HocClkPartLoad loadSource) {
         switch(loadSource) {
-            case SysClkPartLoad_EMC:
+            case HocClkPartLoad_EMC:
                 return t210EmcLoadAll();
-            case SysClkPartLoad_EMCCpu:
+            case HocClkPartLoad_EMCCpu:
                 return t210EmcLoadCpu();
             case HocClkPartLoad_GPU:
                 return gpuLoad;
@@ -121,7 +121,7 @@ namespace board {
             case HocClkPartLoad_FAN:
                 return GetFanLevel();
             default:
-                ASSERT_ENUM_VALID(SysClkPartLoad, loadSource);
+                ASSERT_ENUM_VALID(HocClkPartLoad, loadSource);
         }
         return 0;
     }

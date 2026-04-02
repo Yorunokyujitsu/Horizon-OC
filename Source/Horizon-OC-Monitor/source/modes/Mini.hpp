@@ -360,7 +360,7 @@ public:
 						    if (settings.realTemps) {
 								width += renderer->getTextDimensions(" 888.8°C", false, fontsize).first;
 							}
-                    } else if (key == "GPU" || (key == "RAM" && settings.showpartLoad && R_SUCCEEDED(sysclkCheck))) {
+                    } else if (key == "GPU" || (key == "RAM" && settings.showpartLoad && R_SUCCEEDED(hocclkCheck))) {
                         //dimensions = renderer->drawString("100.0%@4444.4", false, 0, 0, fontsize, renderer->a(0x0000));
 
                         if (!settings.showpartLoadCPUGPU) {
@@ -379,7 +379,7 @@ public:
 						    if (key == "GPU" && settings.realTemps) {
 								width += renderer->getTextDimensions(" 88.8°C", false, fontsize).first;
 							}
-                    } else if (key == "RAM" && (!settings.showpartLoad || R_FAILED(sysclkCheck))) {
+                    } else if (key == "RAM" && (!settings.showpartLoad || R_FAILED(hocclkCheck))) {
                         //dimensions = renderer->drawString("44444444MB@4444.4", false, 0, 0, fontsize, renderer->a(0x0000));
                         if (!settings.realVolts) {
                             width = renderer->getTextDimensions("100%@4444.4", false, fontsize).first;
@@ -1140,12 +1140,12 @@ public:
             } else {
                 unsigned partLoadInt;
                 
-                if (R_SUCCEEDED(sysclkCheck)) {
-                    partLoadInt = partLoad[SysClkPartLoad_EMC] / 10;
+                if (R_SUCCEEDED(hocclkCheck)) {
+                    partLoadInt = partLoad[HocClkPartLoad_EMC] / 10;
                     
                     if (settings.showpartLoadCPUGPU) {
-                        unsigned ramCpuLoadInt = partLoad[SysClkPartLoad_EMCCpu] / 10;
-                        int RAM_GPU_Load = partLoad[SysClkPartLoad_EMC] - partLoad[SysClkPartLoad_EMCCpu];
+                        unsigned ramCpuLoadInt = partLoad[HocClkPartLoad_EMCCpu] / 10;
+                        int RAM_GPU_Load = partLoad[HocClkPartLoad_EMC] - partLoad[HocClkPartLoad_EMCCpu];
                         unsigned ramGpuLoadInt = RAM_GPU_Load / 10;
                         
                         if (settings.realFrequencies && realRAM_Hz) {

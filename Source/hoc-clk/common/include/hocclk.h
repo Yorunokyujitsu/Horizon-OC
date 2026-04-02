@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
+
 /* --------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
  * <p-sam@d3vs.net>, <natinusala@gmail.com>, <m4x@m4xw.net>
@@ -26,14 +26,30 @@
 
 
 #pragma once
+#include <cstdint>
+#include <switch.h> // include libnx
+#ifdef __cplusplus
+#include "cpp_util.hpp"
+extern "C" {
+#endif
 
-#include "board.h"
+// typedef std::uint32_t Result;
+// typedef std::uint32_t u32;
+// typedef std::int32_t s32;
+// typedef std::uint64_t u64;
+// typedef std::int64_t s64;
+// typedef std::uint8_t u8;
+// typedef std::int16_t s16;
+// typedef std::uint16_t u16;
 
-typedef struct {
-    uint32_t id;
-    uint32_t cpu_hz;
-    uint32_t gpu_hz;
-    uint32_t mem_hz;
-} SysClkApmConfiguration;
+#include "hocclk/ipc.h"
+#include "hocclk/board.h"
+#include "hocclk/clock_manager.h"
+#include "hocclk/apm.h"
+#include "hocclk/config.h"
+#include "hocclk/errors.h"
+#include "hocclk/psm_ext.h"
 
-extern SysClkApmConfiguration sysclk_g_apm_configurations[];
+#ifdef __cplusplus
+}
+#endif

@@ -22,11 +22,11 @@ namespace governor {
 
     void HandleGovernor(uint32_t targetHz)
     {
-        u32 tempTargetHz = clockManager::gContext.overrideFreqs[HorizonOCModule_Governor];
+        u32 tempTargetHz = clockManager::gContext.overrideFreqs[HocClkModule_Governor];
         if (!tempTargetHz) {
-            tempTargetHz = config::GetAutoClockHz(clockManager::gContext.applicationId, HorizonOCModule_Governor, clockManager::gContext.profile, true);
+            tempTargetHz = config::GetAutoClockHz(clockManager::gContext.applicationId, HocClkModule_Governor, clockManager::gContext.profile, true);
             if (!tempTargetHz)
-                tempTargetHz = config::GetAutoClockHz(GLOBAL_PROFILE_ID, HorizonOCModule_Governor, clockManager::gContext.profile, true);
+                tempTargetHz = config::GetAutoClockHz(GLOBAL_PROFILE_ID, HocClkModule_Governor, clockManager::gContext.profile, true);
         }
 
         auto resolve = [](u8 app, u8 temp) -> u8 {
@@ -81,7 +81,7 @@ namespace governor {
         return table.count - 1;
     }
 
-    u32 ResolveTargetHz(SysClkModule module)
+    u32 ResolveTargetHz(HocClkModule module)
     {
         u32 hz = clockManager::gContext.overrideFreqs[module];
         if (!hz)
@@ -123,7 +123,7 @@ namespace governor {
                 isCpuGovernorInBoostMode = false;
             }
 
-            auto& table = clockManager::gFreqTable[SysClkModule_CPU];
+            auto& table = clockManager::gFreqTable[HocClkModule_CPU];
 
             if (table.count == 0)
                 continue;
@@ -134,8 +134,8 @@ namespace governor {
 
             u32 tableMaxHz = table.list[table.count - 1];
             u32 desiredHz  = SchedutilTargetHz(cpuLoad, tableMaxHz);
-            u32 targetHz   = ResolveTargetHz(SysClkModule_CPU);
-            u32 maxHz      = clockManager::GetMaxAllowedHz(SysClkModule_CPU, clockManager::gContext.profile);
+            u32 targetHz   = ResolveTargetHz(HocClkModule_CPU);
+            u32 maxHz      = clockManager::GetMaxAllowedHz(HocClkModule_CPU, clockManager::gContext.profile);
 
             if (targetHz && desiredHz > targetHz)
                 desiredHz = targetHz;
@@ -157,16 +157,16 @@ namespace governor {
                 downHoldRemaining--;
 
             if (++tick > 50) {
-                minHz = config::GetConfigValue(HorizonOCConfigValue_CpuGovernorMinimumFreq);
+                minHz = config::GetConfigValue(HocClkConfigValue_CpuGovernorMinimumFreq);
                 tick = 0;
             }
 
             if (newHz < minHz)
                 newHz = minHz;
 
-            if ((!goingDown || (downHoldRemaining == 0)) && clockManager::IsAssignableHz(SysClkModule_CPU, newHz)) {
-                board::SetHz(SysClkModule_CPU, newHz);
-                clockManager::gContext.freqs[SysClkModule_CPU] = newHz;
+            if ((!goingDown || (downHoldRemaining == 0)) && clockManager::IsAssignableHz(HocClkModule_CPU, newHz)) {
+                board::SetHz(HocClkModule_CPU, newHz);
+                clockManager::gContext.freqs[HocClkModule_CPU] = newHz;
                 lastHz = newHz;
             }
 
@@ -189,7 +189,7 @@ namespace governor {
                 continue;
             }
 
-            auto& table = clockManager::gFreqTable[SysClkModule_GPU];
+            auto& table = clockManager::gFreqTable[HocClkModule_GPU];
             if (table.count == 0)
                 continue;
 
@@ -198,8 +198,8 @@ namespace governor {
             u32 gpuLoad    = board::GetPartLoad(HocClkPartLoad_GPU);
             u32 tableMaxHz = table.list[table.count - 1];
             u32 desiredHz  = SchedutilTargetHz(gpuLoad, tableMaxHz);
-            u32 targetHz   = ResolveTargetHz(SysClkModule_GPU);
-            u32 maxHz      = clockManager::GetMaxAllowedHz(SysClkModule_GPU, clockManager::gContext.profile);
+            u32 targetHz   = ResolveTargetHz(HocClkModule_GPU);
+            u32 maxHz      = clockManager::GetMaxAllowedHz(HocClkModule_GPU, clockManager::gContext.profile);
 
             if (targetHz && desiredHz > targetHz)
                 desiredHz = targetHz;
@@ -218,9 +218,9 @@ namespace governor {
             if (downHoldRemaining > 0)
                 downHoldRemaining--;
 
-            if ((!goingDown || (downHoldRemaining == 0)) && clockManager::IsAssignableHz(SysClkModule_GPU, newHz)) {
-                board::SetHz(SysClkModule_GPU, newHz);
-                clockManager::gContext.freqs[SysClkModule_GPU] = newHz;
+            if ((!goingDown || (downHoldRemaining == 0)) && clockManager::IsAssignableHz(HocClkModule_GPU, newHz)) {
+                board::SetHz(HocClkModule_GPU, newHz);
+                clockManager::gContext.freqs[HocClkModule_GPU] = newHz;
                 lastHz = newHz;
             }
 
@@ -234,7 +234,7 @@ namespace governor {
 
         u8 tick = 0;
         for (;;) {
-            if (!clockManager::gRunning || clockManager::gContext.profile == SysClkProfile_Docked || !isVRREnabled) {
+            if (!clockManager::gRunning || clockManager::gContext.profile == HocClkProfile_Docked || !isVRREnabled) {
                 svcSleepThread(POLL_NS);
                 continue;
             }
@@ -259,11 +259,11 @@ namespace governor {
             //     continue;
             // }
 
-            u32 targetHz = clockManager::gContext.overrideFreqs[HorizonOCModule_Display];
+            u32 targetHz = clockManager::gContext.overrideFreqs[HocClkModule_Display];
             if (!targetHz) {
-                targetHz = config::GetAutoClockHz(clockManager::gContext.applicationId, HorizonOCModule_Display, clockManager::gContext.profile, false);
+                targetHz = config::GetAutoClockHz(clockManager::gContext.applicationId, HocClkModule_Display, clockManager::gContext.profile, false);
                 if (!targetHz)
-                    targetHz = config::GetAutoClockHz(GLOBAL_PROFILE_ID, HorizonOCModule_Display, clockManager::gContext.profile, false);
+                    targetHz = config::GetAutoClockHz(GLOBAL_PROFILE_ID, HocClkModule_Display, clockManager::gContext.profile, false);
             }
 
             u8 maxDisplay;
@@ -273,28 +273,28 @@ namespace governor {
                 maxDisplay = 60; // don't assume display stuff!
             }
 
-            u8 minDisplay = board::GetConsoleType() == HorizonOCConsoleType_Aula ? 45 : 40;
+            u8 minDisplay = board::GetConsoleType() == HocClkConsoleType_Aula ? 45 : 40;
             if (maxDisplay == minDisplay)
                 continue;
 
             if (fps >= minDisplay && fps <= maxDisplay) {
-                board::SetHz(HorizonOCModule_Display, fps);
-                clockManager::gContext.freqs[HorizonOCModule_Display] = fps;
-                clockManager::gContext.realFreqs[HorizonOCModule_Display] = fps;
+                board::SetHz(HocClkModule_Display, fps);
+                clockManager::gContext.freqs[HocClkModule_Display] = fps;
+                clockManager::gContext.realFreqs[HocClkModule_Display] = fps;
             } else {
                 for (u32 i = 0; i < 10; i++) {
                     u32 compareHz = fps * i;
                     if (compareHz >= minDisplay && compareHz <= maxDisplay) {
-                        board::SetHz(HorizonOCModule_Display, compareHz);
-                        clockManager::gContext.freqs[HorizonOCModule_Display] = compareHz;
-                        clockManager::gContext.realFreqs[HorizonOCModule_Display] = compareHz;
+                        board::SetHz(HocClkModule_Display, compareHz);
+                        clockManager::gContext.freqs[HocClkModule_Display] = compareHz;
+                        clockManager::gContext.realFreqs[HocClkModule_Display] = compareHz;
                         break;
                     }
                 }
             }
 
             if (++tick > 50) {
-                board::SetHz(HorizonOCModule_Display, maxDisplay);
+                board::SetHz(HocClkModule_Display, maxDisplay);
                 tick = 0;
                 svcSleepThread(50'000'000);
             }

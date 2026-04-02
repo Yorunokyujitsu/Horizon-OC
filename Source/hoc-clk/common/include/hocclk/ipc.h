@@ -27,13 +27,46 @@
 
 #pragma once
 
-#define SYSCLK_ERROR_MODULE 388
-#define SYSCLK_ERROR(desc) ((SYSCLK_ERROR_MODULE & 0x1FF) | (SysClkError_##desc & 0x1FFF)<<9)
+#include <stdint.h>
+#include "board.h"
+#include "clock_manager.h"
 
-typedef enum
+#define HOCCLK_IPC_API_VERSION 1
+#define HOCCLK_IPC_SERVICE_NAME "hoc:clk"
+
+enum HocClkIpcCmd
 {
-    SysClkError_Generic = 0,
-    SysClkError_ConfigNotLoaded = 1,
-    SysClkError_ConfigSaveFailed = 2,
-    // HocClkError_SocThermFail = 3,
-} SysClkError;
+    HocClkIpcCmd_GetApiVersion = 0,
+    HocClkIpcCmd_GetVersionString = 1,
+    HocClkIpcCmd_GetCurrentContext = 2,
+    HocClkIpcCmd_Exit = 3,
+    HocClkIpcCmd_GetProfileCount = 4,
+    HocClkIpcCmd_GetProfiles = 5,
+    HocClkIpcCmd_SetProfiles = 6,
+    HocClkIpcCmd_SetEnabled = 7,
+    HocClkIpcCmd_SetOverride = 8,
+    HocClkIpcCmd_GetConfigValues = 9,
+    HocClkIpcCmd_SetConfigValues = 10,
+    HocClkIpcCmd_GetFreqList = 11,
+    HocClkIpcCmd_SetKipData = 12,
+    HocClkIpcCmd_GetKipData = 13,
+};
+
+
+typedef struct
+{
+    uint64_t tid;
+    HocClkTitleProfileList profiles;
+} HocClkIpc_SetProfiles_Args;
+
+typedef struct
+{
+    HocClkModule module;
+    uint32_t hz;
+} HocClkIpc_SetOverride_Args;
+
+typedef struct
+{
+    HocClkModule module;
+    uint32_t maxCount;
+} HocClkIpc_GetFreqList_Args;

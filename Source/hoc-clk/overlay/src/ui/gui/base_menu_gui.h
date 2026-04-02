@@ -36,9 +36,9 @@ class BaseMenuGui : public BaseGui
 
     public:
         // u8 dockedHighestAllowedRefreshRate = 60;
-        SysClkContext* context;
+        HocClkContext* context;
         std::uint64_t lastContextUpdate;
-        SysClkConfigValueList configList;
+        HocClkConfigValueList configList;
         bool g_hardwareModelCached = false;
         bool g_isMariko = false;
         bool g_isAula = false;
@@ -87,5 +87,5 @@ class BaseMenuGui : public BaseGui
 
     private:
         char displayStrings[48][32];  // Pre-formatted display strings
-        tsl::Color tempColors[SysClkThermalSensor_EnumMax];  // Pre-computed temperature colors
+        tsl::Color tempColors[HocClkThermalSensor_EnumMax];  // Pre-computed temperature colors
 };

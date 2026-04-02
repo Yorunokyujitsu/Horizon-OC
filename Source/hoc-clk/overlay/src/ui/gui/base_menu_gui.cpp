@@ -111,9 +111,9 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
     renderer->drawString(displayStrings[6], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // GPU real
     renderer->drawString(displayStrings[7], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // MEM real
 
-    renderer->drawString(displayStrings[28], false, positions[2], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_CPU]);  // CPU Real Temp
-    renderer->drawString(displayStrings[29], false, positions[3], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_GPU]);  // GPU Real Temp
-    renderer->drawString(displayStrings[30], false, positions[4], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_MEM]);  // RAM Real Temp
+    renderer->drawString(displayStrings[28], false, positions[2], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_CPU]);  // CPU Real Temp
+    renderer->drawString(displayStrings[29], false, positions[3], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_GPU]);  // GPU Real Temp
+    renderer->drawString(displayStrings[30], false, positions[4], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_MEM]);  // RAM Real Temp
 
     // === REAL FREQUENCIES ===
 
@@ -138,9 +138,9 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
     renderer->drawString(labels[7], false, positions[7], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);
 
     // Temperatures with color - use pre-computed colors
-    renderer->drawString(displayStrings[11], false, dataPositions[0], y, SMALL_TEXT_SIZE, tempColors[SysClkThermalSensor_SOC]);  // SOC
-    renderer->drawString(displayStrings[12], false, dataPositions[1], y, SMALL_TEXT_SIZE, tempColors[SysClkThermalSensor_PCB]);  // PCB
-    renderer->drawString(displayStrings[13], false, dataPositions[2], y, SMALL_TEXT_SIZE, tempColors[SysClkThermalSensor_Skin]);  // Skin
+    renderer->drawString(displayStrings[11], false, dataPositions[0], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_SOC]);  // SOC
+    renderer->drawString(displayStrings[12], false, dataPositions[1], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_PCB]);  // PCB
+    renderer->drawString(displayStrings[13], false, dataPositions[2], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_Skin]);  // Skin
 
     y += 20; // Direct assignment (191 + 20)
 
@@ -157,7 +157,7 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
 
     renderer->drawString(labels[10], false, positions[2], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);
 
-    renderer->drawString(displayStrings[20], false, dataPositions[0], y, SMALL_TEXT_SIZE, tempColors[HorizonOCThermalSensor_Battery]);  // Battery
+    renderer->drawString(displayStrings[20], false, dataPositions[0], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_Battery]);  // Battery
 
     renderer->drawString(labels[13], false, positions[4], y, SMALL_TEXT_SIZE, tsl::sectionTextColor); // disp label
 
@@ -198,19 +198,19 @@ void BaseMenuGui::refresh()
 
     // Lazy context allocation
     if (!this->context) [[unlikely]] {
-        this->context = new SysClkContext;
+        this->context = new HocClkContext;
     }
 
-    // === SYSCLK CONTEXT UPDATE ===
-    Result rc = sysclkIpcGetCurrentContext(this->context);
+    // === HOCCLK CONTEXT UPDATE ===
+    Result rc = hocclkIpcGetCurrentContext(this->context);
     if (R_FAILED(rc)) [[unlikely]] {
-        FatalGui::openWithResultCode("sysclkIpcGetCurrentContext", rc);
+        FatalGui::openWithResultCode("hocclkIpcGetCurrentContext", rc);
         return;
     }
 
-    rc = sysclkIpcGetConfigValues(&configList);
+    rc = hocclkIpcGetConfigValues(&configList);
     if (R_FAILED(rc)) [[unlikely]] {
-        FatalGui::openWithResultCode("sysclkIpcGetConfigValues", rc);
+        FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
         return;
     }
     // dockedHighestAllowedRefreshRate = this->context->maxDisplayFreq;
@@ -220,33 +220,33 @@ void BaseMenuGui::refresh()
     sprintf(displayStrings[0], "%016lX", context->applicationId);
 
     // Profile
-    strcpy(displayStrings[1], sysclkFormatProfile(context->profile, true));
+    strcpy(displayStrings[1], hocclkFormatProfile(context->profile, true));
 
     // Current frequencies
-    u32 hz = context->freqs[SysClkModule_CPU]; // CPU
+    u32 hz = context->freqs[HocClkModule_CPU]; // CPU
     sprintf(displayStrings[2], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
-    hz = context->freqs[SysClkModule_GPU]; // GPU
+    hz = context->freqs[HocClkModule_GPU]; // GPU
     sprintf(displayStrings[3], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
-    hz = context->freqs[SysClkModule_MEM]; // MEM
+    hz = context->freqs[HocClkModule_MEM]; // MEM
     sprintf(displayStrings[4], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
     // Real frequencies
-    hz = context->realFreqs[SysClkModule_CPU]; // CPU
+    hz = context->realFreqs[HocClkModule_CPU]; // CPU
     sprintf(displayStrings[5], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
-    hz = context->realFreqs[SysClkModule_GPU]; // GPU
+    hz = context->realFreqs[HocClkModule_GPU]; // GPU
     sprintf(displayStrings[6], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
-    hz = context->realFreqs[SysClkModule_MEM]; // MEM
+    hz = context->realFreqs[HocClkModule_MEM]; // MEM
     sprintf(displayStrings[7], "%u.%u MHz", hz / 1000000U, (hz / 100000U) % 10U);
 
     // Voltages
     sprintf(displayStrings[8], "%.1f mV", context->voltages[HocClkVoltage_CPU] / 1000.0);
     sprintf(displayStrings[9], "%.1f mV", context->voltages[HocClkVoltage_GPU] / 1000.0);
 
-    switch(configList.values[HorizonOCConfigValue_RAMVoltDisplayMode]) {
+    switch(configList.values[HocClkConfigValue_RAMVoltDisplayMode]) {
         case RamDisplayMode_VDD2:
             sprintf(displayStrings[10], "%u.%u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U);
             break;
@@ -259,17 +259,17 @@ void BaseMenuGui::refresh()
     }
 
     // Temperatures and pre-compute colors
-    u32 millis = context->temps[SysClkThermalSensor_SOC]; // SOC
+    u32 millis = context->temps[HocClkThermalSensor_SOC]; // SOC
     sprintf(displayStrings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[SysClkThermalSensor_SOC] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_SOC] = tsl::GradientColor(millis * 0.001f);
 
-    millis = context->temps[SysClkThermalSensor_PCB]; // PCB
+    millis = context->temps[HocClkThermalSensor_PCB]; // PCB
     sprintf(displayStrings[12], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[SysClkThermalSensor_PCB] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_PCB] = tsl::GradientColor(millis * 0.001f);
 
-    millis = context->temps[SysClkThermalSensor_Skin]; // Skin
+    millis = context->temps[HocClkThermalSensor_Skin]; // Skin
     sprintf(displayStrings[13], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[SysClkThermalSensor_Skin] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_Skin] = tsl::GradientColor(millis * 0.001f);
 
     // SOC voltage (if available)
     sprintf(displayStrings[14], "%u mV", context->voltages[HocClkVoltage_SOC] / 1000U);
@@ -279,12 +279,12 @@ void BaseMenuGui::refresh()
     sprintf(displayStrings[16], "%d mW", context->power[1]); // Avg
 
     sprintf(displayStrings[17], "%u%%", context->partLoad[HocClkPartLoad_GPU] / 10);
-    sprintf(displayStrings[18], "%u%%", context->partLoad[SysClkPartLoad_EMC] / 10);
+    sprintf(displayStrings[18], "%u%%", context->partLoad[HocClkPartLoad_EMC] / 10);
     sprintf(displayStrings[19], "%u%%", context->partLoad[HocClkPartLoad_CPUMax] / 10);
 
-    millis = context->temps[HorizonOCThermalSensor_Battery]; // Battery
+    millis = context->temps[HocClkThermalSensor_Battery]; // Battery
     sprintf(displayStrings[20], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[HorizonOCThermalSensor_Battery] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_Battery] = tsl::GradientColor(millis * 0.001f);
 
     sprintf(displayStrings[21], "%d mV", context->voltages[HocClkVoltage_Battery]); // BAT AVG
 
@@ -292,7 +292,7 @@ void BaseMenuGui::refresh()
 
     sprintf(displayStrings[24], "%u%%", context->partLoad[HocClkPartLoad_FAN]);
 
-    sprintf(displayStrings[25], "%u Hz", context->realFreqs[HorizonOCModule_Display]);
+    sprintf(displayStrings[25], "%u Hz", context->realFreqs[HocClkModule_Display]);
     if(this->context->isSaltyNXInstalled) {
         if(context->fps == 254) {
             strcpy(displayStrings[26], "N/A");
@@ -311,17 +311,17 @@ void BaseMenuGui::refresh()
         }
     }
 
-    millis = context->temps[HorizonOCThermalSensor_CPU];
+    millis = context->temps[HocClkThermalSensor_CPU];
     sprintf(displayStrings[28], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[HorizonOCThermalSensor_CPU] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_CPU] = tsl::GradientColor(millis * 0.001f);
 
-    millis = context->temps[HorizonOCThermalSensor_GPU];
+    millis = context->temps[HocClkThermalSensor_GPU];
     sprintf(displayStrings[29], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[HorizonOCThermalSensor_GPU] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_GPU] = tsl::GradientColor(millis * 0.001f);
 
-    millis = context->temps[HorizonOCThermalSensor_MEM];
+    millis = context->temps[HocClkThermalSensor_MEM];
     sprintf(displayStrings[30], "%u.%u", millis / 1000U, (millis % 1000U) / 100U);
-    tempColors[HorizonOCThermalSensor_MEM] = tsl::GradientColor(millis * 0.001f);
+    tempColors[HocClkThermalSensor_MEM] = tsl::GradientColor(millis * 0.001f);
 
 }
 

@@ -953,10 +953,10 @@ public:
             snprintf(MICRO_RAM_all_c, sizeof(MICRO_RAM_all_c), "%.0f%.0fGB", RAM_Used_all_f, RAM_Total_all_f);
         } else {
             // User wants percentage display
-            if (R_SUCCEEDED(sysclkCheck)) {
+            if (R_SUCCEEDED(hocclkCheck)) {
                 // Use sys-clk's RAM load if available
                 snprintf(MICRO_RAM_all_c, sizeof(MICRO_RAM_all_c), "%hu%%",
-                         partLoad[SysClkPartLoad_EMC] / 10);
+                         partLoad[HocClkPartLoad_EMC] / 10);
             } else {
                 // Calculate percentage manually when sys-clk isn't available
                 const uint64_t RAM_Total_all = RAM_Total_application_u + RAM_Total_applet_u + RAM_Total_system_u + RAM_Total_systemunsafe_u;

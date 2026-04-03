@@ -5,7 +5,7 @@ ramLoad -> partLoad
 SysClkRamLoad_All -> HocClkPartLoad_EMC
 SysClkRamLoad_Cpu -> HocClkPartLoad_EMCCpu
 
-API version reference must be changed. use != to compare to HOCCLK_IPC_API_VERSION
+API version reference must be changed. compare to HOCCLK_IPC_API_VERSION
 If you use the service name, use HOCCLK_IPC_SERVICE_NAME
 
 Remove checks for the u8 enabled in sysclk clockmanager struct. Check if hocclk is enabled by listening to IPC results

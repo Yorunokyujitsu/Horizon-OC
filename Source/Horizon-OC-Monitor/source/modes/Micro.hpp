@@ -109,6 +109,10 @@ private:
 
 public:
     MicroOverlay() {
+        CPU_temp_c[0] = '\0';
+        GPU_temp_c[0] = '\0';
+        RAM_temp_c[0] = '\0';
+
         tsl::hlp::requestForeground(false);
         disableJumpTo = true;
         //tsl::initializeUltrahandSettings();
@@ -882,7 +886,7 @@ public:
                 maxUsage, cpuDiff, cpuFreq / 1000000, (cpuFreq / 100000) % 10);
         }
 
-		 if (settings.realTemps && realCPU_Temp != 0) {
+		 if (settings.realTemps && realCPU_Temp != 0 && CPU_temp_c[0] != '\0') {
             char temp_buffer[48];
             snprintf(temp_buffer, sizeof(temp_buffer), " %s", CPU_temp_c);
             strncat(CPU_compressed_c, temp_buffer, sizeof(CPU_compressed_c) - strlen(CPU_compressed_c) - 1);
@@ -912,7 +916,7 @@ public:
                  GPU_Load_u / 10,
                  gpuDiff, gpuFreq / 1000000, (gpuFreq / 100000) % 10);
 
-		if (settings.realTemps && realGPU_Temp != 0) {
+		if (settings.realTemps && realGPU_Temp != 0 && GPU_temp_c[0] != '\0') {
             char temp_buffer[48];
             snprintf(temp_buffer, sizeof(temp_buffer), " %s", GPU_temp_c);
             strncat(GPU_Load_c, temp_buffer, sizeof(GPU_Load_c) - strlen(GPU_Load_c) - 1);
@@ -977,7 +981,7 @@ public:
             "%s%s%u.%u", MICRO_RAM_all_c, ramDiff,
             ramFreq / 1000000, (ramFreq / 100000) % 10);
 
-		if (settings.realTemps && realRAM_Temp != 0) {
+		if (settings.realTemps && realRAM_Temp != 0 && RAM_temp_c[0] != '\0') {
             char temp_buffer[48];
             snprintf(temp_buffer, sizeof(temp_buffer), " %s", RAM_temp_c);
             strncat(RAM_var_compressed_c, temp_buffer, sizeof(RAM_var_compressed_c) - strlen(RAM_var_compressed_c) - 1);

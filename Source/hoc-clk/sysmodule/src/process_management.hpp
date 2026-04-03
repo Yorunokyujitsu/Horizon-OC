@@ -33,6 +33,7 @@ namespace processManagement {
     void Initialize();
     void WaitForQLaunch();
     u64 GetCurrentApplicationId();
+    Result isApplicationOutOfFocus(bool* outOfFocus);
     void Exit();
 
 }

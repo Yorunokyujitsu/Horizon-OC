@@ -16,7 +16,7 @@
  */
 
 #include "governor.hpp"
-
+#include "process_management.hpp"
 namespace governor {
 
     #define POLL_NS 5'000'000  // 5 ms  – governor poll rate
@@ -249,7 +249,7 @@ namespace governor {
     {
         (void)arg;
 
-        u8 tick = 0;
+        u8 tick = 0, tick2 = 0;
         for (;;) {
             if (!clockManager::gRunning || clockManager::gContext.profile == HocClkProfile_Docked || !isVRREnabled) {
                 svcSleepThread(POLL_NS);
@@ -257,6 +257,21 @@ namespace governor {
             }
 
             std::scoped_lock lock{clockManager::gContextMutex};
+            
+            if(++tick2 > 100) {
+                bool isApplicationOutOfFocus = false;
+                Result rc = processManagement::isApplicationOutOfFocus(&isApplicationOutOfFocus);
+                if(R_FAILED(rc)) {
+                    svcSleepThread(POLL_NS);
+                    continue;
+                }
+
+                if(isApplicationOutOfFocus) {
+                    board::ResetToStockDisplay();
+                    svcSleepThread(POLL_NS);
+                    continue;
+                }
+            }
 
             u8 fps;
 

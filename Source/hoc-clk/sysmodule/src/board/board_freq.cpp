@@ -222,9 +222,6 @@ namespace board {
     }
 
     void ResetToStockDisplay() {
-        if (GetConsoleType() != HocClkConsoleType_Hoag) {
-            display::SetRate(60);
-        }
+        display::SetRate(60);
     }
-
 }

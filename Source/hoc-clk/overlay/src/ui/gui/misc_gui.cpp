@@ -1287,7 +1287,7 @@ protected:
             NamedValue("750mV", 750), NamedValue("755mV", 755), NamedValue("760mV", 760),
             NamedValue("765mV", 765), NamedValue("770mV", 770), NamedValue("775mV", 775),
             NamedValue("780mV", 780), NamedValue("785mV", 785), NamedValue("790mV", 790),
-            NamedValue("795mV", 795), NamedValue("800mV", 800)
+            NamedValue("795mV", 795)
         };
 
         if(IsErista()) {

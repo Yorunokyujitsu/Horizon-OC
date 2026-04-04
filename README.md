@@ -167,6 +167,6 @@ Refer to COMPILATION.md
 * **MasaGratoR** - Status Monitor & Display Refresh Rate driver
 * **Dominatorul, Samybigio, Arcdelta, Miki, Happy, Flopsider, Winnerboi77, Blaise, Alvise, TDRR, agjeococh, frost, letum00, and Xenshen** - Testing
 * **Samybigio2011, Miki** - Italian translations
-* **angelblaster** - Korean translation
-* **q1332348216-glitch** - Chinese translation
+* **angelblaster** - Korean translations
+* **q1332348216-glitch** - Chinese translations
 * **Nvidia** - [Tegra X1 Technical Reference Manual](https://developer.nvidia.com/embedded/dlc/tegra-x1-technical-reference-manual), soctherm driver, L4T

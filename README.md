@@ -114,7 +114,7 @@ Refer to COMPILATION.md
 * 816
 * 714
 * 612 → sleep mode
-  
+
 ### GPU clocks
 * 1536 → absolute max clock on mariko. very dangerous
 * 1459
@@ -158,7 +158,7 @@ Refer to COMPILATION.md
 * **CTCaer** - L4T, Hekate, proper RAM timings
 * **KazushiMe** - Switch OC Suite
 * **Hanai3bi (Meha)** - Switch OC Suite, EOS, sys-clk-eos
-* **NaGaa95** - L4T-OC kernel, Status Monitor fork 
+* **NaGaa95** - L4T-OC kernel, Status Monitor fork
 * **B3711 (halop)** - EOS
 * **sys-clk team (m4xw, p-sam, natinusala)** - sys-clk
 * **Dominatorul** - Soctherm driver, guides, general help
@@ -166,5 +166,7 @@ Refer to COMPILATION.md
 * **MasaGratoR and ZachyCatGames** - General help
 * **MasaGratoR** - Status Monitor & Display Refresh Rate driver
 * **Dominatorul, Samybigio, Arcdelta, Miki, Happy, Flopsider, Winnerboi77, Blaise, Alvise, TDRR, agjeococh, frost, letum00, and Xenshen** - Testing
-* **Samybigio2011** - Italian translations
+* **Samybigio2011, Miki** - Italian translations
+* **angelblaster** - Korean translation
+* **q1332348216-glitch** - Chinese translation
 * **Nvidia** - [Tegra X1 Technical Reference Manual](https://developer.nvidia.com/embedded/dlc/tegra-x1-technical-reference-manual), soctherm driver, L4T

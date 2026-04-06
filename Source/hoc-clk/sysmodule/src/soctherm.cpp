@@ -25,7 +25,7 @@
 #include "soctherm.hpp"
 #include "board/board.hpp"
 #include "file_utils.hpp"
-
+#include "globals.hpp"
 namespace soctherm {
 
     namespace {
@@ -440,8 +440,7 @@ namespace soctherm {
     }
 
     Result MapAddress(u64 &va, const u64 &physAddr, const char *name) {
-        u64 outSize;
-        Result mapResult = svcQueryMemoryMapping(&va, &outSize, physAddr, 0x1000);
+        Result mapResult = QueryMemoryMapping(&va, physAddr, 0x1000);
         if (R_FAILED(mapResult)) {
             fileUtils::LogLine("[Soctherm] Failed to map %s! %u", name, R_DESCRIPTION(mapResult));
         }

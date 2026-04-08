@@ -139,8 +139,8 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
 
     // Temperatures with color - use pre-computed colors
     renderer->drawString(displayStrings[11], false, dataPositions[0] - 1, y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_SOC]);  // SOC
-    renderer->drawString(displayStrings[12], false, dataPositions[1] + 5, y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_PCB]);  // PCB
-    renderer->drawString(displayStrings[13], false, dataPositions[2] + 6, y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_Skin]);  // Skin
+    renderer->drawString(displayStrings[12], false, dataPositions[1], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_PCB]);  // PCB
+    renderer->drawString(displayStrings[13], false, dataPositions[2], y, SMALL_TEXT_SIZE, tempColors[HocClkThermalSensor_Skin]);  // Skin
 
     y += 20; // Direct assignment (191 + 20)
 

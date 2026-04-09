@@ -22,6 +22,7 @@
 
 #include "../oc_common.hpp"
 #include "pcv_common.hpp"
+#include "pcv_asm.hpp"
 
 namespace ams::ldr::hoc::pcv {
 
@@ -103,30 +104,10 @@ namespace ams::ldr::hoc::pcv {
          *   0 | 1 1 | 1  0  0  1  0  1| 0  1| 0  0  0  0  0  0  0  0  0  0  0  0  1  1  1  0 |0  1  0  1  1
          */
 
-        inline constexpr u32 asm_pattern[] = {0x52820000, 0x72A001C0};
-
-        inline auto asm_compare_no_rd = [](u32 ins1, u32 ins2) {
-            return ((ins1 ^ ins2) >> 5) == 0;
-        };
-
-        inline auto asm_get_rd = [](u32 ins) {
-            return ins & ((1 << 5) - 1);
-        };
-
-        inline auto asm_set_rd = [](u32 ins, u8 rd) {
-            return (ins & 0xFFFFFFE0) | (rd & 0x1F);
-        };
-
-        inline auto asm_set_imm16 = [](u32 ins, u16 imm) {
-            return (ins & 0xFFE0001F) | ((imm & 0xFFFF) << 5);
-        };
-
-        inline auto AsmGetImm16 = [](u32 ins) {
-            return static_cast<u16>((ins >> 5) & 0xFFFF);
-        };
+        inline constexpr u32 GpuAsmPattern[] = {0x52820000, 0x72A001C0};
 
         inline bool GpuMaxClockPatternFn(u32 *ptr32) {
-            return asm_compare_no_rd(*ptr32, asm_pattern[0]);
+            return asm_compare_no_rd(*ptr32, GpuAsmPattern[0]);
         }
 
         constexpr emc_dvb_dvfs_table_t EmcDvbTableDefault[] = {
@@ -192,11 +173,6 @@ namespace ams::ldr::hoc::pcv {
 
         constexpr u16 CpuMinVolts[] = { 950, 850, 825, 810 };
 
-        inline bool CpuMaxVoltPatternFn(u32* ptr32) {
-            u32 val = *ptr32;
-            return (val == 1132 || val == 1170 || val == 1227);
-        }
-
         static const u32 gpuVoltDvfsPattern[] = { 810, 1150, 1000, 100, 1000, 10, };
         static_assert(sizeof(gpuVoltDvfsPattern) == (sizeof(u32) * 6), "Invalid gpuVoltDvfsPattern");
 
@@ -215,32 +191,10 @@ namespace ams::ldr::hoc::pcv {
          * #31 |30 29|28 27 26 25 24 23|22 21|20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5 |4  3  2  1  0
          *   0 | 1 1 | 1  0  0  1  0  1| 0  1| 0  0  0  0  0  0  0  0  0  0  0  0  1  1  1  0 |0  1  0  1  1
          */
-        inline constexpr u32 asm_pattern[] = {
-            0x52820000, 0x72A001C0
-        };
-
-        inline auto asm_compare_no_rd = [](u32 ins1, u32 ins2) {
-            return ((ins1 ^ ins2) >> 5) == 0;
-        };
-
-        inline auto asm_get_rd = [](u32 ins) {
-            return ins & ((1 << 5) - 1);
-        };
-
-        inline auto asm_set_rd = [](u32 ins, u8 rd) {
-            return (ins & 0xFFFFFFE0) | (rd & 0x1F);
-        };
-
-        inline auto asm_set_imm16 = [](u32 ins, u16 imm) {
-            return (ins & 0xFFE0001F) | ((imm & 0xFFFF) << 5);
-        };
-
-        inline auto AsmGetImm16 = [](u32 ins) {
-            return static_cast<u16>((ins >> 5) & 0xFFFF);
-        };
+        inline constexpr u32 GpuAsmPattern[] = { 0x52820000, 0x72A001C0 };
 
         inline bool GpuMaxClockPatternFn(u32 *ptr32) {
-            return asm_compare_no_rd(*ptr32, asm_pattern[0]);
+            return asm_compare_no_rd(*ptr32, GpuAsmPattern[0]);
         };
 
         constexpr cvb_entry_t GpuCvbTableDefault[] = {

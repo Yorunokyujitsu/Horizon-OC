@@ -57,6 +57,9 @@ tsl::elm::ListItem* FreqChoiceGui::createFreqListItem(std::uint32_t hz, bool sel
 {
     std::string text = formatListFreqHz(hz);
 
+    if(module == HocClkModule_MEM && hz != 0)
+        text += " (" + std::to_string(hz / 500000) + " MT/s)";
+
     std::string rightText = "";
     auto it = labels.find(hz);
     if (it != labels.end())

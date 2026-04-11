@@ -82,9 +82,6 @@ namespace fileUtils {
                 FILE* file = fopen(FILE_LOG_FILE_PATH, "a");
 
                 if (file) {
-                    struct timespec now;
-                    clock_gettime(CLOCK_REALTIME, &now);
-
                     fprintf(file, "[%lu] ", armGetSystemTick());
                     vfprintf(file, format, args);
                     fprintf(file, "\n");

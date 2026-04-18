@@ -1032,6 +1032,7 @@ protected:
         };
 
         this->listElement->addItem(new tsl::elm::CategoryHeader("Advanced"));
+        addConfigButton(KipConfigValue_t2_tRP_cap, "1333WL t2 RP Cap", ValueRange(0, 8, 1, "", 1), "tRP Cap", &thresholdsDisabled, {}, {}, false, true );
         addConfigButton(KipConfigValue_t6_tRTW_fine_tune, "t6 tRTW Fine Tune", ValueRange(0, 4, 1, "", 0), "tRTW Fine Tune", &thresholdsDisabled, {}, t6_tRTW_fine_tune, false, true);
         addConfigButton(KipConfigValue_t7_tWTR_fine_tune, "t7 tWTR Fine Tune", ValueRange(0, 6, 1, "", 0), "tWTR Fine Tune", &thresholdsDisabled, {}, t7_tWTR_fine_tune, false, true);
     }

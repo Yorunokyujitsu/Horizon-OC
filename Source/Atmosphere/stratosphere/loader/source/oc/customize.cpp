@@ -42,7 +42,7 @@ volatile CustomizeTable C = {
 
 /* Available: 66MHz step rate, 100MHz step rate and jedec. */
 /* Jedec freqs are 1333MHz, 1600MHz, 1866MHz, 2133MHz, 2400MHz, 2666MHz, 2933MHz, 3200MHz. */
-.stepMode = StepMode_Jedec,
+.stepMode = StepMode_66MHz,
 
 .marikoEmcMaxClock = 2933000, /* 1866MHz @ 1866tWRL is guaranteed to work on all Mariko units */
 .marikoEmcVddqVolt = 600000,
@@ -50,7 +50,7 @@ volatile CustomizeTable C = {
 
 // Primary
 .t1_tRCD = 0,
-.t2_tRP  = 0,
+.t2_tRP  = 4,
 .t3_tRAS = 0,
 // Secondary
 .t4_tRRD  = 0,
@@ -58,6 +58,8 @@ volatile CustomizeTable C = {
 .t6_tRTW  = 0,
 .t7_tWTR  = 0,
 .t8_tREFI = 0,
+
+.t2_tRP_cap = 2,
 
 .readLatency = {
     2133000,

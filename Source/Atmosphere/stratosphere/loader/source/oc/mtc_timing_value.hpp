@@ -111,20 +111,17 @@ namespace ams::ldr::hoc {
         const std::array<u32,      10>  tWTR_values   = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
         const std::array<u32,       6>  tREFpb_values = { 3900, 5850, 7800, 11700, 15600, 99999 };
 
-        const u32 tRCD    = tRCD_values[C.t1_tRCD];
-        const u32 tRPpb   = tRP_values[C.t2_tRP];
-        const u32 tRAS    = tRAS_values[C.t3_tRAS];
-        const double tRRD = tRRD_values[C.t4_tRRD];
-        const u32 tRFCpb  = tRFC_values[C.t5_tRFC];
-        const u32 tWTR    = 10 - tWTR_values[C.t7_tWTR];
-        const s32 finetRTW = C.fineTune_t6_tRTW;
-        const s32 finetWTR = C.fineTune_t7_tWTR;
+        inline u32 tRCD;
+        inline u32 tRPpb;
+        inline u32 tRAS;
+        inline double tRRD;
+        inline u32 tRFCpb;
 
-        const u32 tRC      = tRAS + tRPpb;
-        const u32 tRFCab   = tRFCpb * 2;
-        const double tXSR  = static_cast<double>(tRFCab + 7.5);
-        const u32 tFAW     = static_cast<u32>(tRRD * 4.0);
-        const double tRPab = tRPpb + 3;
+        inline u32 tRC;
+        inline u32 tRFCab;
+        inline double tXSR;
+        inline u32 tFAW;
+        inline double tRPab;
 
         inline u32 RL;
         inline u32 WL;

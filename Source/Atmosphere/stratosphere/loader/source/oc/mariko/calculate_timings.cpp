@@ -127,12 +127,38 @@ namespace ams::ldr::hoc::pcv::mariko {
     }
 
     void CalculateTimings(double tCK_avg, u32 freq) {
-        RL = 28;
-        WL = 12;
+        RL = RL_1331;
+        WL = WL_1331;
 
         HandleLatency(freq);
 
         GetRext();
+
+        /* At 1333WL, for some reason (incorrect ram timing config in mtc table?), tRP causes crashes at high reductions - 2 seems to be the most common limit. */
+        /* This is a lazy workaround until I find the issue... */
+        u32 tRPpbIndex = C.t2_tRP;
+        if (WL == WL_1331) {
+            tRPpbIndex = MIN(C.t2_tRP_cap, C.t2_tRP);
+        }
+
+        tRCD    = tRCD_values[C.t1_tRCD];
+        tRPpb   = tRP_values[tRPpbIndex];
+        tRAS    = tRAS_values[C.t3_tRAS];
+        tRRD = tRRD_values[C.t4_tRRD];
+        tRFCpb  = tRFC_values[C.t5_tRFC];
+        u32 tWTR    = 10 - tWTR_values[C.t7_tWTR];
+        s32 finetRTW = C.fineTune_t6_tRTW;
+        s32 finetWTR = C.fineTune_t7_tWTR;
+
+        Log("Freq: %u\n", freq);
+        Log("WL: %u\n", WL);
+        Log("tRP value: %u\n\n", tRPpb);
+
+        tRC      = tRAS + tRPpb;
+        tRFCab   = tRFCpb * 2;
+        tXSR  = static_cast<double>(tRFCab + 7.5);
+        tFAW     = static_cast<u32>(tRRD * 4.0);
+        tRPab = tRPpb + 3;
 
         tR2P  = CEIL((RL * 0.426) - 2.0);
         tR2W  = FLOOR(FLOOR((5.0 / tCK_avg) + ((FLOOR(48.0 / WL) - 0.478) * 3.0)) / 1.501) + RL - (C.t6_tRTW * 3) + finetRTW;

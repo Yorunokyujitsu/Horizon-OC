@@ -591,6 +591,63 @@ namespace ams::ldr::hoc::pcv::mariko {
         }
     }
 
+    std::vector<u32> newEmcList;
+    void MtcGenerateJedecTable() {
+        const u32 jedecFreqs[] = { 1866000, 1996000, 2133000, 2400000, 2666000, 2933000, 3200000 };
+        constexpr u32 JedecFreqCount = std::size(jedecFreqs);
+
+        for (u32 i = 0; i < JedecFreqCount; ++i) {
+            if (jedecFreqs[i] <= C.marikoEmcMaxClock) {
+                newEmcList.push_back(jedecFreqs[i]);
+            } else {
+                break;
+            }
+        }
+
+        newEmcList.resize(std::min(newEmcList.size(), DvfsTableEntryLimit));
+    }
+
+    void MtcGenerateFreqTables() {
+        if (C.marikoEmcMaxClock <= EmcClkOSLimit) {
+            return;
+        }
+
+        newEmcList.clear();
+        newEmcList.reserve(DvfsTableEntryCount);
+        newEmcList.insert(newEmcList.end(), std::begin(EmcListDefault), std::end(EmcListDefault));
+
+        u32 stepRate = 0;
+        switch (C.stepMode) {
+            case StepMode_66MHz:
+                stepRate = 66667;
+                break;
+            case StepMode_100MHz:
+                stepRate = 100000;
+                break;
+            case StepMode_Jedec:
+                MtcGenerateJedecTable();
+                return;
+            default:
+                stepRate = 66667;
+                break;
+        }
+
+        constexpr u32 RoundHz = 1000;
+        for (u32 stepIndex = 1;; ++stepIndex) {
+            u32 newFreq = EmcClkOSLimit + stepIndex * stepRate;
+            newFreq     = (newFreq / RoundHz) * RoundHz;
+            if (newFreq > C.marikoEmcMaxClock) {
+                if (newEmcList.back() != C.marikoEmcMaxClock) {
+                    newEmcList.push_back(static_cast<u32>(C.marikoEmcMaxClock));
+                }
+                break;
+            }
+            newEmcList.push_back(newFreq);
+        }
+
+        newEmcList.resize(std::min(newEmcList.size(), DvfsTableEntryLimit));
+    }
+
     Result VerifyMtcTable(MarikoMtcTable *tableStart, u32 expectedFreq) {
         R_UNLESS(tableStart->rate_khz == expectedFreq,  ldr::ResultInvalidMtcTable());
         R_UNLESS(tableStart->rev      == MTC_TABLE_REV, ldr::ResultInvalidMtcTable());
@@ -639,53 +696,11 @@ namespace ams::ldr::hoc::pcv::mariko {
     void PrepareMtcMemoryRegion(u8 *firstTable, MarikoMtcTable *usedTable) {
         memmove(firstTable, usedTable, mariko::MtcFullTableSize);
 
-        /* Clear all other tables */
+        /* Clear all other tables. */
         /* 1 erista table is excluded because it's always before firstTable. */
         /* We also exclude the used table obviously. */
         constexpr size_t RemainingRegionSize = (mariko::MtcFullTableSize) * (mariko::MtcFullTableCount - 1) + (erista::MtcFullTableSize * (erista::MtcFullTableCount - 1));
         memset(firstTable + mariko::MtcFullTableSize, 0, RemainingRegionSize);
-    }
-
-    std::vector<u32> newEmcList;
-    void MtcGenerateFreqTables() {
-        constexpr u32 RoundHz = 1000;
-
-        u32 stepRate = 0;
-        switch (C.stepMode) {
-            case StepMode_66MHz:
-                stepRate = 66667;
-                break;
-            case StepMode_100MHz:
-                stepRate = 100000;
-                break;
-            case StepMode_Jedec:
-                break;
-            default:
-                stepRate = 66667;
-                break;
-        }
-
-        newEmcList.clear();
-        newEmcList.reserve(DvfsTableEntryCount);
-        newEmcList.insert(newEmcList.end(), std::begin(EmcListDefault), std::end(EmcListDefault));
-
-        if (C.marikoEmcMaxClock <= EmcClkOSLimit) {
-            return;
-        }
-
-        for (u32 stepIndex = 1;; ++stepIndex) {
-            u32 newFreq = EmcClkOSLimit + stepIndex * stepRate;
-            newFreq     = (newFreq / RoundHz) * RoundHz;
-            if (newFreq > C.marikoEmcMaxClock) {
-                if (newEmcList.back() != C.marikoEmcMaxClock) {
-                    newEmcList.push_back(static_cast<u32>(C.marikoEmcMaxClock));
-                }
-                break;
-            }
-            newEmcList.push_back(newFreq);
-        }
-
-        newEmcList.resize(std::min(newEmcList.size(), DvfsTableEntryLimit));
     }
 
     void MtcExtendTables(MarikoMtcTable *table) {

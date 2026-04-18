@@ -558,6 +558,14 @@ static inline uint64_t hocclkValidConfigValue(HocClkConfigValue val, uint64_t in
         case KipConfigValue_t6_tRTW:
         case KipConfigValue_t7_tWTR:
         case KipConfigValue_t8_tREFI:
+        case KipConfigValue_read_latency_1333:
+        case KipConfigValue_read_latency_1600:
+        case KipConfigValue_read_latency_1866:
+        case KipConfigValue_read_latency_2133:
+        case KipConfigValue_write_latency_1333:
+        case KipConfigValue_write_latency_1600:
+        case KipConfigValue_write_latency_1866:
+        case KipConfigValue_write_latency_2133:
         case KipConfigValue_mem_burst_read_latency:
         case KipConfigValue_mem_burst_write_latency:
         case KipConfigValue_eristaCpuUV:

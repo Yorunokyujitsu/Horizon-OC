@@ -86,8 +86,8 @@ MiscGui::~MiscGui()
 void MiscGui::addConfigToggle(HocClkConfigValue configVal, const char* altName, bool kip) {
     const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
     tsl::elm::ToggleListItem* toggle = new tsl::elm::ToggleListItem(configName, this->configList->values[configVal]);
-    if (kip)
-        toggle->setTextColor(tsl::Color(255, 165, 0, 255));
+    if (!kip)
+        toggle->setTextColor(tsl::Color(120, 235, 255, 255));
     toggle->setStateChangedListener([this, configVal, kip](bool state) {
         this->configList->values[configVal] = uint64_t(state);
         Result rc = hocclkIpcSetConfigValues(this->configList);
@@ -116,8 +116,8 @@ void MiscGui::addConfigButton(HocClkConfigValue configVal,
     const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
 
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem(configName);
-    if (kip)
-        listItem->setTextColor(tsl::Color(255, 165, 0, 255));
+    if (!kip)
+        listItem->setTextColor(tsl::Color(120, 235, 255, 255));
 
     uint64_t currentValue = this->configList->values[configVal];
     char valueText[32];
@@ -232,8 +232,8 @@ void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
     bool kip)
 {
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem("");
-    if (kip)
-        listItem->setTextColor(tsl::Color(255, 165, 0, 255));
+    if (!kip)
+        listItem->setTextColor(tsl::Color(120, 235, 255, 255));
 
     uint64_t currentValue = this->configList->values[configVal];
     char valueText[32];
@@ -425,8 +425,8 @@ void MiscGui::listUI()
     this->listElement->addItem(new tsl::elm::CategoryHeader("Settings"));
 
     tsl::elm::CustomDrawer* rebootSetWarning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-        renderer->drawString("\uE150 Settings marked in orange", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-        renderer->drawString("require a reboot to apply!", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
+        renderer->drawString("\uE150 Settings marked in blue", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
+        renderer->drawString("don't require a reboot to apply!", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
     });
     rebootSetWarning->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 70);
     this->listElement->addItem(rebootSetWarning);
@@ -886,7 +886,6 @@ protected:
 
         if (IsErista()) {
             tsl::elm::ListItem* freqSubmenu = new tsl::elm::ListItem("RAM Frequency Editor");
-            freqSubmenu->setTextColor(tsl::Color(255, 165, 0, 255));
             freqSubmenu->setClickListener([](u64 keys) {
                 if (keys & HidNpadButton_A) {
                     tsl::changeTo<RamTableEditor>();
@@ -967,7 +966,6 @@ protected:
 
 
         tsl::elm::ListItem* latenciesSubmenu = new tsl::elm::ListItem("RAM Latency Editor");
-        latenciesSubmenu->setTextColor(tsl::Color(255, 165, 0, 255));
         latenciesSubmenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<RamLatenciesSubmenuGui>();
@@ -979,7 +977,6 @@ protected:
         this->listElement->addItem(latenciesSubmenu);
 
         tsl::elm::ListItem* timingsSubmenu = new tsl::elm::ListItem("RAM Timing Reductions");
-        timingsSubmenu->setTextColor(tsl::Color(255, 165, 0, 255));
         timingsSubmenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<RamTimingsSubmenuGui>();
@@ -1224,7 +1221,6 @@ protected:
             uint32_t currentVal = (uint32_t)this->configList->values[thisKey];
 
             tsl::elm::ListItem* item = new tsl::elm::ListItem(label);
-            item->setTextColor(tsl::Color(255, 165, 0, 255));
             item->setValue(makeValueText(currentVal));
 
             item->setClickListener([this, tierIdx, thisKey, keysArr](u64 keys) -> bool {

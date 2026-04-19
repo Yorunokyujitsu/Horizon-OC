@@ -44,13 +44,13 @@ volatile CustomizeTable C = {
 /* Jedec freqs are 1333MHz, 1600MHz, 1866MHz, 2133MHz, 2400MHz, 2666MHz, 2933MHz, 3200MHz. */
 .stepMode = StepMode_66MHz,
 
-.marikoEmcMaxClock = 2933000, /* 1866MHz @ 1866tWRL is guaranteed to work on all Mariko units */
+.marikoEmcMaxClock = 1866000, /* 1866MHz @ 1866tWRL is guaranteed to work on all Mariko units */
 .marikoEmcVddqVolt = 600000,
-.emcDvbShift = 10,
+.emcDvbShift = 0,
 
 // Primary
 .t1_tRCD = 0,
-.t2_tRP  = 4,
+.t2_tRP  = 0,
 .t3_tRAS = 0,
 // Secondary
 .t4_tRRD  = 0,
@@ -69,17 +69,17 @@ volatile CustomizeTable C = {
 .low_t7_tWTR = DISABLED,
 
 .readLatency = {
-    2133000,
-    2400000,
-    2600000,
-    C.marikoEmcMaxClock,
+    DISABLED,
+    DISABLED,
+    DISABLED,
+    DISABLED,
 },
 
 .writeLatency = {
-    2133000,
-    2400000,
-    2600000,
-    C.marikoEmcMaxClock,
+    DISABLED,
+    DISABLED,
+    DISABLED,
+    DISABLED,
 },
 
 /* You can mix and match different latencies if needed */

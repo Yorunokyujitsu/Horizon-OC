@@ -17,7 +17,9 @@
 
 #include "kip.hpp"
 #include "board/board.hpp"
+#include "file_utils.hpp"
 
+#define CUST_REV 2
 namespace kip {
 
     bool kipAvailable = false;
@@ -45,11 +47,16 @@ namespace kip {
         }
 
         if (!cust_read_and_cache("sdmc:/atmosphere/kips/hoc.kip", &table)) {
-            fileUtils::LogLine("[clock_manager] Failed to read KIP file");
+            fileUtils::LogLine("[kip] Failed to read KIP file");
             notification::writeNotification("Horizon OC\nKip read failed");
             return;
         }
 
+        if(cust_get_cust_rev(&table) != CUST_REV) {
+            notification::writeNotification("Horizon OC\nKip version mismatch\nPlease reinstall Horizon OC");
+            return;
+        }
+        
         CUST_WRITE_FIELD_BATCH(&table, custRev, config::GetConfigValue(KipConfigValue_custRev));
         // CUST_WRITE_FIELD_BATCH(&table, mtcConf, config::GetConfigValue(KipConfigValue_mtcConf));
         CUST_WRITE_FIELD_BATCH(&table, hpMode, config::GetConfigValue(KipConfigValue_hpMode));
@@ -127,7 +134,7 @@ namespace kip {
         CUST_WRITE_FIELD_BATCH(&table, t7_tWTR_fine_tune, config::GetConfigValue(KipConfigValue_t7_tWTR_fine_tune));
 
         if (!cust_write_table("sdmc:/atmosphere/kips/hoc.kip", &table)) {
-            fileUtils::LogLine("[clock_manager] Failed to write KIP file");
+            fileUtils::LogLine("[kip] Failed to write KIP file");
             notification::writeNotification("Horizon OC\nKip write failed");
         }
 
@@ -137,9 +144,12 @@ namespace kip {
         configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip"); // write checksum
 
         if (config::SetConfigValues(&configValues, false)) {
-            fileUtils::LogLine("[clock_manager] Successfully loaded KIP data into config");
+            fileUtils::LogLine("[kip] KIP data set. CRC32: %ld (Cust Rev %ld)", configValues.values[KipCrc32], configValues.values[KipConfigValue_custRev]);
+            for (u64 i = KipConfigValue_hpMode; i < HocClkConfigValue_EnumMax; i++) {
+                fileUtils::LogLine("%s: %ld", hocclkFormatConfigValue((HocClkConfigValue)i, false), configValues.values[i]);
+            }
         } else {
-            fileUtils::LogLine("[clock_manager] Warning: Failed to set config values from KIP");
+            fileUtils::LogLine("[kip] Warning: Failed to set config values from KIP");
             notification::writeNotification("Horizon OC\nKip config set failed");
         }
     }
@@ -165,18 +175,20 @@ namespace kip {
             config::GetConfigValues(&configValues);
 
             CustomizeTable table;
-
             if (!cust_read_and_cache("sdmc:/atmosphere/kips/hoc.kip", &table)) {
-                fileUtils::LogLine("[clock_manager] Failed to read KIP file for GetKipData");
+                fileUtils::LogLine("[kip] Failed to read KIP file for GetKipData");
                 notification::writeNotification("Horizon OC\nKip read failed");
+                return;
+            }
+
+            if(cust_get_cust_rev(&table) != CUST_REV) {
+                notification::writeNotification("Horizon OC\nKip version mismatch\nPlease reinstall Horizon OC");
                 return;
             }
 
             if ((u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip") != config::GetConfigValue(KipCrc32) && !config::GetConfigValue(HocClkConfigValue_IsFirstLoad)) {
                 SetKipData();
-                notification::writeNotification("Horizon OC\nKIP has been updated");
-                notification::writeNotification("Horizon OC\nPlease reboot your console");
-                notification::writeNotification("Horizon OC\nto complete the update");
+                notification::writeNotification("Horizon OC\nKIP has been updated\nPlease reboot your console");
                 return;
             }
             if (config::GetConfigValue(HocClkConfigValue_IsFirstLoad) == true) {
@@ -258,22 +270,27 @@ namespace kip {
             configValues.values[KipConfigValue_t7_tWTR_fine_tune] = cust_get_tWTR_fine_tune(&table);
             configValues.values[KipConfigValue_t6_tRTW_fine_tune] = cust_get_tRTW_fine_tune(&table);
 
+
+
             // if(cust_get_cust_rev(&table) == KIP_CUST_REV)
             //     return;
 
             if (sizeof(HocClkConfigValueList) <= sizeof(configValues)) {
                 if (config::SetConfigValues(&configValues, false)) {
-                    fileUtils::LogLine("[clock_manager] Successfully loaded KIP data into config");
+                    fileUtils::LogLine("[kip] KIP loaded. CRC32: %ld (Cust Rev %ld)", configValues.values[KipCrc32], configValues.values[KipConfigValue_custRev]);
+                    for (u64 i = KipConfigValue_hpMode; i < HocClkConfigValue_EnumMax; i++) {
+                        fileUtils::LogLine("%s: %ld", hocclkFormatConfigValue((HocClkConfigValue)i, false), configValues.values[i]);
+                    }
                 } else {
-                    fileUtils::LogLine("[clock_manager] Warning: Failed to set config values from KIP");
+                    fileUtils::LogLine("[kip] Warning: Failed to set config values from KIP");
                     notification::writeNotification("Horizon OC\nKip config set failed");
                 }
             } else {
-                fileUtils::LogLine("[clock_manager] Error: Config value list buffer size mismatch");
+                fileUtils::LogLine("[kip] Error: Config value list buffer size mismatch");
                 notification::writeNotification("Horizon OC\nConfig Buffer Mismatch");
             }
         } else {
-            fileUtils::LogLine("[clock_manager] Config refresh error in GetKipData!");
+            fileUtils::LogLine("[kip] Config refresh error in GetKipData!");
             notification::writeNotification("Horizon OC\nConfig refresh failed");
         }
     }

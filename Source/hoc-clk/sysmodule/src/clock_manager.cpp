@@ -230,7 +230,11 @@ namespace clockManager {
     void DVFSBeforeSet(u32 targetHz)
     {
         s32 dvfsOffset = config::GetConfigValue(HocClkConfigValue_DVFSOffset);
-        u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket()) + dvfsOffset;
+        u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket());
+
+        if (vmin) {
+            vmin += dvfsOffset;
+        }
 
         board::PcvHijackGpuVolts(vmin);
 
@@ -618,7 +622,6 @@ namespace clockManager {
 
     void Tick()
     {
-        fileUtils::LogLine("CPU Temp: %d", board::GetTemperatureMilli(HocClkThermalSensor_CPU));
         std::scoped_lock lock{gContextMutex};
         std::uint32_t mode = 0;
         Result rc = apmExtGetCurrentPerformanceConfiguration(&mode);

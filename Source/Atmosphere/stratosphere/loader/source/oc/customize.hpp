@@ -36,7 +36,7 @@ enum TableConfig: u32 {
     EXTREME_TABLE = 4,
 };
 
-enum StepMode:u32 {
+enum StepMode: u32 {
     StepMode_66MHz  = 0,
     StepMode_100MHz = 1,
     StepMode_Jedec  = 2,

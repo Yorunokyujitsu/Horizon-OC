@@ -747,9 +747,9 @@ namespace ams::ldr::hoc::pcv::mariko {
         MarikoMtcTable *table = reinterpret_cast<MarikoMtcTable *>(startPtr + mtcOffset);
         R_UNLESS(R_SUCCEEDED(MtcValidateAllTables(table, EmcListDefault, EmcListSizeDefault)), ldr::ResultInvalidMtcTable());
 
+        PrepareMtcMemoryRegion(startPtr, table);
         table = reinterpret_cast<MarikoMtcTable *>(startPtr);
 
-        PrepareMtcMemoryRegion(startPtr, table);
         if (R_FAILED(MtcValidateAllTables(table, EmcListDefault, EmcListSizeDefault))) {
             panic::SmcError(panic::Emc);
         }

@@ -726,7 +726,6 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         static const DramId dramId = [] {
             DramId id = GetDramId();
-                id = IOWA_4GB_SAMSUNG_K4U6E3S4AA_MGCL;
             return id;
         }();
 

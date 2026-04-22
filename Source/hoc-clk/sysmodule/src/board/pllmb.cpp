@@ -1,21 +1,25 @@
-// Thx to kazushime for this!
+/*
+ * Copyright (c) Souldbminer
+ *
+ * Copyright (c) KazushiMe
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 #include "pllmb.hpp"
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <inttypes.h>
-#include <switch.h>
-#include "../file_utils.hpp"
-#include <nxExt/t210.h>
-
-
 namespace pllmb {
-    #define CLK_RST_IO_BASE 0x60006000
-    #define CLK_RST_IO_SIZE 0x1000
-
     #define GET_BITS(VAL, HIGH, LOW)    ((VAL & ((1UL << (HIGH + 1UL)) - 1UL)) >> LOW)
     #define GET_BIT(VAL, BIT)           GET_BITS(VAL, BIT, BIT)
 
@@ -74,7 +78,7 @@ namespace pllmb {
         val &= 0xFFFFFF;
         val *= divider;
 
-        double rate_mhz = (u64)val * 32768. / cycle_count;
+        double rate_hz = (u64)val * 32768. / cycle_count;
         usleep(10);
         REG(board::clkVirtAddr + 0x60) = pre_val;
         usleep(10);
@@ -88,7 +92,7 @@ namespace pllmb {
             usleep(10);
         }
 
-        return rate_mhz;
+        return rate_hz;
     }
 
     u64 getRamClockRatePLLMB() {
@@ -104,6 +108,9 @@ namespace pllmb {
         //        ptoGetMHz(CLK_PLLM,  2, PLLM_MISC2, BIT(8)),
         //        ptoGetMHz(CLK_PLLMB, 2, PLLM_MISC2, BIT(9))
         //        );
-        return ptoGetMHz(CLK_PLLMB, 2, PLLM_MISC2, BIT(9));
+
+        u32 pllmb = ptoGetMHz(CLK_PLLMB, 2, PLLM_MISC2, BIT(9));
+        u32 pllm = ptoGetMHz(CLK_PLLM, 2, PLLM_MISC2, BIT(8));
+        return pllmb == 0 ? pllm : pllmb; // pllmb is zeroed out at times, fallback to pllm
     }
 }

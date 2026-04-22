@@ -164,8 +164,8 @@ typedef enum {
 } RamDisplayMode;
 
 typedef enum {
-    MemoryFrequencyMeasurementMode_Actmon = 0,
-    MemoryFrequencyMeasurementMode_PLL,
+    MemoryFrequencyMeasurementMode_PLL = 0,
+    MemoryFrequencyMeasurementMode_Actmon,
     MemoryFrequencyMeasurementMode_EnumMax,
 } MemoryFrequencyMeasurementMode;
 

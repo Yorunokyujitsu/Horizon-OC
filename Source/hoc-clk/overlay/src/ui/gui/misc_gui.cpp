@@ -606,8 +606,8 @@ protected:
 
 
         std::vector<NamedValue> ramRFMeasurementMethods = {
-            NamedValue("Actmon", MemoryFrequencyMeasurementMode_Actmon),
             NamedValue("PLL", MemoryFrequencyMeasurementMode_PLL),
+            NamedValue("Actmon", MemoryFrequencyMeasurementMode_Actmon),
         };
         addConfigButton(
             HocClkConfigValue_MemoryFrequencyMeasurementMode,

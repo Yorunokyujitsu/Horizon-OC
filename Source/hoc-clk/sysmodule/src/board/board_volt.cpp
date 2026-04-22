@@ -1,6 +1,6 @@
 /*
  * Copyright (c) Souldbminer, Lightos_ and Horizon OC Contributors
- *
+ * 
  * Copyright (c) B3711
  * 
  * This program is free software; you can redistribute it and/or modify it
@@ -437,7 +437,7 @@ namespace board {
         u32 bracketStart = ramTable[bracket][0];
         
     
-        u32 rampStartVolt = (bracket == 0) ? 550 : 540;
+        u32 rampStartVolt = (bracket == 0) ? 535 : 525;
         u32 rampSpan = 590 - rampStartVolt; 
 
 
@@ -459,6 +459,6 @@ namespace board {
         }
 
         return baseVolt;
-        }
+    }
 
 }

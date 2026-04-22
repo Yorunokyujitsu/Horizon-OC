@@ -1,6 +1,8 @@
 /*
  * Copyright (c) Souldbminer, Lightos_ and Horizon OC Contributors
  *
+ * Copyright (c) B3711
+ * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -429,17 +431,34 @@ namespace board {
 
         static const u32 gpuVoltArray[] = { 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, };
 
-        if (freqMhz <= 1600) {
-            return 0;
+        if (freqMhz <= 1600) return 0;
+        if (bracket >= std::size(ramTable)) bracket = 0;
+
+        u32 bracketStart = ramTable[bracket][0];
+        
+    
+        u32 rampStartVolt = (bracket == 0) ? 550 : 540;
+        u32 rampSpan = 590 - rampStartVolt; 
+
+
+        if (freqMhz >= 1633 && freqMhz < bracketStart) {
+            u32 raw = rampStartVolt + ((freqMhz - 1633) * rampSpan) / (bracketStart - 1633);
+            u32 volt = ((raw + 2) / 5) * 5;
+            if (volt < rampStartVolt) volt = rampStartVolt;
+            if (volt > 590) volt = 590;
+            return volt;
         }
 
+
+        u32 baseVolt = gpuVoltArray[std::size(gpuVoltArray) - 1];
         for (u32 i = 0; i < std::size(gpuVoltArray); ++i) {
             if (freqMhz <= ramTable[bracket][i]) {
-                return gpuVoltArray[i];
+                baseVolt = gpuVoltArray[i];
+                break;
             }
         }
 
-        return gpuVoltArray[std::size(gpuVoltArray) - 1];
-    }
+        return baseVolt;
+        }
 
 }

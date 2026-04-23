@@ -32,6 +32,7 @@
 namespace board {
 
     GpuVoltData voltData = {};
+    u32 cpuVoltTable[32] = {}; // 32LUT
     u64 cldvfs;
     CpuDfllData cachedTune;
 
@@ -373,14 +374,25 @@ namespace board {
 
                 /* Assuming mariko. */
                 const u32 vmax = 800;
-                constexpr u32 VoltageTableOffset = 312;
-                if (!std::memcmp(&buffer[index + VoltageTableOffset], &vmax, sizeof(vmax))) {
-                    std::memcpy(voltData.voltTable, &buffer[index + VoltageTableOffset], sizeof(voltData.voltTable));
-                    voltData.voltTableAddress = base + memoryInfo.addr + VoltageTableOffset + index;
+                constexpr u32 GpuVoltageTableOffset = 312;
+                if (!std::memcmp(&buffer[index + GpuVoltageTableOffset], &vmax, sizeof(vmax))) {
+                    std::memcpy(voltData.voltTable, &buffer[index + GpuVoltageTableOffset], sizeof(voltData.voltTable));
+                    voltData.voltTableAddress = base + memoryInfo.addr + GpuVoltageTableOffset + index;
                 }
+
+                constexpr u32 CpuVoltageTableOffset = 0xB8;
+                std::memcpy(cpuVoltTable, &buffer[index + CpuVoltageTableOffset], sizeof(cpuVoltTable)); // TODO: verify the CPU table
 
                 svcCloseHandle(handle);
                 handle = INVALID_HANDLE;
+
+                for(int i = 0; i < (int)std::size(cpuVoltTable); ++i) {
+                    fileUtils::LogLine("[dvfs] cpu volt %d: %u mV", i, cpuVoltTable[i]);
+                }
+
+                for(int i = 0; i < (int)std::size(voltData.voltTable); ++i) {
+                    fileUtils::LogLine("[dvfs] gpu volt %d: %u mV", i, voltData.voltTable[i]);
+                }
                 return;
             }
         }

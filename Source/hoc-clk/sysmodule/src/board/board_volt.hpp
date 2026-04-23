@@ -26,8 +26,6 @@ namespace board {
         u64 voltTableAddress;
         u32 ramVmin;
     };
-
-    /* TODO: Find out what component this actually targets. */
     struct UnkRegulator {
         u32 voltageMin;
         u32 voltageStep;

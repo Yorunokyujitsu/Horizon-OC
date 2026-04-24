@@ -77,4 +77,5 @@ protected:
     
     tsl::elm::ToggleListItem* enabledToggle;
     u8 frameCounter = 60;
+    bool shouldSaveKip = false;
 };

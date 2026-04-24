@@ -71,6 +71,10 @@ MiscGui::MiscGui()
 
 MiscGui::~MiscGui()
 {
+    if (shouldSaveKip) {
+        sendKipData();
+        shouldSaveKip = false;
+    }
     if (s_kipThreadPending) {
         threadWaitForExit(&s_kipThread);
         threadClose(&s_kipThread);
@@ -94,7 +98,7 @@ void MiscGui::addConfigToggle(HocClkConfigValue configVal, const char* altName, 
         if (R_FAILED(rc)) {
             FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
         } else if (kip) {
-            sendKipData();
+            shouldSaveKip = true;
         }
         this->lastContextUpdate = armGetSystemTick();
     });
@@ -121,7 +125,7 @@ void MiscGui::addConfigTrackbar(HocClkConfigValue configVal, const char* altName
         this->configList->values[configVal] = v;
         Result rc = hocclkIpcSetConfigValues(this->configList);
         if (R_FAILED(rc)) FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
-        if (kip) sendKipData();
+        if (kip) shouldSaveKip = true;
     });
     this->listElement->addItem(bar);
 }
@@ -142,7 +146,7 @@ void MiscGui::addMappedConfigTrackbar(HocClkConfigValue configVal, const char* a
             this->configList->values[configVal] = vals[idx];
         Result rc = hocclkIpcSetConfigValues(this->configList);
         if (R_FAILED(rc)) FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
-        if (kip) sendKipData();
+        if (kip) shouldSaveKip = true;
     });
     this->listElement->addItem(bar);
 }
@@ -218,7 +222,7 @@ void MiscGui::addConfigButton(HocClkConfigValue configVal,
                             return false;
                         }
                         if (kip) {
-                            sendKipData();
+                            shouldSaveKip = true;
                         }
                         this->lastContextUpdate = armGetSystemTick();
                         return true;
@@ -243,7 +247,7 @@ void MiscGui::addConfigButton(HocClkConfigValue configVal,
                             return false;
                         }
                         if (kip) {
-                            sendKipData();
+                            shouldSaveKip = true;
                         }
                         this->lastContextUpdate = armGetSystemTick();
                         return true;
@@ -336,7 +340,7 @@ void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
                             return false;
                         }
                         if (kip) {
-                            sendKipData();
+                            shouldSaveKip = true;
                         }
                         this->lastContextUpdate = armGetSystemTick();
                         return true;
@@ -361,7 +365,7 @@ void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
                             return false;
                         }
                         if (kip) {
-                            sendKipData();
+                            shouldSaveKip = true;
                         }
                         this->lastContextUpdate = armGetSystemTick();
                         return true;
@@ -1305,7 +1309,7 @@ protected:
                                 FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                                 return false;
                             }
-                            sendKipData();
+                            shouldSaveKip = true;
                             this->lastContextUpdate = armGetSystemTick();
                             return true;
                         },
@@ -1365,7 +1369,7 @@ protected:
                             FatalGui::openWithResultCode("hocclkIpcSetConfigValues", rc);
                             return false;
                         }
-                        sendKipData();
+                        shouldSaveKip = true;
                         this->lastContextUpdate = armGetSystemTick();
                         return true;
                     },

@@ -586,6 +586,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("General Settings"));
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> ramVoltDispModes = {
@@ -643,6 +645,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("Experimental Settings"));
         ValueThresholds thresholdsDisabled(0, 0);
 
@@ -749,6 +753,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("Governor Settings"));
         ValueThresholds thresholdsDisabled(0, 0);
 
@@ -782,6 +788,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         ValueThresholds thresholdsDisabled(0, 0);
 
         BaseMenuGui::refresh(); // get latest context
@@ -833,6 +841,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("Safety Settings"));
         addConfigToggle(HocClkConfigValue_UncappedClocks, nullptr);
         addConfigToggle(HocClkConfigValue_ThermalThrottle, nullptr);
@@ -882,6 +892,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> noNamedValues = {};
 
@@ -1051,6 +1063,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("Memory Timings"));
 
         addConfigTrackbar(KipConfigValue_t1_tRCD,  "t1 tRCD",  ValueRange(0, 7,  1));
@@ -1607,6 +1621,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("RAM Frequency Editor"));
 
         ValueThresholds thresholdsDisabled(0, 0);
@@ -1677,6 +1693,8 @@ public:
 
 protected:
     void listUI() override {
+        Result rc = hocclkIpcGetConfigValues(this->configList);
+        if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> noNamedValues = {};
 

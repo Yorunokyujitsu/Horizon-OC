@@ -918,7 +918,7 @@ protected:
             }
 
             std::vector<NamedValue> marikovmaxconf = {
-                NamedValue("Do Not Override", 0, autoText),
+                NamedValue("Do not override", 0, autoText),
                 NamedValue("1000 mV", 1000),
                 NamedValue("1025 mV", 1025),
                 NamedValue("1050 mV", 1050),

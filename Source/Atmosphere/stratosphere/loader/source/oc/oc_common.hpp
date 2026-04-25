@@ -52,6 +52,8 @@ namespace ams::ldr {
     R_DEFINE_ERROR_RESULT(UnsuccessfulPatcher,      1014);
     R_DEFINE_ERROR_RESULT(SafetyCheckFailure,       1015);
     R_DEFINE_ERROR_RESULT(InvalidMtcTablePattern,   1016);
+    R_DEFINE_ERROR_RESULT(InvalidSocVoltPattern,    1017);
+    R_DEFINE_ERROR_RESULT(InvalidSocVoltLimit,      1018);
 }
 
 namespace ams::ldr::hoc {

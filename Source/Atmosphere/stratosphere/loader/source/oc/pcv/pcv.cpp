@@ -154,6 +154,7 @@ namespace ams::ldr::hoc::pcv {
             { GET_MAX_OF_ARR(erista::maxEmcClocks), 1600'000, 2600'000, false, panic::Emc },
             { C.marikoEmcMaxClock,                  1600'000, 3500'000, false, panic::Emc },
             { C.marikoEmcVddqVolt,                   250'000,  700'000, false, panic::Emc },
+            { C.marikoSocVmax,                          1000,     1200, false, panic::Emc },
             { eristaGpuDvfsMaxFreq,                  768'000, 1152'000, false, panic::Gpu },
             { marikoGpuDvfsMaxFreq,                  768'000, 1536'000, false, panic::Gpu },
             { C.marikoGpuVmax,                           800,      960, false, panic::Gpu },

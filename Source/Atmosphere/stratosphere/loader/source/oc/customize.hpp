@@ -93,6 +93,7 @@ typedef struct CustomizeTable {
     u32 marikoEmcMaxClock;
     u32 marikoEmcVddqVolt;
     u32 emcDvbShift;
+    u32 marikoSocVmax;
     // advanced config
     u32 t1_tRCD;
     u32 t2_tRP;

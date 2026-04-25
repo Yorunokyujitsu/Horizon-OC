@@ -279,12 +279,6 @@ namespace ams::ldr::hoc::pcv::mariko {
             R_THROW(ldr::ResultInvalidGpuFreqMaxPattern());
         }
 
-        /* Verify the limit. */
-        /* TODO: Make this a little bit cleaner at some point. */
-        if (AsmGetImm16(ins1) != (GpuClkOsLimit & 0xFFFF) || AsmGetImm16(ins2) != (GpuClkOsLimit >> 16)) {
-            R_THROW(ldr::ResultInvalidGpuFreqMaxPattern());
-        }
-
         u32 max_clock;
         switch (C.marikoGpuUV) {
         case 0:
@@ -782,20 +776,42 @@ namespace ams::ldr::hoc::pcv::mariko {
             R_SKIP();
         }
 
+        u32 max0 = 1050;
+        u32 max1 = 1025;
+        u32 max2 = 1000;
         s32 voltAdd = 25 * C.emcDvbShift;
-        #define DVB_VOLT(zero, one, two) std::min(zero + voltAdd, 1050), std::min(one + voltAdd, 1025), std::min(two + voltAdd, 1000),
-        DvbEntry emcDvbTableNew[] = {
-            {     204000, {          637, 637, 637, } },
-            {    1331200, {          650, 637, 637, } },
-            {    1600000, {          675, 650, 637, } },
-            {    1866000, { DVB_VOLT(700, 675, 650) } },
-            {    2133000, { DVB_VOLT(725, 700, 675) } },
-            {    2400000, { DVB_VOLT(750, 725, 700) } },
-            {    2666000, { DVB_VOLT(775, 750, 725) } },
-            {    2933000, { DVB_VOLT(800, 775, 750) } },
-            {    3200000, { DVB_VOLT(800, 800, 775) } },
-            { 0xFFFFFFFF, {                         } },
+
+        if (C.marikoSocVmax && C.marikoSocVmax > 1000) {
+            max0 = C.marikoSocVmax;
+            max1 = C.marikoSocVmax;
+            max2 = C.marikoSocVmax;
+        }
+
+        auto DvbVolt = [&](u32 zero, u32 one, u32 two) {
+            return std::array<u32, 3>{
+                std::min(zero + voltAdd, max0),
+                std::min(one  + voltAdd, max1),
+                std::min(two  + voltAdd, max2)
+            };
         };
+
+        #define DVB(v) \
+            static_cast<u32>((v)[0]), \
+            static_cast<u32>((v)[1]), \
+            static_cast<u32>((v)[2])
+        DvbEntry emcDvbTableNew[] = {
+            {     204000, {             637, 637, 637,  } },
+            {    1331200, {             650, 637, 637,  } },
+            {    1600000, {             675, 650, 637,  } },
+            {    1866000, { DVB(DvbVolt(700, 675, 650)) } },
+            {    2133000, { DVB(DvbVolt(725, 700, 675)) } },
+            {    2400000, { DVB(DvbVolt(750, 725, 700)) } },
+            {    2666000, { DVB(DvbVolt(775, 750, 725)) } },
+            {    2933000, { DVB(DvbVolt(800, 775, 750)) } },
+            {    3200000, { DVB(DvbVolt(800, 800, 775)) } },
+            { 0xFFFFFFFF, {                             } },
+        };
+        #undef DVB
 
         u32 j = MtcTableCountDefault;
         for (u32 i = MtcTableCountDefault; i < newEmcList.size(); ++i) {
@@ -914,6 +930,124 @@ namespace ams::ldr::hoc::pcv::mariko {
         R_SUCCEED();
     }
 
+    Result GetSocSpeedo(u32 &socSpeedo) {
+        constexpr u64 FusePhysicalAddress = 0x7000F000;
+        u64 virtualAddress                = 0;
+        constexpr u64 Size = 0x1000;
+
+        u64 outSize;
+        /* TODO: use svc::QueryMemoryMapping instead. */
+        R_TRY(svcQueryMemoryMapping(&virtualAddress, &outSize, FusePhysicalAddress, Size));
+
+        constexpr u32 FuseOffset      = 2048;
+        constexpr u32 SocSpeedoOffset = 308;
+        socSpeedo = *reinterpret_cast<u32 *>(virtualAddress + FuseOffset + SocSpeedoOffset);
+
+        R_SUCCEED();
+    }
+
+    u32 GetSocProcessId(u32 socSpeedo) {
+        if (socSpeedo <= 1597) {
+            return 0;
+        }
+
+        if (socSpeedo <= 1708) {
+            return 1;
+        }
+
+        /* >= 1709. */
+        return 2;
+    }
+
+    Result SocVoltAsm(u32 *compareSpeedos) {
+        constexpr u32 VoltageScanLimit = 10;
+        /* Might actually be speedo id. */
+        u32 *writeProcessId = ScanAssembly(compareSpeedos, VoltageScanLimit, SocVoltWriteProcessIdAsm, asm_compare_no_rd);
+        R_UNLESS(writeProcessId != nullptr, ldr::ResultInvalidSocVoltPattern());
+        u8 writeProcessIdRd = asm_get_rd(*writeProcessId);
+
+        /* This writes 1050mV. */
+        u32 *writeVoltage = ScanAssembly(writeProcessId, VoltageScanLimit, SocVoltWriteVoltageAsm, asm_compare_no_rd);
+        R_UNLESS(writeVoltage != nullptr, ldr::ResultInvalidSocVoltPattern());
+        u8 writeVoltageRd = asm_get_rd(*writeVoltage);
+
+        /* A csel instruction is used to select the soc voltage limit register. */
+        /* We care about its destination register since that is used for verification. */
+        constexpr u32 VoltageSelectScanLimit = 24;
+        u32 *selectVoltage = ScanAssembly(writeVoltage, VoltageSelectScanLimit, SocVoltSelectRegisterAsm, AsmCompareCselNoReg);
+        R_UNLESS(selectVoltage != nullptr, ldr::ResultInvalidSocVoltPattern());
+        /* Todo: check rm and rn? */
+        u8 selectVoltageRd = asm_get_rd(*selectVoltage);
+
+        /* rdCsel is then multiplied by 1000 to convert to uV. */
+        /* This is pretty far down the function. */
+        constexpr u32 MultiplierScanLimit = 200;
+        u32 *multiplier = ScanAssembly(selectVoltage, MultiplierScanLimit, SocVoltMultiplyVoltsAsm, AsmCompareMullNoReg);
+        R_UNLESS(multiplier != nullptr, ldr::ResultInvalidSocVoltPattern());
+        u8 multiplierRn = AsmGetMullRn(*multiplier);
+        u8 multiplierRm = AsmGetMullRm(*multiplier);
+        /* One of the two registers has to be rdCsel. */
+        R_UNLESS((multiplierRn == selectVoltageRd) || (multiplierRm == selectVoltageRd), ldr::ResultInvalidSocVoltPattern());
+        u8 multiplierRd = asm_get_rd(*multiplier);
+
+        /* Subs instruction is then used to verify against absolute limit. */
+        u32 limitValidationPattern = AsmSubsSetRn(SocVoltValidateLimitAsm, multiplierRd);
+        u32 *limitValidation = ScanAssembly(multiplier, VoltageScanLimit, limitValidationPattern, AsmSubsCompareNoReg);
+        R_UNLESS(limitValidation != nullptr, ldr::ResultInvalidSocVoltPattern());
+
+        /* There is a b.gt instruction right after (checks for socVoltageCap < socVoltageMax). */
+        u32 *branchToAbort = limitValidation + 1;
+        R_UNLESS(AsmCompareBrConNoImm19(*branchToAbort, SocVoltBranchToAbortAsm), ldr::ResultInvalidSocVoltPattern());
+
+        if (!C.marikoSocVmax || C.marikoSocVmax <= 1000) {
+            R_SKIP();
+        }
+
+        /* Adjust 1598 speedo minimum to ensure it always goes down process id 0 branch. */
+        /* 2200 should be high enough :D */
+        u32 compareSpeedosPatch = AsmSubsSetImm12(*compareSpeedos, 2200);
+        PATCH_OFFSET(compareSpeedos, compareSpeedosPatch);
+
+        u32 socSpeedo = 0;
+        R_TRY(GetSocSpeedo(socSpeedo));
+
+        /* Adjust processId from 0 to [process id of switch booting this]. */
+        /* We're overwriting the orr instruction entirly. */
+        u32 processId = GetSocProcessId(socSpeedo);
+        u32 writeProcessIdPatch = asm_set_rd(asm_set_imm16(SocVoltWriteVoltageAsm, processId), writeProcessIdRd);
+        PATCH_OFFSET(writeProcessId, writeProcessIdPatch);
+
+        /* Adjust voltage limit. */
+        u32 voltageLimitPatch = asm_set_rd(asm_set_imm16(SocVoltWriteVoltageAsm, C.marikoSocVmax), writeVoltageRd);
+        PATCH_OFFSET(writeVoltage, voltageLimitPatch);
+
+        /* Branches to an abort if limits are invalid -- we patch the branch instruction with NOP. */
+        PATCH_OFFSET(branchToAbort, NopIns);
+
+        R_SUCCEED();
+    }
+
+    Result SocVoltLimit(u32 *ptr) {
+        R_UNLESS(!std::memcmp(ptr - SocVoltLimitMaxDefaultIndex, socVoltLimitArray, sizeof(socVoltLimitArray)), ldr::ResultInvalidSocVoltLimit());
+        if (!C.marikoSocVmax || C.marikoSocVmax <= SocVoltLimitOfficial) {
+            R_SKIP();
+        }
+
+        constexpr u32 Step = 25;
+        u32 maxVolt = C.marikoSocVmax;
+        if (maxVolt % Step) {
+            maxVolt = maxVolt / Step * Step; /* Round. */
+        }
+
+        u32 volt = SocVoltLimitOfficial;
+        for (u32 i = 1; i < DvfsTableEntryCount - SocVoltLimitMaxDefaultIndex && volt < maxVolt; ++i) {
+            volt += Step;
+            PATCH_OFFSET(ptr + i, volt);
+        }
+
+        R_SUCCEED();
+    }
+
     void Patch(uintptr_t mapped_nso, size_t nso_size) {
         nsoStart = reinterpret_cast<u32 *>(mapped_nso);
         MtcGenerateFreqTables();
@@ -932,13 +1066,15 @@ namespace ams::ldr::hoc::pcv::mariko {
             { "GPU Freq Asm",      &GpuFreqMaxAsm,         2,          &GpuMaxClockPatternFn       },
             { "GPU PLL Max",       &GpuFreqPllMax,         1, nullptr,  GpuClkPllMax               },
             { "GPU PLL Limit",     &GpuFreqPllLimit,       4, nullptr,  GpuClkPllLimit             },
-            { "MEM Freq Mtc",      &MemFreqMtcTable,       0, nullptr,  EmcClkOSLimit              },
+            { "MEM Freq Mtc",      &MemFreqMtcTable,       1, nullptr,  EmcClkOSLimit              },
             { "MEM Freq Dvb",      &MemFreqDvbTable,       1, nullptr,  EmcClkOSLimit              },
             { "MEM Freq Max",      &MemFreqMax,            0, nullptr,  EmcClkOSLimit              },
             { "MEM Freq PLLM",     &MemFreqPllmLimit,      2, nullptr,  EmcClkPllmLimit            },
             { "MEM Vddq",          &EmcVddqVolt,           2, nullptr,  EmcVddqDefault             },
             { "MEM Vdd2",          &MemVoltHandler,        2, nullptr,  MemVdd2Default             },
-            { "Mem Table Asm",     &MemMtcTableAsm,        0,          &MemMtcGetGetTablePatternFn },
+            { "MEM Table Asm",     &MemMtcTableAsm,        1,          &MemMtcGetGetTablePatternFn },
+            { "SOC Volt Asm",      &SocVoltAsm,            1,          &SocVoltPatternFn           },
+            { "SOC Volt Limit",    &SocVoltLimit,          1, nullptr,  SocVoltLimitOfficial       },
         };
 
         for (uintptr_t ptr = mapped_nso; ptr <= mapped_nso + nso_size - sizeof(MarikoMtcTable); ptr += sizeof(u32)) {

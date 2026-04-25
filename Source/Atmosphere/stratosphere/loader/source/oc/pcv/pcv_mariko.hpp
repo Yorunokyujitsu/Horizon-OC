@@ -112,7 +112,7 @@ namespace ams::ldr::hoc::pcv::mariko {
 
     struct DvbEntry {
         u64 freq;
-        s32 volt[4] = {};
+        u32 volt[4] = {};
     };
 
     constexpr DvbEntry EmcDvbTableDefault[] = {
@@ -123,6 +123,27 @@ namespace ams::ldr::hoc::pcv::mariko {
         { 1331200, { 650, 637, 637, } },
         { 1600000, { 675, 650, 637, } },
     };
+
+    /* Movz */
+    /*
+        SF | OPC                     | HW    | Imm16                                      | RD
+        31 | 30 29 28 27 26 25 24 23 | 22 21 | 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 | 4 3 2 1 0
+    */
+    constexpr u32 SocVoltCompareSpeedoAsm  = 0x7118FAFF; /* subs imm, compares to >=1598 max speedo and then goes down process id 1 route. */
+    constexpr u32 SocVoltWriteProcessIdAsm = 0x2A1F03F4; /* orr, writes id 0. */
+    constexpr u32 SocVoltWriteVoltageAsm   = 0x52808358; /* Movz imm, writes 1050mV. */
+    constexpr u32 SocVoltSelectRegisterAsm = 0x1A9A3118; /* Csel, selects the voltage -- we need the register of this. */
+    constexpr u32 SocVoltMultiplyVoltsAsm  = 0x1B1A7F0B; /* Mul, converts from mV -> uV */
+    constexpr u32 SocVoltValidateLimitAsm  = 0x6B0A017F; /* Subs, checks limits */
+    constexpr u32 SocVoltBranchToAbortAsm  = 0x540020AC; /* B.ge Branches to abort if limits are invalid. */
+
+    ALWAYS_INLINE bool SocVoltPatternFn(u32 *ptr) {
+        return asm_compare_no_rd(*ptr, SocVoltCompareSpeedoAsm);
+    }
+
+    constexpr u32 SocVoltLimitOfficial = 1050;
+    constexpr u32 SocVoltLimitMaxDefaultIndex = 17;
+    static const u32 socVoltLimitArray[DvfsTableEntryCount] = { 637, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000, 1025, 1050, };
 
     constexpr u32 EmcListDefault[]   = { 204000, 1331200, 1600000, };
     constexpr u32 EmcListSizeDefault = std::size(EmcListDefault);
@@ -260,8 +281,8 @@ namespace ams::ldr::hoc::pcv::mariko {
 
     /* Adrp */
     /*
-        OP | ImmLow               | ImmHigh                                             | RD
-        31 | 30 29 28 27 26 25 24 | 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 | 4 3 2 1 0
+        OP | ImmLow |                | ImmHigh                                             | RD
+        31 | 30 29  | 28 27 26 25 24 | 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 | 4 3 2 1 0
     */
 
     /* ADD (immediate) */

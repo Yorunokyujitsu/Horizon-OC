@@ -46,7 +46,9 @@ volatile CustomizeTable C = {
 
 .marikoEmcMaxClock = 2133000, /* 1866MHz @ 1866tWRL is guaranteed to work on all Mariko units */
 .marikoEmcVddqVolt = 600000,
+
 .emcDvbShift = 0,
+.marikoSocVmax = 0, /* 0 = stock limits. */
 
 // Primary
 .t1_tRCD = 0,
@@ -65,21 +67,21 @@ volatile CustomizeTable C = {
 
 /* Frequency where non low timings gets used. */
 .timingEmcTbreak = DISABLED,
-.low_t6_tRTW = DISABLED,
-.low_t7_tWTR = DISABLED,
+.low_t6_tRTW = 0,
+.low_t7_tWTR = 0,
 
 .readLatency = {
-    DISABLED,
-    DISABLED,
-    DISABLED,
-    DISABLED,
+    /* 1333 */ 0,
+    /* 1600 */ 0,
+    /* 1866 */ 0,
+    /* 2133 */ 0,
 },
 
 .writeLatency = {
-    DISABLED,
-    DISABLED,
-    DISABLED,
-    DISABLED,
+    /* 1333 */ 0,
+    /* 1600 */ 0,
+    /* 1866 */ 0,
+    /* 2133 */ 0,
 },
 
 /* You can mix and match different latencies if needed */

@@ -892,6 +892,10 @@ public:
 
 protected:
     void listUI() override {
+        BaseMenuGui::refresh();
+        if(!this->context)
+            return;
+
         Result rc = hocclkIpcGetConfigValues(this->configList);
         if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         ValueThresholds thresholdsDisabled(0, 0);
@@ -903,8 +907,18 @@ protected:
         
         addConfigTrackbar(KipConfigValue_emcDvbShift,  "SoC DVB Shift",  ValueRange(0, 16, 1)); // yes, DVB 16 is nessesary
         if(IsMariko()) {
+            u32 socSpeedo = this->context->speedos[HocClkSpeedo_SOC];
+            std::string autoText = "1000 mV";
+            if (socSpeedo <= 1597) {
+                autoText = "1050 mV";
+            } else if (socSpeedo <= 1708) {
+                autoText = "1025 mV";
+            } else if(socSpeedo >= 1709) {
+                autoText = "1000 mV";
+            }
+
             std::vector<NamedValue> marikovmaxconf = {
-                NamedValue("Auto", 0),
+                NamedValue("Do Not Override", 0, autoText),
                 NamedValue("1000 mV", 1000),
                 NamedValue("1025 mV", 1025),
                 NamedValue("1050 mV", 1050),

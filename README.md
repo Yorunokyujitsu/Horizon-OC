@@ -154,6 +154,7 @@ Refer to COMPILATION.md
 
 * **Souldbminer** - hoc-clk and loader development
 * **Lightos** - Loader patches development, hoc-clk development, guides
+* **TDRR** - HOC Logo Design
 * **SciresM** - Atmosphere CFW
 * **CTCaer** - L4T, Hekate, proper RAM timings
 * **KazushiMe** - Switch OC Suite

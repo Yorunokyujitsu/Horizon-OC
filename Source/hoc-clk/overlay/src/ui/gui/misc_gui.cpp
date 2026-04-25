@@ -1419,6 +1419,90 @@ protected:
 
         this->listElement->addItem(new tsl::elm::CategoryHeader("CPU Settings"));
         if(IsMariko()) {
+            addConfigTrackbar(KipConfigValue_marikoCpuUVLow, "CPU Low UV", ValueRange(0, 8, 1));
+            addConfigTrackbar(KipConfigValue_marikoCpuUVHigh, "CPU High UV", ValueRange(0, 12, 1));
+
+            std::vector<NamedValue> marikoTableConf = {
+                // NamedValue("Auto", 0),
+                NamedValue("Default", 1),
+                NamedValue("1581MHz Tbreak", 2),
+                NamedValue("1683MHz Tbreak", 3),
+                NamedValue("Extreme UV Table", 4)
+            };
+
+            addConfigButton(
+                KipConfigValue_tableConf,
+                "CPU UV Table",
+                ValueRange(0, 12, 1, "", 0),
+                "CPU UV Table",
+                &thresholdsDisabled,
+                {},
+                marikoTableConf,
+                false,
+                true
+            );
+
+            addConfigButton(
+                KipConfigValue_marikoCpuLowVmin,
+                "CPU Low VMIN",
+                ValueRange(550, 750, 5, "mV", 1),
+                "CPU VMIN",
+                &thresholdsDisabled,
+                {},
+                {},
+                false,
+                true
+            );
+
+            addConfigButton(
+                KipConfigValue_marikoCpuHighVmin,
+                "CPU High VMIN",
+                ValueRange(650, 900, 5, "mV", 1),
+                "CPU VMIN",
+                &thresholdsDisabled,
+                {},
+                {},
+                false,
+                true
+            );
+
+            ValueThresholds mCpuVoltThresholds(1160, 1180);
+            addConfigButton(
+                KipConfigValue_marikoCpuMaxVolt,
+                "CPU Max Voltage",
+                ValueRange(1000, 1200, 5, "mV", 1),
+                "CPU Max Voltage",
+                &mCpuVoltThresholds,
+                {},
+                {},
+                false,
+                true
+            );
+
+            
+            std::vector<NamedValue> maxClkOptions = {
+                NamedValue("1963 MHz", 1963500),
+                NamedValue("2091 MHz", 2091000),
+                NamedValue("2193 MHz", 2193000),
+                NamedValue("2295 MHz", 2295000),
+                NamedValue("2397 MHz", 2397000),
+                NamedValue("2499 MHz", 2499000),
+                NamedValue("2601 MHz", 2601000),
+                NamedValue("2703 MHz", 2703000),
+            };
+
+            addConfigButton(
+                KipConfigValue_marikoCpuMaxClock,
+                "CPU Max Clock",
+                ValueRange(0, 0, 1, "", 1),
+                "CPU Max Clock",
+                this->configList->values[KipConfigValue_marikoCpuUVHigh] ? &mCpuClockThresholdsUV : &mCpuClockThresholds,
+                {},
+                maxClkOptions,
+                false,
+                true
+            );
+
             std::vector<NamedValue> ClkOptions = {
                 NamedValue("1963 MHz", 1963500),
                 NamedValue("2091 MHz", 2091000),
@@ -1442,41 +1526,10 @@ protected:
                 true
             );
         } else {
-            std::vector<NamedValue> ClkOptionsE = {
-                NamedValue("1785 MHz", 1785000),
-                NamedValue("1887 MHz", 1887000),
-                NamedValue("1989 MHz", 1989000),
-                NamedValue("2091 MHz", 2091000),
-                NamedValue("2193 MHz", 2193000),
-                NamedValue("2295 MHz", 2295000),
-                NamedValue("2397 MHz", 2397000),
-            };
-            addConfigButton(
-                KipConfigValue_eristaCpuBoostClock,
-                "CPU Boost Clock",
-                ValueRange(0, 0, 1, "", 1),
-                "CPU Boost Clock",
-                this->configList->values[KipConfigValue_eristaCpuUV] ? &eCpuClockThresholdsUV : &eCpuClockThresholds,
-                {},
-                ClkOptionsE,
-                false,
-                true
-            );
-        }
-        if(IsErista()) {
-            addConfigButton(
-                KipConfigValue_eristaCpuUV,
-                "CPU UV",
-                ValueRange(0, 5, 1, "", 1),
-                "CPU UV",
-                &thresholdsDisabled,
-                {},
-                {},
-                false,
-                true
-            );
+            addConfigTrackbar(KipConfigValue_eristaCpuUV, "CPU UV", ValueRange(0, 5, 1));
 
             addConfigToggle(KipConfigValue_eristaCpuUnlock, "CPU Unlock", true);
+
             addConfigButton(
                 KipConfigValue_eristaCpuVmin,
                 "CPU VMIN",
@@ -1522,112 +1575,29 @@ protected:
                 maxClkOptions,
                 false
             );
-        } else {
-            std::vector<NamedValue> marikoTableConf = {
-                // NamedValue("Auto", 0),
-                NamedValue("Default", 1),
-                NamedValue("1581MHz Tbreak", 2),
-                NamedValue("1683MHz Tbreak", 3),
-                NamedValue("Extreme UV Table", 4)
-            };
-
-            addConfigButton(
-                KipConfigValue_tableConf,
-                "CPU UV Table",
-                ValueRange(0, 12, 1, "", 0),
-                "CPU UV Table",
-                &thresholdsDisabled,
-                {},
-                marikoTableConf,
-                false,
-                true
-            );
-            addConfigButton(
-                KipConfigValue_marikoCpuUVLow,
-                "CPU Low UV",
-                ValueRange(0, 8, 1, "", 1),
-                "CPU Low UV",
-                &thresholdsDisabled,
-                {},
-                {},
-                false,
-                true
-            );
-            addConfigButton(
-                KipConfigValue_marikoCpuUVHigh,
-                "CPU High UV",
-                ValueRange(0, 12, 1, "", 1),
-                "CPU High UV",
-                &thresholdsDisabled,
-                {},
-                {},
-                false,
-                true
-            );
-
-            std::vector<NamedValue> maxClkOptions = {
-                NamedValue("1963 MHz", 1963500),
+            std::vector<NamedValue> ClkOptionsE = {
+                NamedValue("1785 MHz", 1785000),
+                NamedValue("1887 MHz", 1887000),
+                NamedValue("1989 MHz", 1989000),
                 NamedValue("2091 MHz", 2091000),
                 NamedValue("2193 MHz", 2193000),
                 NamedValue("2295 MHz", 2295000),
                 NamedValue("2397 MHz", 2397000),
-                NamedValue("2499 MHz", 2499000),
-                NamedValue("2601 MHz", 2601000),
-                NamedValue("2703 MHz", 2703000),
             };
-
             addConfigButton(
-                KipConfigValue_marikoCpuMaxClock,
-                "CPU Max Clock",
+                KipConfigValue_eristaCpuBoostClock,
+                "CPU Boost Clock",
                 ValueRange(0, 0, 1, "", 1),
-                "CPU Max Clock",
-                this->configList->values[KipConfigValue_marikoCpuUVHigh] ? &mCpuClockThresholdsUV : &mCpuClockThresholds,
+                "CPU Boost Clock",
+                this->configList->values[KipConfigValue_eristaCpuUV] ? &eCpuClockThresholdsUV : &eCpuClockThresholds,
                 {},
-                maxClkOptions,
+                ClkOptionsE,
                 false,
                 true
             );
-
-            addConfigButton(
-                KipConfigValue_marikoCpuLowVmin,
-                "CPU Low VMIN",
-                ValueRange(550, 750, 5, "mV", 1),
-                "CPU VMIN",
-                &thresholdsDisabled,
-                {},
-                {},
-                false,
-                true
-            );
-
-            addConfigButton(
-                KipConfigValue_marikoCpuHighVmin,
-                "CPU High VMIN",
-                ValueRange(650, 900, 5, "mV", 1),
-                "CPU VMIN",
-                &thresholdsDisabled,
-                {},
-                {},
-                false,
-                true
-            );
-
-            ValueThresholds mCpuVoltThresholds(1160, 1180);
-            addConfigButton(
-                KipConfigValue_marikoCpuMaxVolt,
-                "CPU Max Voltage",
-                ValueRange(1000, 1200, 5, "mV", 1),
-                "CPU Max Voltage",
-                &mCpuVoltThresholds,
-                {},
-                {},
-                false,
-                true
-            );
-
-            addConfigToggle(HocClkConfigValue_OverwriteBoostMode, nullptr);
-
         }
+        addConfigToggle(HocClkConfigValue_OverwriteBoostMode, nullptr);
+
     }
 };
 

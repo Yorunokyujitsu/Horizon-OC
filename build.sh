@@ -1,7 +1,7 @@
 #!/bin/sh
 
-SRC="Source/Atmosphere/stratosphere/loader/source/oc"
-DEST="build/stratosphere/loader/source/oc"
+SRC="Source/Atmosphere/stratosphere/loader/"
+DEST="build/stratosphere/loader/"
 mkdir -p "dist/atmosphere/kips/"
 mkdir -p "$DEST"
 

@@ -85,6 +85,7 @@ typedef enum {
     KipConfigValue_marikoEmcMaxClock,
     KipConfigValue_marikoEmcVddqVolt,
     KipConfigValue_emcDvbShift,
+    KipConfigValue_marikoSocVmax,
 
     KipConfigValue_t1_tRCD,
     KipConfigValue_t2_tRP,
@@ -310,7 +311,8 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "Mariko EMC VDDQ Voltage" : "mariko_emc_vddq_volt";
         case KipConfigValue_emcDvbShift:
             return pretty ? "EMC DVB Shift" : "emc_dvb_shift";
-
+        case KipConfigValue_marikoSocVmax:
+            return pretty ? "SOC Vmax" : "soc_vmax";
         // Memory timings
         case KipConfigValue_t1_tRCD:
             return pretty ? "t1 - tRCD" : "t1_trcd";
@@ -566,6 +568,7 @@ static inline uint64_t hocclkValidConfigValue(HocClkConfigValue val, uint64_t in
         case KipConfigValue_marikoEmcMaxClock:
         case KipConfigValue_marikoEmcVddqVolt:
         case KipConfigValue_emcDvbShift:
+        case KipConfigValue_marikoSocVmax:
         case KipConfigValue_t1_tRCD:
         case KipConfigValue_t2_tRP:
         case KipConfigValue_t3_tRAS:

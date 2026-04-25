@@ -44,6 +44,8 @@ namespace kip {
         u32 marikoEmcMaxClock;
         u32 marikoEmcVddqVolt;
         u32 emcDvbShift;
+        u32 marikoSocVmax;
+
         // advanced config
         u32 t1_tRCD;
         u32 t2_tRP;
@@ -266,6 +268,7 @@ namespace kip {
     static inline bool cust_set_common_gpu_offset(const char* p, u32 v) { CUST_WRITE_FIELD(p, commonGpuVoltOffset, v); }
     static inline bool cust_set_gpu_speedo(const char* p, u32 v) { CUST_WRITE_FIELD(p, gpuSpeedo, v); }
     static inline bool cust_set_marikoCpuMaxClock(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoCpuMaxClock, v); }
+    static inline bool cust_set_marikoSocVmax(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoSocVmax, v); }
 
     /* GPU VOLT ARRAY HELPERS */
     static inline bool cust_set_erista_gpu_volt(const char* p, int idx, u32 v) {
@@ -354,6 +357,7 @@ namespace kip {
     static inline u32 cust_get_common_gpu_offset(const CustomizeTable* t) { return CUST_GET_FIELD(t, commonGpuVoltOffset); }
     static inline u32 cust_get_gpu_speedo(const CustomizeTable* t) { return CUST_GET_FIELD(t, gpuSpeedo); }
     static inline u32 cust_get_marikoCpuMaxClock(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoCpuMaxClock); }
+    static inline u32 cust_get_marikoSocVmax(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoSocVmax); }
 
     static inline u32 cust_get_erista_gpu_volt(const CustomizeTable* t, int idx) {
         if (!t || idx < 0 || idx >= 27) return 0;

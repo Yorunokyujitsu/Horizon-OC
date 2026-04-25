@@ -69,6 +69,7 @@ namespace kip {
         CUST_WRITE_FIELD_BATCH(&table, marikoEmcMaxClock, config::GetConfigValue(KipConfigValue_marikoEmcMaxClock));
         CUST_WRITE_FIELD_BATCH(&table, marikoEmcVddqVolt, config::GetConfigValue(KipConfigValue_marikoEmcVddqVolt));
         CUST_WRITE_FIELD_BATCH(&table, emcDvbShift, config::GetConfigValue(KipConfigValue_emcDvbShift));
+        CUST_WRITE_FIELD_BATCH(&table, marikoSocVmax, config::GetConfigValue(KipConfigValue_marikoSocVmax));
 
         CUST_WRITE_FIELD_BATCH(&table, t1_tRCD, config::GetConfigValue(KipConfigValue_t1_tRCD));
         CUST_WRITE_FIELD_BATCH(&table, t2_tRP, config::GetConfigValue(KipConfigValue_t2_tRP));
@@ -208,6 +209,7 @@ namespace kip {
             configValues.values[KipConfigValue_marikoEmcMaxClock] = cust_get_mariko_emc_max(&table);
             configValues.values[KipConfigValue_marikoEmcVddqVolt] = cust_get_mariko_emc_vddq(&table);
             configValues.values[KipConfigValue_emcDvbShift] = cust_get_emc_dvb_shift(&table);
+            configValues.values[KipConfigValue_marikoSocVmax] = cust_get_marikoSocVmax(&table);
 
             configValues.values[KipConfigValue_t1_tRCD] = cust_get_tRCD(&table);
             configValues.values[KipConfigValue_t2_tRP] = cust_get_tRP(&table);

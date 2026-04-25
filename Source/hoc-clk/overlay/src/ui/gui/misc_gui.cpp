@@ -901,8 +901,35 @@ protected:
 
         this->listElement->addItem(new tsl::elm::CategoryHeader("RAM Settings"));
         
-        addConfigTrackbar(KipConfigValue_emcDvbShift,  "SoC DVB Shift",  ValueRange(0, 10, 1));
+        addConfigTrackbar(KipConfigValue_emcDvbShift,  "SoC DVB Shift",  ValueRange(0, 16, 1)); // yes, DVB 16 is nessesary
+        if(IsMariko()) {
+            std::vector<NamedValue> marikovmaxconf = {
+                NamedValue("Auto", 0),
+                NamedValue("1000 mV", 1000),
+                NamedValue("1025 mV", 1025),
+                NamedValue("1050 mV", 1050),
+                NamedValue("1075 mV", 1075),
+                NamedValue("1100 mV", 1100),
+                NamedValue("1125 mV", 1125),
+                NamedValue("1150 mV", 1150),
+                NamedValue("1175 mV", 1175),
+                NamedValue("1200 mV", 1200),
+            };
+            ValueThresholds marikovmaxT(1075, 1150);
 
+            addConfigButton(
+                KipConfigValue_marikoSocVmax,
+                "SoC Max Volt",
+                ValueRange(0, 12, 1, "", 0),
+                "SoC Max Volt",
+                &marikovmaxT,
+                {},
+                marikovmaxconf,
+                false,
+                true
+            );
+        }
+        
         addConfigToggle(KipConfigValue_hpMode, "HP Mode", true);
 
         std::map<uint32_t, std::string> emc_voltage_label = {

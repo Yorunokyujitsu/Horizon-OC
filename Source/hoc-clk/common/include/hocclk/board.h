@@ -126,9 +126,9 @@ typedef enum {
 } HocClkSpeedo;
 
 typedef enum {
-    GPUUVLevel_NoUV = 0,
-    GPUUVLevel_SLT,
-    GPUUVLevel_HiOPT,
+    GPUUVLevel_HiOPT = 0,
+    GPUUVLevel_HiOPT15,
+    GPUUVLevel_HighUV,
     GPUUVLevel_EnumMax,
 } GPUUndervoltLevel;
 

@@ -141,8 +141,8 @@ namespace ams::ldr::hoc::pcv::mariko {
         return asm_compare_no_rd(*ptr, SocVoltCompareSpeedoAsm);
     }
 
-    constexpr u32 SocVoltLimitOfficial = 1050;
-    constexpr u32 SocVoltLimitMaxDefaultIndex = 17;
+    constexpr u32 SocVoltLimitOfficial                      = 1050;
+    constexpr u32 SocVoltLimitMaxDefaultIndex               = 17;
     static const u32 socVoltLimitArray[DvfsTableEntryCount] = { 637, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000, 1025, 1050, };
 
     constexpr u32 EmcListDefault[]   = { 204000, 1331200, 1600000, };
@@ -151,10 +151,10 @@ namespace ams::ldr::hoc::pcv::mariko {
     constexpr u32 EmcRateStep        = 33'000;
     constexpr u32 EmcRateStepScale   = 33'200;
 
-    constexpr u32 EmcClkOSAlt = 1331'200;
+    constexpr u32 EmcClkOSAlt     = 1331'200;
     constexpr u32 EmcClkPllmLimit = 2133'000'000;
-    constexpr u32 EmcVddqDefault = 600'000;
-    constexpr u32 MemVdd2Default = 1100'000;
+    constexpr u32 EmcVddqDefault  = 600'000;
+    constexpr u32 MemVdd2Default  = 1100'000;
 
     constexpr u32 MTC_TABLE_REV        = 3;
     constexpr u32 MtcTableCountDefault = 3;

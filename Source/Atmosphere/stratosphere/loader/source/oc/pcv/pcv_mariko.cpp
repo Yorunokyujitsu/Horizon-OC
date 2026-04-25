@@ -776,9 +776,9 @@ namespace ams::ldr::hoc::pcv::mariko {
             R_SKIP();
         }
 
-        u32 max0 = 1050;
-        u32 max1 = 1025;
-        u32 max2 = 1000;
+        u32 max0    = 1050;
+        u32 max1    = 1025;
+        u32 max2    = 1000;
         s32 voltAdd = 25 * C.emcDvbShift;
 
         if (C.marikoSocVmax && C.marikoSocVmax > 1000) {
@@ -865,7 +865,7 @@ namespace ams::ldr::hoc::pcv::mariko {
         regulator *entry = reinterpret_cast<regulator *>(reinterpret_cast<u8 *>(ptr) - offsetof(regulator, type_2_3.default_uv));
 
         constexpr u32 uv_step = 5'000;
-        constexpr u32 uv_min = 250'000;
+        constexpr u32 uv_min  = 250'000;
 
         auto validator = [entry]() {
             R_UNLESS(entry->id               == 2,       ldr::ResultInvalidRegulatorEntry());
@@ -933,7 +933,7 @@ namespace ams::ldr::hoc::pcv::mariko {
     Result GetSocSpeedo(u32 &socSpeedo) {
         constexpr u64 FusePhysicalAddress = 0x7000F000;
         u64 virtualAddress                = 0;
-        constexpr u64 Size = 0x1000;
+        constexpr u64 Size                = 0x1000;
 
         u64 outSize;
         /* TODO: use svc::QueryMemoryMapping instead. */
@@ -941,7 +941,7 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         constexpr u32 FuseOffset      = 2048;
         constexpr u32 SocSpeedoOffset = 308;
-        socSpeedo = *reinterpret_cast<u32 *>(virtualAddress + FuseOffset + SocSpeedoOffset);
+        socSpeedo                     = *reinterpret_cast<u32 *>(virtualAddress + FuseOffset + SocSpeedoOffset);
 
         R_SUCCEED();
     }
@@ -974,7 +974,7 @@ namespace ams::ldr::hoc::pcv::mariko {
         /* A csel instruction is used to select the soc voltage limit register. */
         /* We care about its destination register since that is used for verification. */
         constexpr u32 VoltageSelectScanLimit = 24;
-        u32 *selectVoltage = ScanAssembly(writeVoltage, VoltageSelectScanLimit, SocVoltSelectRegisterAsm, AsmCompareCselNoReg);
+        u32 *selectVoltage                   = ScanAssembly(writeVoltage, VoltageSelectScanLimit, SocVoltSelectRegisterAsm, AsmCompareCselNoReg);
         R_UNLESS(selectVoltage != nullptr, ldr::ResultInvalidSocVoltPattern());
         /* Todo: check rm and rn? */
         u8 selectVoltageRd = asm_get_rd(*selectVoltage);
@@ -982,7 +982,7 @@ namespace ams::ldr::hoc::pcv::mariko {
         /* rdCsel is then multiplied by 1000 to convert to uV. */
         /* This is pretty far down the function. */
         constexpr u32 MultiplierScanLimit = 200;
-        u32 *multiplier = ScanAssembly(selectVoltage, MultiplierScanLimit, SocVoltMultiplyVoltsAsm, AsmCompareMullNoReg);
+        u32 *multiplier                   = ScanAssembly(selectVoltage, MultiplierScanLimit, SocVoltMultiplyVoltsAsm, AsmCompareMullNoReg);
         R_UNLESS(multiplier != nullptr, ldr::ResultInvalidSocVoltPattern());
         u8 multiplierRn = AsmGetMullRn(*multiplier);
         u8 multiplierRm = AsmGetMullRm(*multiplier);
@@ -1013,7 +1013,7 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         /* Adjust processId from 0 to [process id of switch booting this]. */
         /* We're overwriting the orr instruction entirly. */
-        u32 processId = GetSocProcessId(socSpeedo);
+        u32 processId           = GetSocProcessId(socSpeedo);
         u32 writeProcessIdPatch = asm_set_rd(asm_set_imm16(SocVoltWriteVoltageAsm, processId), writeProcessIdRd);
         PATCH_OFFSET(writeProcessId, writeProcessIdPatch);
 

@@ -41,6 +41,7 @@
 #include <nxExt/cpp/lockable_mutex.h>
 #include "kip.hpp"
 #include "governor.hpp"
+#include "display/aula.hpp"
 
 #define HOSPPC_HAS_BOOST (hosversionAtLeast(7,0,0))
 
@@ -219,11 +220,15 @@ namespace clockManager {
     {
         static u32 tick = 0;
         if(++tick > 10) {
+            tick = 0;
+            
             if (config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent)) {
                 I2c_Bq24193_SetFastChargeCurrentLimit(config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent));
             }
-            tick = 0;
             I2c_BuckConverter_SetMvOut(&I2c_Display, config::GetConfigValue(HocClkConfigValue_DisplayVoltage));
+
+            AulaDisplay::SetDisplayColorMode((AulaColorMode)config::GetConfigValue(HocClkConfigValue_AulaDisplayColorPreset));
+
         }
     }
 

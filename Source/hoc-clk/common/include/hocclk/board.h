@@ -177,6 +177,43 @@ typedef enum {
     RamDisplayUnit_EnumMax,
 } RamDisplayUnit;
 
+typedef enum AulaColorMode {
+    AulaDisplayColorMode_Saturated = 0x0,
+    AulaDisplayColorMode_Washed = 0x45,
+    AulaDisplayColorMode_Basic = 0x03, // Default
+    AulaDisplayColorMode_PowerReset = 0x20, // Reset to on power on
+    AulaDisplayColorMode_Natural = 0x23,
+    AulaDisplayColorMode_Vivid = 0x65,
+    AulaDisplayColorMode_Night0 = 0x43,
+    AulaDisplayColorMode_Night1 = 0x15,
+    AulaDisplayColorMode_Night2 = 0x35,
+    AulaDisplayColorMode_Night3 = 0x75,
+} AulaColorMode;
+// typedef enum {
+// 	PANEL_JDI_XXX062M     = 0x10,
+// 	PANEL_JDI_LAM062M109A = 0x0910, // SI.
+// 	PANEL_JDI_LPM062M326A = 0x2610, // LTPS.
+// 	PANEL_INL_P062CCA_AZ1 = 0x0F20,
+// 	PANEL_AUO_A062TAN01   = 0x0F30,
+// 	PANEL_INL_2J055IA_27A = 0x1020,
+// 	PANEL_AUO_A055TAN01   = 0x1030,
+// 	PANEL_SHP_LQ055T1SW10 = 0x1040,
+// 	PANEL_SAM_AMS699VC01  = 0x2050,
+    
+// 	PANEL_RR_SUPER5_OLED_V1  = 0x10E0,
+// 	PANEL_RR_SUPER5_OLED_HD_V1  = 0x10E1,
+// 	PANEL_RR_SUPER7_IPS_V1  = 0x0FE0,
+// 	PANEL_RR_SUPER7_IPS_HD_V1  = 0x0FE1
+// 	// Found on 6/2" clones. Unknown markings. Clone of AUO A062TAN01.
+// 	// Quality seems JDI like. Has bad low backlight scaling. ID: [83] 94 [0F]. Sometimes reports [30] 94 [0F]. Both IDs have correct CRC16.
+// 	PANEL_OEM_CLONE_6_2   = 0x0F83,
+// 	// Found on 5.5" clones with AUO A055TAN02 (59.05A30.001) fake markings.
+// 	PANEL_OEM_CLONE_5_5   = 0x00B3,
+// 	// Found on 5.5" clones with AUO A055TAN02 (59.05A30.001) fake markings.
+// 	PANEL_OEM_CLONE       = 0x0000
+// 	//0x0F40 [40] 94 [0F], 5.5" clone
+// } HocClkDisplayPanel;
+
 #define HOCCLK_ENUM_VALID(n, v) ((v) < n##_EnumMax)
 
 // Packed u32
@@ -285,7 +322,7 @@ static inline const char* hocClkFormatVoltage(HocClkVoltage voltage, bool pretty
         case HocClkVoltage_GPU:
             return pretty ? "GPU" : "gpu";
         case HocClkVoltage_EMCVDD2:
-            return pretty ? "VDD2" : "emcvdd2";
+            return pretty ? "VDD2" : "vdd2";
         case HocClkVoltage_EMCVDDQ:
             return pretty ? "VDDQ" : "vddq";
         case HocClkVoltage_SOC:
@@ -296,3 +333,44 @@ static inline const char* hocClkFormatVoltage(HocClkVoltage voltage, bool pretty
             return "unknown";
     }
 }
+
+// static inline const char* hocClkFormatPanel(HocClkDisplayPanel panel, bool pretty)
+// {
+//     switch(panel)
+//     {
+//         case PANEL_JDI_XXX062M:
+//             return pretty ? "JDI XXX062M" : "jdi_xxx062m";
+//         case PANEL_JDI_LAM062M109A:
+//             return pretty ? "JDI LAM062M109A" : "jdi_lam062m109a";
+//         case PANEL_JDI_LPM062M326A:
+//             return pretty ? "JDI LPM062M326A" : "jdi_lpm062m326a";
+//         case PANEL_INL_P062CCA_AZ1:
+//             return pretty ? "INL P062CCA-AZ1" : "inl_p062cca_az1";
+//         case PANEL_AUO_A062TAN01:
+//             return pretty ? "AUO A062TAN01" : "auo_a062tan01";
+//         case PANEL_INL_2J055IA_27A:
+//             return pretty ? "INL 2J055IA-27A" : "inl_2j055ia_27a";
+//         case PANEL_AUO_A055TAN01:
+//             return pretty ? "AUO A055TAN01" : "auo_a055tan01";
+//         case PANEL_SHP_LQ055T1SW10:
+//             return pretty ? "SHP LQ055T1SW10" : "shp_lq055t1sw10";
+//         case PANEL_SAM_AMS699VC01:
+//             return pretty ? "SAM AMS699VC01" : "sam_ams699vc01";
+//         case PANEL_RR_SUPER5_OLED_V1:
+//             return pretty ? "SUPER5 OLED" : "rr_super5_oled_v1";
+//         case PANEL_RR_SUPER5_OLED_HD_V1:
+//             return pretty ? "SUPER5 OLED HD" : "rr_super5_oled_hd_v1";
+//         case PANEL_RR_SUPER7_IPS_V1:
+//             return pretty ? "SUPER7 IPS" : "rr_super7_ips_v1";
+//         case PANEL_RR_SUPER7_IPS_HD_V1:
+//             return pretty ? "RR Super7 IPS HD V1" : "rr_super7_ips_hd_v1";
+//         case PANEL_OEM_CLONE_6_2:
+//             return pretty ? "OEM Clone 6.2" : "oem_clone_6_2";
+//         case PANEL_OEM_CLONE_5_5:
+//             return pretty ? "OEM Clone 5.5" : "oem_clone_5_5";
+//         case PANEL_OEM_CLONE:
+//             return pretty ? "OEM Clone" : "oem_clone";
+//         default:
+//             return "unknown";
+//     }
+// }

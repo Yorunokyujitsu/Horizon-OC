@@ -831,6 +831,32 @@ protected:
                 {},
                 false
             );
+        } else {
+            std::vector<NamedValue> displayClrPreset = {
+                NamedValue("Basic", AulaDisplayColorMode_Basic),
+                NamedValue("Saturated", AulaDisplayColorMode_Saturated),
+                NamedValue("Washed", AulaDisplayColorMode_Washed),
+                NamedValue("Natural", AulaDisplayColorMode_Natural),
+                NamedValue("Vivid", AulaDisplayColorMode_Vivid),
+                NamedValue("Washed", AulaDisplayColorMode_Night0, "Night"),
+                NamedValue("Basic", AulaDisplayColorMode_Night1, "Night"),
+                NamedValue("Natural", AulaDisplayColorMode_Night2, "Night"),
+                NamedValue("Vivid", AulaDisplayColorMode_Night3, "Night"),
+            };
+
+            addConfigButton(
+                HocClkConfigValue_AulaDisplayColorPreset,
+                "Display Color Preset",
+                ValueRange(0, 1, 1, "", 0),
+                "Display Color Preset",
+                &thresholdsDisabled,
+                {},
+                displayClrPreset,
+                false,
+                false
+            );
+
+            
         }
     }
 };

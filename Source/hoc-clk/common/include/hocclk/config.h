@@ -72,6 +72,8 @@ typedef enum {
     HocClkConfigValue_RamDisplayUnit,
     HocClkConfigValue_IsFirstLoad,
 
+    HocClkConfigValue_AulaDisplayColorPreset,
+
     KipConfigValue_custRev,
     // KipConfigValue_mtcConf,
     KipConfigValue_hpMode,
@@ -285,6 +287,8 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
 
         case HocClkConfigValue_RamDisplayUnit:
             return pretty ? "RAM Frequency Display Unit" : "RAM_display_unit";
+        case HocClkConfigValue_AulaDisplayColorPreset:
+            return pretty ? "Aula Display Color Preset" : "aula_color_preset";
 
         // KIP config values
         case KipConfigValue_custRev:
@@ -524,6 +528,8 @@ static inline uint64_t hocclkDefaultConfigValue(HocClkConfigValue val)
             return 60ULL;
         case HocClkConfigValue_DisplayVoltage:
             return 1200ULL; // Auto
+        case HocClkConfigValue_AulaDisplayColorPreset:
+            return AulaDisplayColorMode_Basic;
         default:
             return 0ULL;
     }
@@ -672,6 +678,7 @@ static inline uint64_t hocclkValidConfigValue(HocClkConfigValue val, uint64_t in
         case HocClkConfigValue_CpuGovernorMinimumFreq:
         case HocClkConfigValue_MemoryFrequencyMeasurementMode:
         case HocClkConfigValue_RamDisplayUnit:
+        case HocClkConfigValue_AulaDisplayColorPreset:
             return true;
         case HocClkConfigValue_BatteryChargeCurrent:
             return ((input >= 1024) && (input <= 3072)) || !input;

@@ -162,10 +162,7 @@ namespace ams::ldr::hoc::pcv {
 
         for (auto &v : validators) {
             if (R_FAILED(v.check())) {
-                #if defined(AMS_BUILD_FOR_AUDITING) || defined(AMS_BUILD_FOR_DEBUGGING)
-                    panic::SmcError(v.panic);
-                #endif
-
+                panic::SmcError(v.panic);
                 CRASH("Validation FAIL");
             }
         }

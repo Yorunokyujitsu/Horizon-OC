@@ -18,14 +18,10 @@
 
 #pragma once
 
-#ifdef ATMOSPHERE_IS_STRATOSPHERE
-    #include <stratosphere.hpp>
-    #include <vapours/results/results_common.hpp>
-    #define LOGGING(fmt, ...) ((void)0)
-    #define CRASH(msg, ...) { ams::diag::AbortImpl(msg, __PRETTY_FUNCTION__, "", 0); __builtin_unreachable(); }
-#else
-    #include "oc_test.hpp"
-#endif
+#include <stratosphere.hpp>
+#include <vapours/results/results_common.hpp>
+#define LOGGING(fmt, ...) ((void)0)
+#define CRASH(msg, ...) { ams::diag::AbortImpl(msg, __PRETTY_FUNCTION__, "", 0); __builtin_unreachable(); }
 
 #include "customize.hpp"
 
@@ -96,9 +92,7 @@ namespace ams::ldr::hoc {
         }
 
         Result CheckResult() {
-            #ifndef ATMOSPHERE_IS_STRATOSPHERE
             R_UNLESS(patched_count > 0, ldr::ResultUnsuccessfulPatcher());
-            #endif
 
             if (maximum_patched_count)
                 R_UNLESS(patched_count <= maximum_patched_count, ldr::ResultUnsuccessfulPatcher());

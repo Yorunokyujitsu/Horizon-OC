@@ -38,5 +38,4 @@ namespace governor {
     void startThreads();
     void exitThreads();
     void HandleGovernor(uint32_t targetHz);
-    void GovernorThread(void* arg);
 }

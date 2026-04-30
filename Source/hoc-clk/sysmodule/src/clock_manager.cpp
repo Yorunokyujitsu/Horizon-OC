@@ -292,8 +292,23 @@ namespace clockManager {
     {
         if (board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
             board::PcvHijackGpuVolts(0); // Reset to vMin
+
+            u32 targetHz = gContext.overrideFreqs[HocClkModule_GPU];
+            if (!targetHz) {
+                targetHz = config::GetAutoClockHz(gContext.applicationId, HocClkModule_GPU, gContext.profile, false);
+                if (!targetHz) {
+                    targetHz = config::GetAutoClockHz(HOCCLK_GLOBAL_PROFILE_TID, HocClkModule_GPU, gContext.profile, false);
+                }
+            }
+            u32 maxHz = GetMaxAllowedHz(HocClkModule_GPU, gContext.profile);
+            u32 nearestHz = GetNearestHz(HocClkModule_GPU, targetHz, maxHz);
+
             board::SetHz(HocClkModule_GPU, ~0);
-            board::ResetToStockGpu();
+            if (targetHz) {
+                board::SetHz(HocClkModule_GPU, nearestHz);
+            } else {
+                board::ResetToStockGpu();
+            }
         }
     }
 
@@ -445,7 +460,11 @@ namespace clockManager {
         // restore clocks to stock values on app or profile change
         if (hasChanged) {
             board::ResetToStock();
-            DVFSReset();
+            if (board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
+                board::PcvHijackGpuVolts(0);
+                board::SetHz(HocClkModule_GPU, ~0);
+                board::ResetToStockGpu();
+            }
             WaitForNextTick();
         }
 

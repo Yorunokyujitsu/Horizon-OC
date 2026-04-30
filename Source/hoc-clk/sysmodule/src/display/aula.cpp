@@ -31,10 +31,11 @@ namespace AulaDisplay {
         DSI(DSI_TRIGGER) = DSI_TRIGGER_HOST;
 
         if (wait)
-            svcSleepThread(wait * 1000);
+            svcSleepThread(wait * 1000); // usleep-equivalant
     }
 
     void SetDisplayColorMode(AulaColorMode mode) {
+        // send display command to change color mode.
         _display_dsi_send_cmd(MIPI_DSI_DCS_SHORT_WRITE_PARAM,
                         MIPI_DCS_PRIV_SM_SET_COLOR_MODE | (mode << 8), 0);
 

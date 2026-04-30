@@ -260,7 +260,7 @@ namespace board {
                     rgltrGetVoltage(&session, &out);
                     rgltrCloseSession(&session);
                 } else {
-                    out = GetVoltage(HocClkVoltage_EMCVDD2);
+                    out = GetVoltage(HocClkVoltage_EMCVDD2); // VDD2 and VDDQ are always connected to the same rail on Erista
                 }
                 break;
             case HocClkVoltage_Display:
@@ -321,6 +321,7 @@ namespace board {
     }
 
     void CacheGpuVoltTable() {
+        // Likely CPU regulator?
         UnkRegulator reg = {
             .voltageMin  = 600000,
             .voltageStep = 12500,
@@ -386,6 +387,7 @@ namespace board {
                 svcCloseHandle(handle);
                 handle = INVALID_HANDLE;
 
+                // Print info AFTER we exit the handle to avoid hangs
                 for(int i = 0; i < (int)std::size(cpuVoltTable); ++i) {
                     fileUtils::LogLine("[dvfs] cpu volt %d: %u mV", i, cpuVoltTable[i]);
                 }
@@ -435,21 +437,21 @@ namespace board {
 
     u32 GetMinimumGpuVmin(u32 freqMhz, u32 bracket) {
         static const u32 ramTable[][22] = {
-            { 2133, 2200, 2266, 2300, 2366, 2400, 2433, 2466, 2533, 2566, 2600, 2633, 2700, 2733, 2766, 2833, 2866, 2900, 2933, 3033, 3066, 3100, },
-            { 2300, 2366, 2433, 2466, 2533, 2566, 2633, 2700, 2733, 2800, 2833, 2900, 2933, 2966, 3033, 3066, 3100, 3133, 3166, 3200, 3233, 3266, },
-            { 2433, 2466, 2533, 2600, 2666, 2733, 2766, 2800, 2833, 2866, 2933, 2966, 3033, 3066, 3100, 3133, 3166, 3200, 3233, 3300, 3333, 3366, },
-            { 2500, 2533, 2600, 2633, 2666, 2733, 2800, 2866, 2900, 2966, 3033, 3100, 3166, 3200, 3233, 3266, 3300, 3333, 3366, 3400, 3400, 3400, },
+            { 2133, 2200, 2266, 2300, 2366, 2400, 2433, 2466, 2533, 2566, 2600, 2633, 2700, 2733, 2766, 2833, 2866, 2900, 2933, 3033, 3066, 3100, }, // Bracket 0
+            { 2300, 2366, 2433, 2466, 2533, 2566, 2633, 2700, 2733, 2800, 2833, 2900, 2933, 2966, 3033, 3066, 3100, 3133, 3166, 3200, 3233, 3266, }, // Bracket 1
+            { 2433, 2466, 2533, 2600, 2666, 2733, 2766, 2800, 2833, 2866, 2933, 2966, 3033, 3066, 3100, 3133, 3166, 3200, 3233, 3300, 3333, 3366, }, // Bracket 2
+            { 2500, 2533, 2600, 2633, 2666, 2733, 2800, 2866, 2900, 2966, 3033, 3100, 3166, 3200, 3233, 3266, 3300, 3333, 3366, 3400, 3400, 3400, }, // Bracket 3
         };
 
         static const u32 gpuVoltArray[] = { 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, };
 
-        if (freqMhz <= 1600) return 0;
+        if (freqMhz <= 1600) return 0; // DVFS doesnt work below 1600MHz, it will just use vMin
         if (bracket >= std::size(ramTable)) bracket = 0;
 
         u32 bracketStart = ramTable[bracket][0];
         
     
-        u32 rampStartVolt = (bracket == 0) ? 535 : 525;
+        u32 rampStartVolt = (bracket == 0) ? 535 : 525; // Do not touch!
         u32 rampSpan = 590 - rampStartVolt; 
 
 

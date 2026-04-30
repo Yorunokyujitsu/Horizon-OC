@@ -218,6 +218,7 @@ namespace clockManager {
 
     void HandleMiscFeatures()
     {
+        // these dont need to run that often, so dont bother
         static u32 tick = 0;
         if(++tick > 10) {
             tick = 0;
@@ -225,9 +226,11 @@ namespace clockManager {
             if (config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent)) {
                 I2c_Bq24193_SetFastChargeCurrentLimit(config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent));
             }
-            I2c_BuckConverter_SetMvOut(&I2c_Display, config::GetConfigValue(HocClkConfigValue_DisplayVoltage));
 
-            AulaDisplay::SetDisplayColorMode((AulaColorMode)config::GetConfigValue(HocClkConfigValue_AulaDisplayColorPreset));
+            I2c_BuckConverter_SetMvOut(&I2c_Display, config::GetConfigValue(HocClkConfigValue_DisplayVoltage));
+            
+            if(board::GetConsoleType() == HocClkConsoleType_Aula)
+                AulaDisplay::SetDisplayColorMode((AulaColorMode)config::GetConfigValue(HocClkConfigValue_AulaDisplayColorPreset));
 
         }
     }
@@ -235,7 +238,7 @@ namespace clockManager {
     void DVFSBeforeSet(u32 targetHz)
     {
         s32 dvfsOffset = config::GetConfigValue(HocClkConfigValue_DVFSOffset);
-        u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket());
+        u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket()); // Get GPU vmin using the algorithm
 
         if (vmin) {
             vmin += dvfsOffset;
@@ -248,7 +251,9 @@ namespace clockManager {
             I2c_BuckConverter_SetMvOut(&I2c_Mariko_GPU, vmin);
         }
 
-        gContext.voltages[HocClkVoltage_GPU] = vmin * 1000;
+        svcSleepThread(25E6); // Wait for voltages to properly adjust
+
+        gContext.voltages[HocClkVoltage_GPU] = vmin * 1000; // Update the voltages in the context
     }
 
     void DVFSAfterSet(u32 targetHz)
@@ -265,8 +270,9 @@ namespace clockManager {
         u32 nearestHz = GetNearestHz(HocClkModule_GPU, targetHz, maxHz);
         board::PcvHijackGpuVolts(vmin);
 
+        // Voltage doesn't update properly unless you set gpu to max and set it to min
         if (targetHz) {
-            board::SetHz(HocClkModule_GPU, ~0);
+            board::SetHz(HocClkModule_GPU, ~0); // This won't apply, it will set back to nearestHz before it can apply the higher freq
             board::SetHz(HocClkModule_GPU, nearestHz);
         } else {
             board::SetHz(HocClkModule_GPU, ~0);
@@ -277,7 +283,7 @@ namespace clockManager {
     void HandleCpuUv()
     {
         if (board::GetSocType() == HocClkSocType_Erista)
-            board::SetDfllTunings(config::GetConfigValue(KipConfigValue_eristaCpuUV), 0, 1581000000);
+            board::SetDfllTunings(config::GetConfigValue(KipConfigValue_eristaCpuUV), 0, 1581000000); // Erista tbreak is always 1581MHz
         else
             board::SetDfllTunings(config::GetConfigValue(KipConfigValue_marikoCpuUVLow), config::GetConfigValue(KipConfigValue_marikoCpuUVHigh), board::CalculateTbreak(config::GetConfigValue(KipConfigValue_tableConf)));
     }
@@ -285,24 +291,9 @@ namespace clockManager {
     void DVFSReset()
     {
         if (board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
-            board::PcvHijackGpuVolts(0);
-
-            u32 targetHz = gContext.overrideFreqs[HocClkModule_GPU];
-            if (!targetHz) {
-                targetHz = config::GetAutoClockHz(gContext.applicationId, HocClkModule_GPU, gContext.profile, false);
-                if (!targetHz) {
-                    targetHz = config::GetAutoClockHz(HOCCLK_GLOBAL_PROFILE_TID, HocClkModule_GPU, gContext.profile, false);
-                }
-            }
-            u32 maxHz = GetMaxAllowedHz(HocClkModule_GPU, gContext.profile);
-            u32 nearestHz = GetNearestHz(HocClkModule_GPU, targetHz, maxHz);
-
+            board::PcvHijackGpuVolts(0); // Reset to vMin
             board::SetHz(HocClkModule_GPU, ~0);
-            if (targetHz) {
-                board::SetHz(HocClkModule_GPU, nearestHz);
-            } else {
-                board::ResetToStockGpu();
-            }
+            board::ResetToStockGpu();
         }
     }
 
@@ -385,7 +376,7 @@ namespace clockManager {
                 }
             }
 
-            // Skip GPU and CPU if governors handle them
+            // The modules above MEM require special handling
             if (module > HocClkModule_MEM) {
                 continue;
             }
@@ -407,6 +398,7 @@ namespace clockManager {
                         targetHz / 1000000, targetHz / 100000 - targetHz / 1000000 * 10
                     );
 
+                    // The logic MUST be done in this order otherwise you WILL get crashes
                     if (module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && targetHz > oldHz && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
                         DVFSBeforeSet(targetHz);
                     }
@@ -453,11 +445,7 @@ namespace clockManager {
         // restore clocks to stock values on app or profile change
         if (hasChanged) {
             board::ResetToStock();
-            if (board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
-                board::PcvHijackGpuVolts(0);
-                board::SetHz(HocClkModule_GPU, ~0);
-                board::ResetToStockGpu();
-            }
+            DVFSReset();
             WaitForNextTick();
         }
 

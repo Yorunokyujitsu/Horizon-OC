@@ -271,13 +271,12 @@ namespace clockManager {
         board::PcvHijackGpuVolts(vmin);
 
         // Voltage doesn't update properly unless you set gpu to max and set it to min
+        board::ResetToStockGpu();
+
         if (targetHz) {
-            board::SetHz(HocClkModule_GPU, ~0); // This won't apply, it will set back to nearestHz before it can apply the higher freq
             board::SetHz(HocClkModule_GPU, nearestHz);
-        } else {
-            board::SetHz(HocClkModule_GPU, ~0);
-            board::ResetToStockGpu();
         }
+
     }
 
     void HandleCpuUv()
@@ -303,42 +302,42 @@ namespace clockManager {
             u32 maxHz = GetMaxAllowedHz(HocClkModule_GPU, gContext.profile);
             u32 nearestHz = GetNearestHz(HocClkModule_GPU, targetHz, maxHz);
 
-            board::SetHz(HocClkModule_GPU, ~0);
-            if (targetHz) {
+            board::ResetToStockGpu();
+            if (targetHz)
                 board::SetHz(HocClkModule_GPU, nearestHz);
-            } else {
-                board::ResetToStockGpu();
-            }
         }
     }
 
-    void HandleFreqReset(HocClkModule module, bool isBoost)
+    void HandleFreqReset(HocClkModule module, bool isBoost, bool didHijackPcv)
     {
         switch (module) {
-        case HocClkModule_CPU:
-            if (!(isBoost || (config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode) && isBoost)))
-                board::ResetToStockCpu();
-            if (config::GetConfigValue(HocClkConfigValue_LiveCpuUv)) {
-                if (board::GetSocType() == HocClkSocType_Erista)
-                    board::SetDfllTunings(config::GetConfigValue(KipConfigValue_eristaCpuUV), 0, 1581000000);
-                else
-                    board::SetDfllTunings(config::GetConfigValue(KipConfigValue_marikoCpuUVLow), config::GetConfigValue(KipConfigValue_marikoCpuUVHigh), board::CalculateTbreak(config::GetConfigValue(KipConfigValue_tableConf)));
-            }
-            break;
-        case HocClkModule_GPU:
-            board::ResetToStockGpu();
-            break;
-        case HocClkModule_MEM:
-            board::ResetToStockMem();
-            DVFSReset();
-            break;
-        case HocClkModule_Display:
-            if (config::GetConfigValue(HocClkConfigValue_OverwriteRefreshRate)) {
-                board::ResetToStockDisplay();
-            }
-            break;
-        default:
-            break;
+            case HocClkModule_CPU:
+                if (!(isBoost || (config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode) && isBoost)))
+                    board::ResetToStockCpu();
+                if (config::GetConfigValue(HocClkConfigValue_LiveCpuUv)) {
+                    if (board::GetSocType() == HocClkSocType_Erista)
+                        board::SetDfllTunings(config::GetConfigValue(KipConfigValue_eristaCpuUV), 0, 1581000000);
+                    else
+                        board::SetDfllTunings(config::GetConfigValue(KipConfigValue_marikoCpuUVLow), config::GetConfigValue(KipConfigValue_marikoCpuUVHigh), board::CalculateTbreak(config::GetConfigValue(KipConfigValue_tableConf)));
+                }
+                break;
+            case HocClkModule_GPU:
+                board::ResetToStockGpu();
+                break;
+            case HocClkModule_MEM:
+                board::ResetToStockMem();
+                if(!didHijackPcv) {
+                    DVFSReset();
+                    didHijackPcv = true;
+                }
+                break;
+            case HocClkModule_Display:
+                if (config::GetConfigValue(HocClkConfigValue_OverwriteRefreshRate)) {
+                    board::ResetToStockDisplay();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -347,7 +346,7 @@ namespace clockManager {
         std::uint32_t targetHz = 0;
         std::uint32_t maxHz = 0;
         std::uint32_t nearestHz = 0;
-
+        bool didHijackPcv = false;
         bool skipCpuDueToBoost = isBoost && !config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode);
         if (skipCpuDueToBoost) {
             u32 boostFreq = board::GetHz(HocClkModule_CPU);
@@ -388,7 +387,7 @@ namespace clockManager {
                     gContext.freqs[HocClkModule_Display] = targetHz;
                     gContext.realFreqs[HocClkModule_Display] = targetHz;
                 } else {
-                    HandleFreqReset(HocClkModule_Display, isBoost);
+                    HandleFreqReset(HocClkModule_Display, isBoost, didHijackPcv);
                 }
             }
 
@@ -429,9 +428,12 @@ namespace clockManager {
                     if (module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && targetHz < oldHz && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
                         DVFSAfterSet(targetHz);
                     }
+
+                    if(module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack)
+                        didHijackPcv = false;
                 }
             } else {
-                HandleFreqReset((HocClkModule)module, isBoost);
+                HandleFreqReset((HocClkModule)module, isBoost, didHijackPcv);
             }
         }
     }
@@ -463,7 +465,6 @@ namespace clockManager {
             board::ResetToStock();
             if (board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
                 board::PcvHijackGpuVolts(0);
-                board::SetHz(HocClkModule_GPU, ~0);
                 board::ResetToStockGpu();
             }
             WaitForNextTick();

@@ -348,7 +348,8 @@ namespace clockManager {
         std::uint32_t maxHz = 0;
         std::uint32_t nearestHz = 0;
 
-        if (isBoost && !config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode)) {
+        bool skipCpuDueToBoost = isBoost && !config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode);
+        if (skipCpuDueToBoost) {
             u32 boostFreq = board::GetHz(HocClkModule_CPU);
             if (boostFreq / 1000000 > 1785) {
                 board::SetHz(HocClkModule_CPU, boostFreq);
@@ -396,7 +397,7 @@ namespace clockManager {
                 continue;
             }
 
-            if (noCPU && module == HocClkModule_CPU)
+            if ((skipCpuDueToBoost || noCPU) && module == HocClkModule_CPU)
                 continue;
             if (noGPU && module == HocClkModule_GPU)
                 continue;

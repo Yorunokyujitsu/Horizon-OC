@@ -222,42 +222,19 @@ namespace clockManager {
         static u32 tick = 0;
         if(++tick > 10) {
             tick = 0;
-            
+
             if (config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent)) {
                 I2c_Bq24193_SetFastChargeCurrentLimit(config::GetConfigValue(HocClkConfigValue_BatteryChargeCurrent));
             }
 
             I2c_BuckConverter_SetMvOut(&I2c_Display, config::GetConfigValue(HocClkConfigValue_DisplayVoltage));
-            
+
             if(board::GetConsoleType() == HocClkConsoleType_Aula)
                 AulaDisplay::SetDisplayColorMode((AulaColorMode)config::GetConfigValue(HocClkConfigValue_AulaDisplayColorPreset));
-
         }
     }
 
-    void DVFSBeforeSet(u32 targetHz)
-    {
-        s32 dvfsOffset = config::GetConfigValue(HocClkConfigValue_DVFSOffset);
-        u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket()); // Get GPU vmin using the algorithm
-
-        if (vmin) {
-            vmin += dvfsOffset;
-        }
-
-        board::PcvHijackGpuVolts(vmin);
-
-        /* Update the voltage. */
-        if (I2c_BuckConverter_GetMvOut(&I2c_Mariko_GPU) < vmin) {
-            I2c_BuckConverter_SetMvOut(&I2c_Mariko_GPU, vmin);
-        }
-
-        svcSleepThread(25E6); // Wait for voltages to properly adjust
-
-        gContext.voltages[HocClkVoltage_GPU] = vmin * 1000; // Update the voltages in the context
-    }
-
-    void DVFSAfterSet(u32 targetHz)
-    {
+    void ApplyGpuDvfs(u32 targetHz) {
         s32 dvfsOffset = config::GetConfigValue(HocClkConfigValue_DVFSOffset);
         dvfsOffset = std::max(dvfsOffset, -80);
         u32 vmin = board::GetMinimumGpuVmin(targetHz / 1000000, board::GetGpuSpeedoBracket());
@@ -266,17 +243,24 @@ namespace clockManager {
             vmin += dvfsOffset;
         }
 
+        /* Prevent console from combusting if for some reason bad shit happens :P */
+        vmin = std::min(vmin, 1000u);
+
+        /* Get nearest gpu clock; we need this in a second to update the voltage. */
+        u32 gpuHz = board::GetHz(HocClkModule_GPU);
         u32 maxHz = GetMaxAllowedHz(HocClkModule_GPU, gContext.profile);
-        u32 nearestHz = GetNearestHz(HocClkModule_GPU, targetHz, maxHz);
+        u32 nearestGpuHz = GetNearestHz(HocClkModule_GPU, gpuHz, maxHz);
+
+        /* Hijack gpu volt table. */
         board::PcvHijackGpuVolts(vmin);
 
-        // Voltage doesn't update properly unless you set gpu to max and set it to min
-        board::ResetToStockGpu();
-
+        /* Update gpu frequency to actually use the voltage. */
         if (targetHz) {
-            board::SetHz(HocClkModule_GPU, nearestHz);
+            board::SetHz(HocClkModule_GPU, nearestGpuHz);
+        } else {
+            /* If the target frequency is zero, we reset the frequency to ensure it gets updated even without any frequency override. */
+            board::ResetToStockGpu();
         }
-
     }
 
     void HandleCpuUv()
@@ -415,7 +399,7 @@ namespace clockManager {
 
                     // The logic MUST be done in this order otherwise you WILL get crashes
                     if (module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && targetHz > oldHz && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
-                        DVFSBeforeSet(targetHz);
+                        ApplyGpuDvfs(targetHz);
                     }
 
                     board::SetHz((HocClkModule)module, nearestHz);
@@ -426,7 +410,7 @@ namespace clockManager {
                     }
 
                     if (module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && targetHz < oldHz && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack) {
-                        DVFSAfterSet(targetHz);
+                        ApplyGpuDvfs(targetHz);
                     }
 
                     if(module == HocClkModule_MEM && board::GetSocType() == HocClkSocType_Mariko && config::GetConfigValue(HocClkConfigValue_DVFSMode) == DVFSMode_Hijack)

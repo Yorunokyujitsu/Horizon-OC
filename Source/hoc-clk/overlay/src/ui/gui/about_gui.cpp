@@ -179,13 +179,21 @@ void AboutGui::listUI()
         new tsl::elm::ListItem("Blaise25")
     );
 
-    // ---- Testers ----
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Testers")
+        new tsl::elm::ListItem("tetetete-ctrl")
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("Dom")
+        new tsl::elm::ListItem("B3711")
+    );
+
+    this->listElement->addItem(
+        new tsl::elm::ListItem("TDRR")
+    );
+
+    // ---- Testers ----
+    this->listElement->addItem(
+        new tsl::elm::CategoryHeader("Testers")
     );
 
     this->listElement->addItem(
@@ -205,10 +213,6 @@ void AboutGui::listUI()
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("tetetete-ctrl")
-    );
-
-    this->listElement->addItem(
         new tsl::elm::ListItem("Winnerboi77")
     );
 
@@ -222,10 +226,6 @@ void AboutGui::listUI()
 
     this->listElement->addItem(
         new tsl::elm::ListItem("Alvise")
-    );
-
-    this->listElement->addItem(
-        new tsl::elm::ListItem("TDRR")
     );
 
     this->listElement->addItem(
@@ -259,10 +259,6 @@ void AboutGui::listUI()
 
     this->listElement->addItem(
         new tsl::elm::ListItem("NaGaa95 - L4T-OC-Kernel")
-    );
-
-    this->listElement->addItem(
-        new tsl::elm::ListItem("B3711 - EOS")
     );
 
     this->listElement->addItem(

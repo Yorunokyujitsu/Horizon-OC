@@ -149,22 +149,22 @@ Refer to COMPILATION.md
 
 ## Credits
 * **Lightos's Cat** - Cat
-
 * **Souldbminer** - hoc-clk and loader development
 * **Lightos** - Loader patches development, hoc-clk development, guides
 * **TDRR** - HOC Logo Design
+* **tetetete-ctrl** - Website design
 * **SciresM** - Atmosphere CFW
 * **CTCaer** - L4T, Hekate, proper RAM timings
 * **KazushiMe** - Switch OC Suite
 * **Hanai3bi (Meha)** - Switch OC Suite, EOS, sys-clk-eos
 * **NaGaa95** - L4T-OC kernel, Status Monitor fork
-* **B3711 (halop)** - EOS
+* **B3711 (halop)** - EOS, contributions
 * **sys-clk team (m4xw, p-sam, natinusala)** - sys-clk
 * **Dominatorul** - Soctherm driver, guides, general help
 * **ppkantorski** - Ultrahand sys-clk & Status Monitor fork
 * **MasaGratoR and ZachyCatGames** - General help
 * **MasaGratoR** - Status Monitor & Display Refresh Rate driver
-* **Dominatorul, Samybigio, Arcdelta, Miki, Happy, tetetete-ctrl, Winnerboi77, Blaise, Alvise, TDRR, agjeococh, frost, letum00, and Xenshen** - Testing
+* **Dominatorul, Samybigio, Arcdelta, Miki, Happy, Winnerboi77, Blaise, Alvise, agjeococh, frost, letum00, and Xenshen** - Testing
 * **Samybigio2011, Miki** - Italian translations
 * **angelblaster** - Korean translations
 * **q1332348216-glitch** - Chinese translations

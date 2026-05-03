@@ -121,11 +121,11 @@ Refer to COMPILATION.md
 * 1382
 * 1305
 * 1267 → NVIDIA T214(mariko) rating
-* 1228 → mariko HiOPT safe clock
-* 1152 → mariko SLT max clock
-* 1075 → mariko no UV max clock. absolute max clock on erista. very dangerous
+* 1228 → mariko High UV safe clock
+* 1152 → mariko hiOpt-15mV max clock
+* 1075 → mariko hiOpt max clock. absolute max clock on erista. very dangerous
 * 998 → NVIDIA T210 (erista) rating
-* 960 (erista only) → erista slt/hiopt safe max clock
+* 960 (erista only) → erista high uv/hiOpt-15mV safe max clock
 * 921 → erista no UV max clock
 * 844
 * 768 → official docked
@@ -142,30 +142,29 @@ Refer to COMPILATION.md
 **Notes:**
 1. On Erista, CPU in handheld is capped to 1581MHz
 2. GPU overclock is capped at 460MHz on erista in handheld
-3. On Mariko, cap with No uv is 614MHz, with SLT it is 691MHz and with HiOPT it's 768MHz
+3. On Mariko, cap with hiOpt is 614MHz, with hiOpt-15mV it is 691MHz and with High UV it's 768MHz
 4. Clocks higher than 768MHz on erista need the official charger is plugged in.
-5. On Mariko, cap with No uv is 844MHz, with SLT it is 921MHz and with HiOPT it's 998MHz
-
 
 ---
 
 ## Credits
 * **Lightos's Cat** - Cat
-
 * **Souldbminer** - hoc-clk and loader development
 * **Lightos** - Loader patches development, hoc-clk development, guides
+* **TDRR** - HOC Logo Design
+* **tetetete-ctrl** - Website design
 * **SciresM** - Atmosphere CFW
 * **CTCaer** - L4T, Hekate, proper RAM timings
 * **KazushiMe** - Switch OC Suite
 * **Hanai3bi (Meha)** - Switch OC Suite, EOS, sys-clk-eos
 * **NaGaa95** - L4T-OC kernel, Status Monitor fork
-* **B3711 (halop)** - EOS
+* **B3711 (halop)** - EOS, contributions
 * **sys-clk team (m4xw, p-sam, natinusala)** - sys-clk
 * **Dominatorul** - Soctherm driver, guides, general help
-* **b0rd2death** - Ultrahand sys-clk & Status Monitor fork
+* **ppkantorski** - Ultrahand sys-clk & Status Monitor fork
 * **MasaGratoR and ZachyCatGames** - General help
 * **MasaGratoR** - Status Monitor & Display Refresh Rate driver
-* **Dominatorul, Samybigio, Arcdelta, Miki, Happy, Flopsider, Winnerboi77, Blaise, Alvise, TDRR, agjeococh, frost, letum00, and Xenshen** - Testing
+* **Dominatorul, Samybigio, Arcdelta, Miki, Happy, Winnerboi77, Blaise, Alvise, agjeococh, frost, letum00, and Xenshen** - Testing
 * **Samybigio2011, Miki** - Italian translations
 * **angelblaster** - Korean translations
 * **q1332348216-glitch** - Chinese translations

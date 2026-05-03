@@ -141,7 +141,7 @@ namespace board {
         batteryInfoInitialize();
         FetchHardwareInfos();
 
-        soctherm::Initialize();
+        soctherm::Initialize(); // SOCTHERM must be init before AOTAG
         // PMC exosphere check
         SecmonArgs args = {};
         args.X[0] = 0xF0000002;

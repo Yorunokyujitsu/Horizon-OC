@@ -81,14 +81,15 @@ namespace aotag {
         .tsample_ate = 39,
     };
 
+    // These coeffs are likely NOT accurate. Probably need to dump them from L4T?
     static const struct FuseCorrCoeff tegra_aotag_coeff = {
-        .alpha = 1063200,
-        .beta = -6749000,
+        .alpha = 4496200,
+        .beta = -4496200,
     };
 
     static const struct FuseCorrCoeff tegra210b01_aotag_coeff = {
-        .alpha = 991100,
-        .beta = 1096200,
+        .alpha = 4496200,
+        .beta = -4496200,
     };
 
     struct aotag_sensor_info_t {

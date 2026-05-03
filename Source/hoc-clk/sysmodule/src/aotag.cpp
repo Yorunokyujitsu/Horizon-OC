@@ -30,7 +30,7 @@ namespace aotag {
     #define TEGRA_FUSE_CP_REV_0_3          (3)
     #define FUSE_CP_REV                    0x90
     u64 fuseVa = 0;
-
+    bool wasInit = false;
     inline int tegra_fuse_readl(unsigned long base, u32* value) {
         *value = *reinterpret_cast<volatile u32*>(fuseVa + base);
         return 0;
@@ -133,7 +133,6 @@ namespace aotag {
         svcCallSecureMonitor(&args);
 
         if (args.X[1] == (PMC_BASE + offset)) { // if param 1 is identical read failed
-            notification::writeNotification("Horizon OC\nCannot read AOTAG\nExosphere patch not applied!");
             return 0;
         }
 
@@ -304,9 +303,13 @@ namespace aotag {
         set_bit(CFG_TAG_EN_POS, &r);
         clear_bit(CFG_DISABLE_CLK_POS, &r);
         tegra_pmc_writel(r, PMC_AOTAG_CFG);
+        fileUtils::LogLine("[aotag] Init complete!");
+        wasInit = true;
     }
     s32 getTemp()
     {
+        if(!wasInit)
+            return -125;
         u32 regval = 0, abs = 0, fraction = 0, valid = 0, sign = 0;
         s32 temp = 0;
         regval = tegra_pmc_readl(PMC_TSENSOR_STATUS1);
@@ -322,5 +325,9 @@ namespace aotag {
         if (sign)
             temp = (-1) * (temp);
         return temp;
+    }
+
+    bool isInitialized() {
+        return wasInit;
     }
 }

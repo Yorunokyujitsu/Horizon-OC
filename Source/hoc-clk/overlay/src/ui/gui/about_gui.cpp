@@ -37,6 +37,7 @@ tsl::elm::ListItem* ramBWItemCpu = NULL;
 tsl::elm::ListItem* ramBWItemGpu = NULL;
 tsl::elm::ListItem* ramBWItemMax = NULL;
 tsl::elm::ListItem* bqtempitem = NULL;
+tsl::elm::ListItem* aotagTempItem = NULL;
 
 ImageElement* CatImage = NULL;
 HideableCategoryHeader* CatHeader = NULL;
@@ -73,6 +74,10 @@ void AboutGui::listUI()
     if(IsErista()) {
         this->listElement->addItem(eristaPLLXItem);
     }
+
+    aotagTempItem =
+        new tsl::elm::ListItem("AOTAG Temp:");
+    this->listElement->addItem(aotagTempItem);
 
     bqtempitem =
         new tsl::elm::ListItem("BQ24193 Temp:");
@@ -368,6 +373,14 @@ void AboutGui::refresh()
         sprintf(strings[3], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
         eristaPLLXItem->setValue(strings[3]);
     }
+
+    u32 millis = context->temps[HocClkThermalSensor_AO];
+    if(millis > 0) {
+        sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
+    } else {
+        sprintf(strings[11], "N/A");
+    }
+    aotagTempItem->setValue(strings[11]);
 
     sprintf(strings[4], "%u.%u / %u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U, context->voltages[HocClkVoltage_EMCVDDQ] / 1000);
     ramVoltItem->setValue(strings[4]);

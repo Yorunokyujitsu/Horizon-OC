@@ -92,6 +92,7 @@ typedef enum
     HocClkThermalSensor_GPU, // GPU temperature in millicelcius
     HocClkThermalSensor_MEM, // MEM temperature in millicelcius. Returns the PLLX sensor value on Mariko
     HocClkThermalSensor_PLLX, // PLLX temperature in millicelcius
+    HocClkThermalSensor_AO, // AOTAG
     HocClkThermalSensor_BQ24193, // BQ24193 temperature. Refer to BQ24193Temp for returned values
     HocClkThermalSensor_EnumMax
 } HocClkThermalSensor;
@@ -184,6 +185,7 @@ typedef enum {
     BQ24193Temp_EnumMax
 } BQ24193Temp;
 typedef enum AulaColorMode {
+    AulaDisplayColorMode_DoNotOverride = 0xFF,
     AulaDisplayColorMode_Saturated = 0x0,
     AulaDisplayColorMode_Washed = 0x45,
     AulaDisplayColorMode_Basic = 0x03, // Default
@@ -281,6 +283,10 @@ static inline const char* hocclkFormatThermalSensor(HocClkThermalSensor thermSen
             return pretty ? "MEM" : "mem";
         case HocClkThermalSensor_PLLX:
             return pretty ? "PLLX" : "pllx";
+        case HocClkThermalSensor_AO:
+            return pretty ? "AO" : "ao";
+        case HocClkThermalSensor_BQ24193:
+            return pretty ? "BQ24193" : "bq24193";
         default:
             return "unknown";
     }

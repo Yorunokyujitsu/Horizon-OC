@@ -37,6 +37,8 @@ namespace AulaDisplay {
     }
 
     void SetDisplayColorMode(AulaColorMode mode) {
+        if(mode == AulaDisplayColorMode_DoNotOverride)
+            return;
         // send display command to change color mode.
         _display_dsi_send_cmd(MIPI_DSI_DCS_SHORT_WRITE_PARAM,
                         MIPI_DCS_PRIV_SM_SET_COLOR_MODE | (mode << 8), 0);

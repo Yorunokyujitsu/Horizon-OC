@@ -529,7 +529,7 @@ static inline uint64_t hocclkDefaultConfigValue(HocClkConfigValue val)
         case HocClkConfigValue_DisplayVoltage:
             return 1200ULL; // Auto
         case HocClkConfigValue_AulaDisplayColorPreset:
-            return AulaDisplayColorMode_Basic;
+            return AulaDisplayColorMode_DoNotOverride;
         default:
             return 0ULL;
     }

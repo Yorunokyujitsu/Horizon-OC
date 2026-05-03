@@ -224,4 +224,5 @@ namespace aotag {
 
     void init(bool isMariko);
     s32 getTemp();
+    bool isInitialized();
 }

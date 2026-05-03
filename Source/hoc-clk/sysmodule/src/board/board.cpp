@@ -55,6 +55,8 @@ namespace board {
     PwmChannelSession iCon;
 
     u32 fd = 0, fd2 = 0;
+    
+    #define PMC_BASE 0x7000E400
 
     void FetchHardwareInfos() {
         ReadFuses(fuseData);
@@ -140,7 +142,16 @@ namespace board {
         FetchHardwareInfos();
 
         soctherm::Initialize();
-        aotag::init(GetSocType() == HocClkSocType_Mariko);
+        // PMC exosphere check
+        SecmonArgs args = {};
+        args.X[0] = 0xF0000002;
+        args.X[1] = PMC_BASE;
+        svcCallSecureMonitor(&args);
+
+        if (args.X[1] != PMC_BASE) { // if param 1 is identical read failed
+            aotag::init(GetSocType() == HocClkSocType_Mariko);
+        }
+
         Result pwmCheck = 1;
         if (hosversionAtLeast(6,0,0) && R_SUCCEEDED(pwmInitialize())) {
             pwmCheck = pwmOpenSession2(&iCon, 0x3D000001);

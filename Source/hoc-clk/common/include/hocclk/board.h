@@ -51,13 +51,13 @@ typedef enum
 } HocClkConsoleType;
 
 typedef enum {
-    HocClkVoltage_SOC = 0,
-    HocClkVoltage_EMCVDD2,
-    HocClkVoltage_CPU,
-    HocClkVoltage_GPU,
-    HocClkVoltage_EMCVDDQ, // Returns VDD2 on Erista
-    HocClkVoltage_Display,
-    HocClkVoltage_Battery,
+    HocClkVoltage_SOC = 0, // VDD_SOC rail. 
+    HocClkVoltage_EMCVDD2, // DRAM VDD2 rail
+    HocClkVoltage_CPU,     // CPU rail
+    HocClkVoltage_GPU,     // GPU rail
+    HocClkVoltage_EMCVDDQ, // DRAM VDDQ rail
+    HocClkVoltage_Display, // Display rail
+    HocClkVoltage_Battery, // Battery voltage
     HocClkVoltage_EnumMax,
 } HocClkVoltage;
 
@@ -73,7 +73,7 @@ typedef enum
 
 typedef enum
 {
-    HocClkModule_CPU = 0,
+    HocClkModule_CPU = 0, 
     HocClkModule_GPU,
     HocClkModule_MEM,
     HocClkModule_Governor,
@@ -83,16 +83,16 @@ typedef enum
 
 typedef enum
 {
-    HocClkThermalSensor_SOC = 0,
-    HocClkThermalSensor_PCB,
-    HocClkThermalSensor_Skin,
-    HocClkThermalSensor_Battery,
+    HocClkThermalSensor_SOC = 0, // SoC temperature in millicelcius
+    HocClkThermalSensor_PCB,     // PCB temperature in millicelcius
+    HocClkThermalSensor_Skin,    // "Skin" temperature in millicelcius
+    HocClkThermalSensor_Battery, // Battery temperature in millicelcius
     HocClkThermalSensor_PMIC, // Always return 50.0C, as thats the only reasonable value the PMIC sensor can generate
-    HocClkThermalSensor_CPU,
-    HocClkThermalSensor_GPU,
-    HocClkThermalSensor_MEM, // Returns the PLLX sensor value on Mariko
-    HocClkThermalSensor_PLLX, 
-    HocClkThermalSensor_BQ24193,
+    HocClkThermalSensor_CPU, // CPU temperature in millicelcius
+    HocClkThermalSensor_GPU, // GPU temperature in millicelcius
+    HocClkThermalSensor_MEM, // MEM temperature in millicelcius. Returns the PLLX sensor value on Mariko
+    HocClkThermalSensor_PLLX, // PLLX temperature in millicelcius
+    HocClkThermalSensor_BQ24193, // BQ24193 temperature. Refer to BQ24193Temp for returned values
     HocClkThermalSensor_EnumMax
 } HocClkThermalSensor;
 
@@ -114,7 +114,7 @@ typedef enum
     HocClkPartLoad_RamBWAll,
     HocClkPartLoad_RamBWCpu,
     HocClkPartLoad_RamBWGpu,
-    HocClkPartLoad_RamBWPeak, 
+    HocClkPartLoad_RamBWPeak, // Maximum possible RAM bandwidth
     HocClkPartLoad_EnumMax
 } HocClkPartLoad;
 
@@ -134,7 +134,7 @@ typedef enum {
 
 enum {
     DVFSMode_Disabled = 0,
-    DVFSMode_Hijack,
+    DVFSMode_Hijack, // PCV hijack dvfs
     // DVFSMode_OfficialService,
     // DVFSMode_Hack,
     DVFSMode_EnumMax,
@@ -176,7 +176,13 @@ typedef enum {
     RamDisplayUnit_MHzMTs,
     RamDisplayUnit_EnumMax,
 } RamDisplayUnit;
-
+typedef enum {
+    BQ24193Temp_Normal = 0,
+    BQ24193Temp_Warm,
+    BQ24193Temp_Hot,
+    BQ24193Temp_Overheat,
+    BQ24193Temp_EnumMax
+} BQ24193Temp;
 typedef enum AulaColorMode {
     AulaDisplayColorMode_Saturated = 0x0,
     AulaDisplayColorMode_Washed = 0x45,

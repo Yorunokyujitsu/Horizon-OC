@@ -33,6 +33,8 @@
 #include "board.hpp"
 #include "../soctherm.hpp"
 #include "bq24193.hpp"
+#include "../aotag.hpp"
+
 namespace board {
 
     s32 GetTemperatureMilli(HocClkThermalSensor sensor) {
@@ -48,7 +50,8 @@ namespace board {
                 break;
             }
             case HocClkThermalSensor_PCB: {
-                millis = tmp451TempPcb();
+                millis = aotag::getTemp();
+                // = tmp451TempPcb();
                 break;
             }
             case HocClkThermalSensor_Skin: {

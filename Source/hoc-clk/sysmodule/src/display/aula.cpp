@@ -20,6 +20,8 @@
 #include "aula.hpp"
 #include "common.hpp"
 
+// I *think* HOS changes this in some ways, so look into it more
+
 namespace AulaDisplay {
     #define MMIO_REG32(base, off) *(vu32 *)((base) + (off))
     #define DSI(off)             MMIO_REG32(board::dsiVirtAddr, (off) << 2u)

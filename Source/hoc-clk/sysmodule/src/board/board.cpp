@@ -42,6 +42,7 @@
 #include "../soctherm.hpp"
 #include "../integrations.hpp"
 #include "../file_utils.hpp"
+#include "../aotag.hpp"
 namespace board {
 
     u64 clkVirtAddr, dsiVirtAddr, apbVirtAddr;
@@ -139,7 +140,7 @@ namespace board {
         FetchHardwareInfos();
 
         soctherm::Initialize();
-
+        aotag::init(GetSocType() == HocClkSocType_Mariko);
         Result pwmCheck = 1;
         if (hosversionAtLeast(6,0,0) && R_SUCCEEDED(pwmInitialize())) {
             pwmCheck = pwmOpenSession2(&iCon, 0x3D000001);

@@ -191,6 +191,10 @@ void AboutGui::listUI()
         new tsl::elm::ListItem("TDRR")
     );
 
+    this->listElement->addItem(
+        new tsl::elm::ListItem("MasaGratoR")
+    );
+
     // ---- Testers ----
     this->listElement->addItem(
         new tsl::elm::CategoryHeader("Testers")
@@ -270,7 +274,7 @@ void AboutGui::listUI()
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("MasaGratoR - Status Monitor")
+        new tsl::elm::ListItem("CtCaer - Hekate, L4T and Proper Timings")
     );
 
     // Create cat elements but hide them initially
@@ -384,16 +388,16 @@ void AboutGui::refresh()
     ramBWItemMax->setValue(strings[9]);
 
     switch(context->temps[HocClkThermalSensor_BQ24193]) {
-        case 0: 
+        case BQ24193Temp_Normal: 
             strcpy(strings[10], "Normal"); 
             break;
-        case 1: 
+        case BQ24193Temp_Warm: 
             strcpy(strings[10], "Warm"); 
             break;
-        case 2: 
+        case BQ24193Temp_Hot: 
             strcpy(strings[10], "Hot"); 
             break;
-        case 3: 
+        case BQ24193Temp_Overheat: 
             strcpy(strings[10], "Overheat"); 
             break;
         default: 

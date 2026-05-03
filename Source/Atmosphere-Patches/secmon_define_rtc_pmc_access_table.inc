@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define __ACCESS_TABLE_NAME__    EmcAccessTable2
-#define __ACCESS_TABLE_ADDRESS__ MemoryRegionPhysicalDeviceExternalMemoryController2.GetAddress()
-#define __ACCESS_TABLE_INC__     "secmon_emc_access_table_data.inc"
+#define __ACCESS_TABLE_NAME__    RtcPmcAccessTable
+#define __ACCESS_TABLE_ADDRESS__ MemoryRegionPhysicalDeviceRtcPmc.GetAddress()
+#define __ACCESS_TABLE_INC__     "secmon_rtc_pmc_access_table_data.inc"
 
 #include "secmon_define_access_table.inc"
 

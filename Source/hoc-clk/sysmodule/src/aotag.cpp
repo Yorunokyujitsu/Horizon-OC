@@ -28,7 +28,7 @@
 namespace aotag {
     #define PMC_BASE 0x7000E400
     #define TEGRA_FUSE_CP_REV_0_3          (3)
-    #define FUSE_CP_REV                    0x90
+    #define FUSE_CP_REV                    0x190
     u64 fuseVa = 0;
     bool wasInit = false;
     inline int tegra_fuse_readl(unsigned long base, u32* value) {
@@ -252,15 +252,15 @@ namespace aotag {
         R_UNLESS(MapAddress(fuseVa, FusePa, "fuse"));
 
         if (isMariko) {
-            u32 major, minor, rev;
+            // u32 major, minor, rev;
             pdata = &tegra210b01_plat_data;
             info->config = &tegra210b01_aotag_config;
-            tegra_fuse_readl(FUSE_CP_REV, &rev);
-            minor = rev & 0x1f;
-            major = (rev >> 5) & 0x3f;
-            if (major == 0 && minor < TEGRA_FUSE_CP_REV_0_3) {
-                info->config->tsample_ate -= 1;
-            }
+            // tegra_fuse_readl(FUSE_CP_REV, &rev);
+            // minor = rev & 0x1f;
+            // major = (rev >> 5) & 0x3f;
+            // if (major == 0 && minor < TEGRA_FUSE_CP_REV_0_3) {
+            //     info->config->tsample_ate -= 1;
+            // }
         } else {
             info->config = &tegra_aotag_config;
             pdata = &tegra210_plat_data;

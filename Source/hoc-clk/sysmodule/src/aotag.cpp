@@ -81,31 +81,14 @@ namespace aotag {
         .tsample_ate = 39,
     };
 
-    /*
-        Calculate AOTAG coeffs:
-        offset_C = 5000
-        halfA = low millis * 2 - offset_C * 2
-        halfB = high millis * 2 - offset_C * 2
-
-        count_A = (aotag_half_A + |thermb|) × 8192 / therma
-        count_B = (aotag_half_B + |thermb|) × 8192 / therma
-        therma_target = (soctherm_half_B - soctherm_half_A) × 8192 / (count_B - count_A)
-
-        thermb_target = (soctherm_half_A - D×2) - therma_target × count_A / 8192
-
-        alpha = therma_target x 1,000,000 / therma_raw
-
-        beta  = thermb_target x 1,000,000 - thermb_raw × alpha
-    */
-
     static const struct FuseCorrCoeff tegra_aotag_coeff = {
-        .alpha = 1290000,
-        .beta = 40500000,
+        .alpha = 1063200,
+        .beta = -6749000,
     };
 
     static const struct FuseCorrCoeff tegra210b01_aotag_coeff = {
-        .alpha = 1290000,
-        .beta = 40500000,
+        .alpha = 991100,
+        .beta = 1096200,
     };
 
     struct aotag_sensor_info_t {
@@ -315,7 +298,7 @@ namespace aotag {
         r = REG_SET(r, TSENSOR_PDIV, i->config->pdiv);
         tegra_pmc_writel(r, PMC_TSENSOR_PDIV0);
 
-        r = 0;
+        r = tegra_pmc_readl(PMC_AOTAG_CFG);
         set_bit(CFG_TAG_EN_POS, &r);
         clear_bit(CFG_DISABLE_CLK_POS, &r);
         tegra_pmc_writel(r, PMC_AOTAG_CFG);

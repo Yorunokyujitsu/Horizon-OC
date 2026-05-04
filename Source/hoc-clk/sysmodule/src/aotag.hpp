@@ -105,7 +105,7 @@ namespace aotag {
     * Register definitions
     */
     #define TSENSOR_COMMON_FUSE_ADDR	(0x280)
-    #define AOTAG_FUSE_ADDR			(0x1D4)
+    #define AOTAG_FUSE_ADDR			(0x2D4)
 
     #define PMC_R_OBS_AOTAG			(0x017)
     #define PMC_R_OBS_AOTAG_CAPTURE		(0x017)

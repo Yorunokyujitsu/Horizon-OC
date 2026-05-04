@@ -330,14 +330,19 @@ namespace clockManager {
         std::uint32_t targetHz = 0;
         std::uint32_t maxHz = 0;
         std::uint32_t nearestHz = 0;
+        static bool prepareBoostExit = false;
+
         bool didHijackPcv = false;
         bool skipCpuDueToBoost = isBoost && !config::GetConfigValue(HocClkConfigValue_OverwriteBoostMode);
         if (skipCpuDueToBoost) {
-            u32 boostFreq = board::GetHz(HocClkModule_CPU);
-            if (boostFreq / 1000000 > 1785) {
-                board::SetHz(HocClkModule_CPU, boostFreq);
-            }
+            board::SetHz(HocClkModule_CPU, board::GetHz(HocClkModule_CPU));
+            prepareBoostExit = true;
             return; // Return if we aren't overwriting boost mode
+        }
+
+        if (prepareBoostExit) {
+            board::SetHz(HocClkModule_CPU, board::GetHz(HocClkModule_CPU));
+            prepareBoostExit = false;
         }
 
         bool returnRaw = false; // Return a value scaled to MHz instead of raw value

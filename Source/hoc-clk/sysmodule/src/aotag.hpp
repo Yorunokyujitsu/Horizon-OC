@@ -105,6 +105,9 @@ namespace aotag {
     * Register definitions
     */
     #define TSENSOR_COMMON_FUSE_ADDR	(0x280)
+    
+    // NVIDIA driver uses 1D4 here but its incorrect.
+    // I guess that's what happens when you vibecode your AOTAG driver (jk)
     #define AOTAG_FUSE_ADDR			(0x2D4)
 
     #define PMC_R_OBS_AOTAG			(0x017)

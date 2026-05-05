@@ -19,3 +19,4 @@
 #include <switch.h>
 
 Result QueryMemoryMapping(u64* virtaddr, u64 physaddr, u64 size);
+Result MapAddress(u64 &va, const u64 &physAddr, const char *name);

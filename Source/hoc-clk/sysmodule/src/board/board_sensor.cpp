@@ -31,18 +31,19 @@
 #include <battery.h>
 #include <pwm.h>
 #include "board.hpp"
-#include "../soctherm.hpp"
+#include "../tsensor/soctherm.hpp"
+#include "../tsensor/aotag.hpp"
 #include "bq24193.hpp"
-#include "../aotag.hpp"
 #include "../config.hpp"
+
 namespace board {
 
     s32 GetTemperatureMilli(HocClkThermalSensor sensor) {
         s32 millis = 0;
         BatteryChargeInfo info;
 
-        soctherm::TSensorTemps temps = {};
-        soctherm::ReadSensors(temps);
+        tsensor::TSensorTemps temps = {};
+        tsensor::ReadTSensors(temps);
 
         switch(sensor) {
             case HocClkThermalSensor_SOC: {
@@ -79,8 +80,8 @@ namespace board {
                 break;
             }
             case HocClkThermalSensor_MEM: {
-                if(board::GetSocType() == HocClkSocType_Mariko && aotag::isInitialized() && aotag::getTemp() > 0) {
-                    millis = (temps.gpu * 0.45f) + (temps.pllx * 0.30f) + (temps.cpu * 0.15f) + (aotag::getTemp() * 0.10f) + 3000;
+                if (board::GetSocType() == HocClkSocType_Mariko && tsensor::IsInitialized() && tsensor::ReadAotag() > 0) {
+                    millis = (temps.gpu * 0.45f) + (temps.pllx * 0.30f) + (temps.cpu * 0.15f) + (tsensor::ReadAotag() * 0.10f) + 3000;
                 } else {
                     millis = board::GetSocType() == HocClkSocType_Mariko ? temps.pllx : temps.mem;
                 }
@@ -95,7 +96,7 @@ namespace board {
                 break;
             }
             case HocClkThermalSensor_AO: {
-                millis = aotag::getTemp();
+                millis = tsensor::ReadAotag();
                 break;
             }
             default: {

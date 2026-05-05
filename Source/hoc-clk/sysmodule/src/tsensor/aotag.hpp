@@ -5,7 +5,7 @@
  * Copyright (c) 2014 - 2017, NVIDIA CORPORATION.  All rights reserved.
  *
  * Copyright (c) 2026, Souldbminer
- * 
+ *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
  * may be copied, distributed, and modified under those terms.
@@ -18,85 +18,11 @@
  */
 
 #pragma once
-#include "board/board.hpp"
-namespace aotag {
+
+namespace tsensor {
 
     #define MASK(start, end)	\
 	(((0xFFFFFFFF)<<start) & (u32)(((u64)1<<(end+1))-1))
-
-    #define R_UNLESS(rc)    \
-    do {                    \
-        if (R_FAILED(rc)) { \
-            return;         \
-        }                   \
-    } while (0)
-
-    struct TSensorConfig {
-        u32 tall;
-        u32 tiddq_en;
-        u32 ten_count;
-        u32 pdiv;
-        u32 pdiv_ate;
-        u32 tsample;
-        u32 tsample_ate;
-    };
-
-    struct FuseCorrCoeff {
-        s32 alpha;
-        s32 beta;
-    };
-
-    struct TSensorGroup {
-        const char *name;
-        u8 id;
-        u16 sensor_temp_offset;
-        u32 sensor_temp_mask;
-        u32 pdiv_mask;
-        u32 pllx_hotspot_diff;
-        u32 pllx_hotspot_mask;
-        u32 hw_pllx_offset_mask;
-        u32 hw_pllx_offset_en_mask;
-        u32 thermtrip_enable_mask;
-        u32 thermtrip_any_en_mask;
-        u32 thermtrip_threshold_mask;
-        u16 thermctl_lvl0_offset;
-        u32 thermctl_isr_mask;
-        u32 thermctl_lvl0_up_thresh_mask;
-        u32 thermctl_lvl0_dn_thresh_mask;
-    };
-
-    struct TSensorGroupOffsets {
-        u32 max;
-        u32 min;
-        u32 hw_offsetting_en;
-        const TSensorGroup *ttg;
-    };
-
-    struct TSensor {
-        const char *name;
-        const u32 base;
-        const TSensorConfig *config;
-        const u32 calib_fuse_offset;
-        const FuseCorrCoeff fuse_corr;
-        const TSensorGroup *group;
-    };
-
-    struct TSensorFuse {
-        u32 fuse_base_cp_mask;
-        u32 fuse_base_cp_shift;
-        u32 fuse_base_ft_mask;
-        u32 fuse_base_ft_shift;
-        u32 fuse_shift_ft_mask;
-        u32 fuse_shift_ft_shift;
-        u32 fuse_spare_realignment;
-    };
-
-    struct TSensorSharedCalib {
-        u32 base_cp;
-        u32 base_ft;
-        u32 actual_temp_cp;
-        u32 actual_temp_ft;
-    };
 
     #define MAX_THRESHOLD_TEMP	(127000)
     #define MIN_THRESHOLD_TEMP	(-127000)
@@ -105,7 +31,7 @@ namespace aotag {
     * Register definitions
     */
     #define TSENSOR_COMMON_FUSE_ADDR	(0x280)
-    
+
     // NVIDIA driver uses 1D4 here but its incorrect.
     // I guess that's what happens when you vibecode your AOTAG driver (jk)
     #define AOTAG_FUSE_ADDR			(0x2D4)
@@ -224,8 +150,7 @@ namespace aotag {
     #define AOTAG_FUSE_CALIB_FT_MASK	(MASK(AOTAG_FUSE_CALIB_FT_POS_START, \
                             AOTAG_FUSE_CALIB_FT_POS_END))
 
-
-    void init(bool isMariko);
-    s32 getTemp();
-    bool isInitialized();
+    void InitializeAotag(bool isMariko);
+    s32 ReadAotag();
+    bool IsInitialized();
 }

@@ -39,10 +39,10 @@
 #include "board_load.hpp"
 #include "board_volt.hpp"
 #include "board_misc.hpp"
-#include "../soctherm.hpp"
+#include "../tsensor/soctherm.hpp"
+#include "../tsensor/aotag.hpp"
 #include "../integrations.hpp"
 #include "../file_utils.hpp"
-#include "../aotag.hpp"
 namespace board {
 
     u64 clkVirtAddr, dsiVirtAddr, apbVirtAddr;
@@ -55,7 +55,7 @@ namespace board {
     PwmChannelSession iCon;
 
     u32 fd = 0, fd2 = 0;
-    
+
     #define PMC_BASE 0x7000E400
 
     void FetchHardwareInfos() {
@@ -141,7 +141,7 @@ namespace board {
         batteryInfoInitialize();
         FetchHardwareInfos();
 
-        soctherm::Initialize(); // SOCTHERM must be init before AOTAG
+        tsensor::InitializeSoctherm(); // SOCTHERM must be init before AOTAG
         // PMC exosphere check
         SecmonArgs args = {};
         args.X[0] = 0xF0000002;
@@ -149,7 +149,7 @@ namespace board {
         svcCallSecureMonitor(&args);
 
         if (args.X[1] != PMC_BASE) { // if param 1 is identical read failed
-            aotag::init(GetSocType() == HocClkSocType_Mariko);
+            tsensor::InitializeAotag(GetSocType() == HocClkSocType_Mariko);
         }
 
         Result pwmCheck = 1;
@@ -164,7 +164,7 @@ namespace board {
 
         rc = QueryMemoryMapping(&dsiVirtAddr, 0x54300000, 0x40000);
         ASSERT_RESULT_OK(rc, "QueryMemoryMapping (dsi)");
-        
+
         rc = QueryMemoryMapping(&apbVirtAddr, 0x70000000, 0x1000);
         ASSERT_RESULT_OK(rc, "QueryMemoryMapping (apb)");
 

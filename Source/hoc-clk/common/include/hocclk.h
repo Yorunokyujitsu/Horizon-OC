@@ -49,6 +49,7 @@ extern "C" {
 #include "hocclk/config.h"
 #include "hocclk/errors.h"
 #include "hocclk/psm_ext.h"
+#include "hocclk/result.hpp"
 
 #ifdef __cplusplus
 }

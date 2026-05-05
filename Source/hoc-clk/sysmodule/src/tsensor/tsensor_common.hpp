@@ -1,6 +1,8 @@
 /*
  * Copyright (c) 2014 - 2019, NVIDIA CORPORATION.  All rights reserved.
  *
+ * Copyright (c) 1994, Linus Torvalds
+ *
  * Author:
  *	Mikko Perttunen <mperttunen@nvidia.com>
  *
@@ -22,17 +24,10 @@
 
 #pragma once
 
-#include <switch.h>
-#include <hocclk.h>
+namespace tsensor {
 
-namespace soctherm {
-
-    #define R_UNLESS(rc)    \
-    do {                    \
-        if (R_FAILED(rc)) { \
-            return;         \
-        }                   \
-    } while (0)
+    #define FUSE_TSENSOR_COMMON 0xA80
+    #define FUSE_CACHE_OFFSET 0x800
 
     struct TSensorConfig {
         u32 tall;
@@ -101,26 +96,27 @@ namespace soctherm {
         u32 actual_temp_ft;
     };
 
-    enum SocthermTSensor : u32 {
-        SocthermTSensor_CPU0    = 0,
-        SocthermTSensor_CPU1    = 1,
-        SocthermTSensor_CPU2    = 2,
-        SocthermTSensor_CPU3    = 3,
-        SocthermTSensor_GPU     = 4,
-        SocthermTSensor_PLLX    = 5,
-        SocthermTSensor_MEM0    = 6,
-        SocthermTSensor_MEM1    = 7,
-        SocthermTSensor_EnumMax = 8,
-    };
+    template<typename T = u32>
+    static inline T ReadReg(u64 base, u32 offset) {
+        return *reinterpret_cast<volatile T*>(base + offset);
+    }
 
-    struct TSensorTemps {
-        s32 cpu;
-        s32 gpu;
-        s32 mem;
-        s32 pllx;
-    };
+    template<typename T = u32>
+    static inline void WriteReg(u64 base, u32 offset, T value) {
+        *reinterpret_cast<volatile T*>(base + offset) = value;
+    }
 
-    void Initialize();
-    void ReadSensors(TSensorTemps &temps);
+    template<typename T = u32>
+    static inline void SetBits(u64 base, u32 offset, T mask) {
+        WriteReg(base, offset, ReadReg<T>(base, offset) | mask);
+    }
+
+    template<typename T = u32>
+    static inline void ClearBits(u64 base, u32 offset, T mask) {
+        WriteReg(base, offset, ReadReg<T>(base, offset) & ~mask);
+    }
+
+    void CalcSharedCal(const TSensorFuse *tfuse, TSensorSharedCalib *shared, u64 fuseVa);
+    void CalcTSensorCalib(const TSensorConfig *cfg, TSensorSharedCalib *shared, const FuseCorrCoeff *corr, u32 *calibration, u32 offset, u64 fuseVa);
 
 }

@@ -22,17 +22,16 @@
 
 #include <switch.h>
 #include <hocclk.h>
+#include "../board/board.hpp"
+#include "../file_utils.hpp"
+#include "../mem_map.hpp"
 #include "soctherm.hpp"
-#include "board/board.hpp"
-#include "file_utils.hpp"
-#include "mem_map.hpp"
+#include "tsensor_common.hpp"
 
-namespace soctherm {
+namespace tsensor {
 
     namespace {
 
-        #define FUSE_CACHE_OFFSET 0x800
-        #define FUSE_TSENSOR_COMMON 0xA80
         #define CAR_CLK_SOURCE_TSENSOR 0x3B8
         #define CAR_CLK_OUT_ENB_V 0x360
 
@@ -43,9 +42,6 @@ namespace soctherm {
         #define CLK_ENB_SOC_THERM 1 << 14
 
         #define CAR_CLK_SOURCE_TSENSOR_VAL 0x8000005E
-
-        #define NOMINAL_CALIB_FT 105
-        #define NOMINAL_CALIB_CP  25
 
         #define THERMCTL_LEVEL0_GROUP_CPU    0x0
         #define THERMCTL_LEVEL0_GROUP_GPU    0x4
@@ -65,9 +61,7 @@ namespace soctherm {
 
         #define SENSOR_CONFIG2 8
         #define SENSOR_CONFIG2_THERMA_MASK (0xffffu << 16)
-        #define SENSOR_CONFIG2_THERMA_SHIFT 16
         #define SENSOR_CONFIG2_THERMB_MASK 0xffff
-        #define SENSOR_CONFIG2_THERMB_SHIFT 0
 
         #define THERMCTL_THERMTRIP_CTL			0x80
 
@@ -126,9 +120,6 @@ namespace soctherm {
         #define TEGRA210_BPTT           9
 
         #define FUSE_TSENSOR_CALIB_CP_TS_BASE_MASK  0x1fff
-        #define FUSE_TSENSOR_CALIB_FT_TS_BASE_MASK (0x1fff << 13)
-        #define FUSE_TSENSOR_CALIB_FT_TS_BASE_SHIFT	  13
-        #define CALIB_COEFFICIENT                     1000000LL
 
         #define SENSOR_CONFIG0 0
         #define SENSOR_CONFIG0_STOP BIT(0)
@@ -420,53 +411,6 @@ namespace soctherm {
         bool isMariko;
     }
 
-    template<typename T = u32>
-    static inline T ReadReg(u64 base, u32 offset) {
-        return *reinterpret_cast<volatile T*>(base + offset);
-    }
-
-    template<typename T = u32>
-    static inline void WriteReg(u64 base, u32 offset, T value) {
-        *reinterpret_cast<volatile T*>(base + offset) = value;
-    }
-
-    template<typename T = u32>
-    static inline void SetBits(u64 base, u32 offset, T mask) {
-        WriteReg(base, offset, ReadReg<T>(base, offset) | mask);
-    }
-
-    template<typename T = u32>
-    static inline void ClearBits(u64 base, u32 offset, T mask) {
-        WriteReg(base, offset, ReadReg<T>(base, offset) & ~mask);
-    }
-
-    Result MapAddress(u64 &va, const u64 &physAddr, const char *name) {
-        Result mapResult = QueryMemoryMapping(&va, physAddr, 0x1000);
-        if (R_FAILED(mapResult)) {
-            fileUtils::LogLine("[Soctherm] Failed to map %s! %u", name, R_DESCRIPTION(mapResult));
-        }
-
-        return mapResult;
-    }
-
-    static inline s32 sign_extend32(u32 value, int index) {
-        u8 shift = 31 - index;
-        return (s32) (value << shift) >> shift;
-    }
-
-    static inline s64 div64_s64(s64 dividend, s64 divisor) {
-        return dividend / divisor;
-    }
-
-    static s64 div64_s64_precise(s64 a, s32 b) {
-        s64 r, al;
-
-        al = a << 16;
-
-        r = div64_s64(al * 2 + 1, 2 * b);
-        return r >> 16;
-    }
-
     bool IsDisabledThroughSleep() {
         return (ReadReg(carVa, CLK_RST_CONTROLLER_RST_DEVICES) & SWR_SOC_THERM_RST) || !(ReadReg(carVa, CLK_RST_CONTROLLER_CLK_OUT_ENB) & CLK_ENB_SOC_THERM);
     }
@@ -529,7 +473,7 @@ namespace soctherm {
         WriteReg(socthermVa, TSENSOR_TSENSOR_CLKEN, TSENSOR_TSENSOR_ENABLE);
     }
 
-    void ReadSensors(TSensorTemps &temps) {
+    void ReadTSensors(TSensorTemps &temps) {
         if (IsDisabledThroughSleep()) {
             return;
         }
@@ -549,65 +493,7 @@ namespace soctherm {
         }
     }
 
-    void CalcSharedCal(const TSensorFuse *tfuse, TSensorSharedCalib *shared, u64 fuseVa) {
-        s32 shifted_cp, shifted_ft;
-
-        u32 val = ReadReg(fuseVa, FUSE_TSENSOR_COMMON);
-
-        shared->base_cp = (val & tfuse->fuse_base_cp_mask) >> tfuse->fuse_base_cp_shift;
-        shared->base_ft = (val & tfuse->fuse_base_ft_mask) >> tfuse->fuse_base_ft_shift;
-
-        shifted_ft = (val & tfuse->fuse_shift_ft_mask) >> tfuse->fuse_shift_ft_shift;
-        shifted_ft = sign_extend32(shifted_ft, 4);
-
-        if (tfuse->fuse_spare_realignment) {
-            val = ReadReg(fuseVa, tfuse->fuse_spare_realignment + FUSE_CACHE_OFFSET);
-        }
-
-        shifted_cp = sign_extend32(val, 5);
-
-        shared->actual_temp_cp = 2 * NOMINAL_CALIB_CP + shifted_cp;
-        shared->actual_temp_ft = 2 * NOMINAL_CALIB_FT + shifted_ft;
-    }
-
-    void CalcTSensorCalib(const TSensorConfig *cfg, TSensorSharedCalib *shared, const FuseCorrCoeff *corr, u32 *calibration, u32 offset, u64 fuseVa) {
-        u32 val, calib;
-        s32 actual_tsensor_ft, actual_tsensor_cp;
-        s32 delta_sens, delta_temp;
-        s32 mult, div;
-        s16 therma, thermb;
-        s64 temp;
-
-        val = ReadReg(fuseVa, offset + FUSE_CACHE_OFFSET);
-
-        actual_tsensor_cp = (shared->base_cp * 64) + sign_extend32(val, 12);
-        val = (val & FUSE_TSENSOR_CALIB_FT_TS_BASE_MASK) >> FUSE_TSENSOR_CALIB_FT_TS_BASE_SHIFT;
-        actual_tsensor_ft = (shared->base_ft * 32) + sign_extend32(val, 12);
-
-        delta_sens = actual_tsensor_ft - actual_tsensor_cp;
-        delta_temp = shared->actual_temp_ft - shared->actual_temp_cp;
-
-        mult = cfg->pdiv * cfg->tsample_ate;
-        div = cfg->tsample * cfg->pdiv_ate;
-
-        temp = (s64)delta_temp * (1LL << 13) * mult;
-        therma = div64_s64_precise(temp, (s64)delta_sens * div);
-
-        temp = ((s64)actual_tsensor_ft * shared->actual_temp_cp) - ((s64)actual_tsensor_cp * shared->actual_temp_ft);
-        thermb = div64_s64_precise(temp, delta_sens);
-
-        temp = (s64)therma * corr->alpha;
-        therma = div64_s64_precise(temp, CALIB_COEFFICIENT);
-
-        temp = (s64)thermb * corr->alpha + corr->beta;
-        thermb = div64_s64_precise(temp, CALIB_COEFFICIENT);
-
-        calib = ((u16)therma << SENSOR_CONFIG2_THERMA_SHIFT) | ((u16)thermb << SENSOR_CONFIG2_THERMB_SHIFT);
-
-        *calibration = calib;
-    }
-
-    void Initialize() {
+    void InitializeSoctherm() {
         isMariko = board::GetSocType() == HocClkSocType_Mariko;
 
         constexpr u64 SocthermPa = 0x700E2000, FusePa = 0x7000F000, CarPa = 0x60006000;

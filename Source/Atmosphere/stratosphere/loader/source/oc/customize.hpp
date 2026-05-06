@@ -21,6 +21,7 @@
 #pragma once
 
 #define CUST_REV 2
+#define HOC_VERSION 220
 
 #include "oc_common.hpp"
 #include "pcv/pcv_common.hpp"
@@ -79,8 +80,8 @@ constexpr uint32_t MARIKO_MTC_MAGIC = 0x43544D4D; // MMTC
 typedef struct CustomizeTable {
     u8  cust[4] = {'C', 'U', 'S', 'T'};
     u32 custRev = CUST_REV;
+    u32 hocVersion = HOC_VERSION;
 
-    u32 placeholder;
     u32 hpMode;
 
     u32 commonEmcMemVolt;

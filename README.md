@@ -79,14 +79,57 @@ Refer to COMPILATION.md
 ## Clock table
 
 ### MEM clocks (mhz)
+
 * 3200 → max on mariko, JEDEC.
+* 3166
+* 3133
+* 3100
+* 3066
+* 3033
+* 3000
+* 2966
 * 2933 → JEDEC.
+* 2900
+* 2866
+* 2833
+* 2800
+* 2766
+* 2733
+* 2700
 * 2666 → JEDEC.
+* 2633
+* 2600
+* 2566
+* 2533
+* 2500
+* 2466
+* 2433
 * 2400 → max on erista, JEDEC.
+* 2366
+* 2333
+* 2300
+* 2266
+* 2233
+* 2200
+* 2166
 * 2133 → Mariko JEDEC standard max (4266 Modules)
+* 2100
+* 2066
+* 2033
+* 2000
 * 1996 → JEDEC standard
+* 1966
+* 1933
+* 1900
 * 1866 → Mariko JEDEC standard max (3733 Modules)
-* 1600 → official docked, boost mode, erista safe max, JEDEC.
+* 1833
+* 1800
+* 1766
+* 1733
+* 1700
+* 1666
+* 1633
+* 1600 → official docked, boost mode, Erista JEDEC standard max (3200 Modules), JEDEC.
 * 1331 → official handheld, JEDEC.
 * 1065
 * 800

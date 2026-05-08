@@ -74,6 +74,7 @@ typedef struct {
     u8 maxDisplayFreq;
     u8 dramID;
     bool isDram8GB;
+    HocClkConsoleType consoleType;
 
     // FPS / Resolution
     u8 fps;
@@ -82,7 +83,7 @@ typedef struct {
     u16 kipVersion;
 
     // Reserved for future use
-    u8 reserved[0x363];
+    u8 reserved[0x35B];
 } HocClkContext;
 
 typedef struct

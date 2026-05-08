@@ -42,10 +42,8 @@ typedef enum
 typedef enum
 {
     HocClkConsoleType_Icosa = 0, // V1
-    HocClkConsoleType_Copper,    // Unreleased Erista
-    HocClkConsoleType_Hoag,      // Lite
     HocClkConsoleType_Iowa,      // V2
-    HocClkConsoleType_Calcio,    // Unreleased Mariko
+    HocClkConsoleType_Hoag,      // Lite
     HocClkConsoleType_Aula,      // OLED
     HocClkConsoleType_EnumMax,
 } HocClkConsoleType;
@@ -342,6 +340,23 @@ static inline const char* hocClkFormatVoltage(HocClkVoltage voltage, bool pretty
             return pretty ? "SOC" : "soc";
         case HocClkVoltage_Display:
             return pretty ? "Display" : "display";
+        default:
+            return "unknown";
+    }
+}
+
+static inline const char* hocClkFormatConsoleType(HocClkConsoleType consoleType, bool pretty)
+{
+    switch(consoleType)
+    {
+        case HocClkConsoleType_Icosa:
+            return pretty ? "Icosa (V1)" : "icosa";
+        case HocClkConsoleType_Iowa:
+            return pretty ? "Iowa (V2)" : "iowa";
+        case HocClkConsoleType_Hoag:
+            return pretty ? "Hoag (Lite)" : "hoag";
+        case HocClkConsoleType_Aula:
+            return pretty ? "Aula (OLED)" : "aula";
         default:
             return "unknown";
     }

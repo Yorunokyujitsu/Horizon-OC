@@ -40,6 +40,7 @@ tsl::elm::ListItem* ramBWItemGpu = NULL;
 tsl::elm::ListItem* ramBWItemMax = NULL;
 tsl::elm::ListItem* bqtempitem = NULL;
 tsl::elm::ListItem* aotagTempItem = NULL;
+tsl::elm::ListItem* cTypeItem = NULL;
 
 ImageElement* CatImage = NULL;
 HideableCategoryHeader* CatHeader = NULL;
@@ -57,8 +58,13 @@ AboutGui::~AboutGui()
 
 void AboutGui::listUI()
 {
+    BaseMenuGui::refresh();
+
+    if (!this->context)
+        return;
+
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Voltages and Temps")
+        new tsl::elm::CategoryHeader("Voltages")
     );
 
     ramVoltItem =
@@ -71,9 +77,12 @@ void AboutGui::listUI()
         new tsl::elm::ListItem("Display Voltage:");
     this->listElement->addItem(dispVoltItem);
 
+    this->listElement->addItem(
+        new tsl::elm::CategoryHeader("Temperatures")
+    );
     eristaPLLXItem =
         new tsl::elm::ListItem("PLLX Temp:");
-    if(IsErista()) {
+    if(this->context->temps[HocClkThermalSensor_AO] > 0) { // Only show if the value is valid (not -126, which means not patched)
         this->listElement->addItem(eristaPLLXItem);
     }
 
@@ -107,8 +116,13 @@ void AboutGui::listUI()
 
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("HW Info")
+        new tsl::elm::CategoryHeader("Hardware Info")
     );
+
+    cTypeItem =
+        new tsl::elm::ListItem("Console Type:");
+    this->listElement->addItem(cTypeItem);
+
     SpeedoItem =
         new tsl::elm::ListItem("Speedo:");
     this->listElement->addItem(SpeedoItem);
@@ -118,7 +132,7 @@ void AboutGui::listUI()
     this->listElement->addItem(IddqItem);
 
     DramModule =
-        new tsl::elm::ListItem("Module: ");
+        new tsl::elm::ListItem("DRAM Module: ");
     this->listElement->addItem(DramModule);
 
     waferCordsItem =
@@ -380,13 +394,11 @@ void AboutGui::refresh()
     sprintf(strings[2], "X: %u Y: %u", this->context->waferX, this->context->waferY);
     waferCordsItem->setValue(strings[2]);
 
-    if(IsErista()) {
-        u32 millis = context->temps[HocClkThermalSensor_PLLX];
-        sprintf(strings[3], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-        eristaPLLXItem->setValue(strings[3]);
-    }
+    s32 millis = context->temps[HocClkThermalSensor_PLLX];
+    sprintf(strings[3], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
+    eristaPLLXItem->setValue(strings[3]);
 
-    s32 millis = context->temps[HocClkThermalSensor_AO];
+    millis = context->temps[HocClkThermalSensor_AO];
     if(millis > 0) {
         sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
     } else if (millis == -125) {
@@ -432,5 +444,7 @@ void AboutGui::refresh()
     }
 
     bqtempitem->setValue(strings[10]);
+
+    cTypeItem->setValue(hocClkFormatConsoleType(this->context->consoleType, true));
 
 }

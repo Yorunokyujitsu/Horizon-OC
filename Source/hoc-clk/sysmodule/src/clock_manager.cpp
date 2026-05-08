@@ -469,7 +469,10 @@ namespace clockManager {
             if (hz != 0 && hz != gContext.freqs[module]) {
                 fileUtils::LogLine("[mgr] %s clock change: %u.%u MHz", board::GetModuleName((HocClkModule)module, true), hz / 1000000, hz / 100000 - hz / 1000000 * 10);
                 gContext.freqs[module] = hz;
-                gContext.stable.freqs[module] = hz;
+
+                if (module < HocClkModuleStable_EnumMax) {
+                    gContext.stable.freqs[module] = hz;
+                }
                 hasChanged = true;
             }
 
@@ -479,7 +482,10 @@ namespace clockManager {
                     fileUtils::LogLine("[mgr] %s override change: %u.%u MHz", board::GetModuleName((HocClkModule)module, true), hz / 1000000, hz / 100000 - hz / 1000000 * 10);
                 }
                 gContext.overrideFreqs[module] = hz;
-                gContext.stable.overrideFreqs[module] = hz;
+
+                if (module < HocClkModuleStable_EnumMax) {
+                    gContext.stable.overrideFreqs[module] = hz;
+                }
                 hasChanged = true;
             }
         }
@@ -495,7 +501,10 @@ namespace clockManager {
                 fileUtils::LogLine("[mgr] %s temp: %u.%u °C", board::GetThermalSensorName((HocClkThermalSensor)sensor, true), millis / 1000, (millis - millis / 1000 * 1000) / 100);
             }
             gContext.temps[sensor] = millis;
-            gContext.stable.temps[sensor] = millis;
+
+            if (sensor < HocClkThermalSensorStable_EnumMax) {
+                gContext.stable.temps[sensor] = millis;
+            }
         }
 
         // power stats do not and should not force a refresh, hasChanged untouched
@@ -507,7 +516,10 @@ namespace clockManager {
                 fileUtils::LogLine("[mgr] Power %s: %d mW", board::GetPowerSensorName((HocClkPowerSensor)sensor, false), mw);
             }
             gContext.power[sensor] = mw;
-            gContext.stable.power[sensor] = mw;
+
+            if (sensor < HocClkPowerSensorStable_EnumMax) {
+                gContext.stable.power[sensor] = mw;
+            }
         }
 
         // real freqs do not and should not force a refresh, hasChanged untouched
@@ -519,18 +531,27 @@ namespace clockManager {
                 fileUtils::LogLine("[mgr] %s real freq: %u.%u MHz", board::GetModuleName((HocClkModule)module, true), realHz / 1000000, realHz / 100000 - realHz / 1000000 * 10);
             }
             gContext.realFreqs[module] = realHz;
-            gContext.stable.realFreqs[module] = realHz;
+
+            if (module < HocClkModuleStable_EnumMax) {
+                gContext.stable.realFreqs[module] = realHz;
+            }
         }
 
         // ram load do not and should not force a refresh, hasChanged untouched
         for (unsigned int loadSource = 0; loadSource < HocClkPartLoad_EnumMax; loadSource++) {
             gContext.partLoad[loadSource] = board::GetPartLoad((HocClkPartLoad)loadSource);
-            gContext.stable.partLoad[loadSource] = board::GetPartLoad((HocClkPartLoad)loadSource);
+
+            if (loadSource < HocClkPartLoadStable_EnumMax) {
+                gContext.stable.partLoad[loadSource] = board::GetPartLoad((HocClkPartLoad)loadSource);
+            }
         }
 
         for (unsigned int voltageSource = 0; voltageSource < HocClkVoltage_EnumMax; voltageSource++) {
             gContext.voltages[voltageSource] = board::GetVoltage((HocClkVoltage)voltageSource);
-            gContext.stable.voltages[voltageSource] = board::GetVoltage((HocClkVoltage)voltageSource);
+
+            if (voltageSource < HocClkVoltageStable_EnumMax) {
+                gContext.stable.voltages[voltageSource] = board::GetVoltage((HocClkVoltage)voltageSource);
+            }
         }
 
         if (ConfigIntervalTimeout(HocClkConfigValue_CsvWriteIntervalMs, ns, &gLastCsvWriteNs)) {
@@ -570,9 +591,13 @@ namespace clockManager {
             gContext.freqs[module] = 0;
             gContext.realFreqs[module] = 0;
             gContext.overrideFreqs[module] = 0;
-            gContext.stable.freqs[module] = 0;
-            gContext.stable.realFreqs[module] = 0;
-            gContext.stable.overrideFreqs[module] = 0;
+
+            if (module < HocClkModuleStable_EnumMax) {
+                gContext.stable.freqs[module] = 0;
+                gContext.stable.realFreqs[module] = 0;
+                gContext.stable.overrideFreqs[module] = 0;
+            }
+
             RefreshFreqTableRow((HocClkModule)module);
         }
 

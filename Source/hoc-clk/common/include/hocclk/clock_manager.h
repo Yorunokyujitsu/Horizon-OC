@@ -36,7 +36,7 @@ typedef struct {
         #define HocClkModuleStable_EnumMax 5
         #define HocClkThermalSensorStable_EnumMax 11
         #define HocClkPowerSensorStable_EnumMax 2
-        #define HocClkRamLoadStable_EnumMax 10
+        #define HocClkPartLoadStable_EnumMax 10
         #define HocClkVoltageStable_EnumMax 7
 
         u32 freqs[HocClkModuleStable_EnumMax];
@@ -44,7 +44,7 @@ typedef struct {
         u32 overrideFreqs[HocClkModuleStable_EnumMax];
         s32 temps[HocClkThermalSensorStable_EnumMax];
         u32 power[HocClkPowerSensorStable_EnumMax];
-        u32 partLoad[HocClkRamLoadStable_EnumMax];
+        u32 partLoad[HocClkPartLoadStable_EnumMax];
         u32 voltages[HocClkVoltageStable_EnumMax];
     } stable;
 

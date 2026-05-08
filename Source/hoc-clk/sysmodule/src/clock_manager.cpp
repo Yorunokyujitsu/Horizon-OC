@@ -412,7 +412,10 @@ namespace clockManager {
 
                     board::SetHz((HocClkModule)module, nearestHz);
                     gContext.freqs[module] = nearestHz;
-                    gContext.stable.freqs[module] = nearestHz;
+
+                    if (module < HocClkModuleStable_EnumMax) {
+                        gContext.stable.freqs[module] = nearestHz;
+                    }
 
                     if (module == HocClkModule_CPU && config::GetConfigValue(HocClkConfigValue_LiveCpuUv)) {
                         HandleCpuUv();

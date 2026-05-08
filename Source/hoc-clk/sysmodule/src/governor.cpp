@@ -144,7 +144,7 @@ namespace governor {
                     u32 targetHz = ResolveTargetHz(HocClkModule_CPU);
                     u32 maxHz = clockManager::GetMaxAllowedHz(HocClkModule_CPU, clockManager::gContext.profile);
 
-                    if (targetHz && desiredHz > targetHz) 
+                    if (targetHz && desiredHz > targetHz)
                         desiredHz = targetHz;
                     if (maxHz    && desiredHz > maxHz)
                         desiredHz = maxHz;
@@ -171,6 +171,7 @@ namespace governor {
                     if ((!goingDown || (cpuDownHoldRemaining == 0)) && clockManager::IsAssignableHz(HocClkModule_CPU, newHz)) {
                         board::SetHz(HocClkModule_CPU, newHz);
                         clockManager::gContext.freqs[HocClkModule_CPU] = newHz;
+                        clockManager::gContext.stable.freqs[HocClkModule_CPU] = newHz;
                         cpuLastHz = newHz;
                     }
                 }
@@ -209,6 +210,7 @@ namespace governor {
                 if ((!goingDown || (gpuDownHoldRemaining == 0)) && clockManager::IsAssignableHz(HocClkModule_GPU, newHz)) {
                     board::SetHz(HocClkModule_GPU, newHz);
                     clockManager::gContext.freqs[HocClkModule_GPU] = newHz;
+                    clockManager::gContext.stable.freqs[HocClkModule_GPU] = newHz;
                     gpuLastHz = newHz;
                 }
             } else {
@@ -250,6 +252,8 @@ namespace governor {
                                 board::SetHz(HocClkModule_Display, fps);
                                 clockManager::gContext.freqs[HocClkModule_Display] = fps;
                                 clockManager::gContext.realFreqs[HocClkModule_Display] = fps;
+                                clockManager::gContext.stable.freqs[HocClkModule_Display] = fps;
+                                clockManager::gContext.stable.realFreqs[HocClkModule_Display] = fps;
                             } else {
                                 for (u32 i = 0; i < 10; i++) {
                                     u32 compareHz = fps * i;
@@ -257,6 +261,8 @@ namespace governor {
                                         board::SetHz(HocClkModule_Display, compareHz);
                                         clockManager::gContext.freqs[HocClkModule_Display] = compareHz;
                                         clockManager::gContext.realFreqs[HocClkModule_Display] = compareHz;
+                                        clockManager::gContext.stable.freqs[HocClkModule_Display] = compareHz;
+                                        clockManager::gContext.stable.realFreqs[HocClkModule_Display] = compareHz;
                                         break;
                                     }
                                 }

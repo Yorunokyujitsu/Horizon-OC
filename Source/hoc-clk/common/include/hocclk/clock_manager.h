@@ -30,8 +30,24 @@
 #include <stdint.h>
 #include "board.h"
 
-typedef struct
-{
+typedef struct {
+
+    struct {
+        #define HocClkModuleStable_EnumMax 5
+        #define HocClkThermalSensorStable_EnumMax 11
+        #define HocClkPowerSensorStable_EnumMax 2
+        #define HocClkRamLoadStable_EnumMax 10
+        #define HocClkVoltageStable_EnumMax 7
+
+        u32 freqs[HocClkModuleStable_EnumMax];
+        u32 realFreqs[HocClkModuleStable_EnumMax];
+        u32 overrideFreqs[HocClkModuleStable_EnumMax];
+        s32 temps[HocClkThermalSensorStable_EnumMax];
+        u32 power[HocClkPowerSensorStable_EnumMax];
+        u32 partLoad[HocClkRamLoadStable_EnumMax];
+        u32 voltages[HocClkVoltageStable_EnumMax];
+    } stable;
+
     uint64_t applicationId;
     HocClkProfile profile;
     uint32_t freqs[HocClkModule_EnumMax];
@@ -60,7 +76,7 @@ typedef struct
     u16 resolutionHeight;
 
     // Reserved for future use
-    u8 reserved[0x41C];
+    u8 reserved[0x368];
 } HocClkContext;
 
 typedef struct

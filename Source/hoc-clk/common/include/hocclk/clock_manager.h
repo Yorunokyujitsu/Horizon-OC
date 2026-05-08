@@ -78,9 +78,11 @@ typedef struct {
     // FPS / Resolution
     u8 fps;
     u16 resolutionHeight;
+    u8 custRev;
+    u16 kipVersion;
 
     // Reserved for future use
-    u8 reserved[0x368];
+    u8 reserved[0x363];
 } HocClkContext;
 
 typedef struct

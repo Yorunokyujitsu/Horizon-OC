@@ -34,7 +34,7 @@ namespace kip {
     typedef struct {
         u8  cust[4];
         u32 custRev;
-        u32 hocVersion;
+        u32 kipVersion;
         u32 hpMode;
         u32 commonEmcMemVolt;
         u32 eristaEmcMaxClock;
@@ -206,7 +206,7 @@ namespace kip {
             return cust_write_table(path, &t); \
         } while (0)
 
-    static inline bool cust_set_cust_rev(const char* p, u32 v) { CUST_WRITE_FIELD(p, custRev, v); }
+    // static inline bool cust_set_cust_rev(const char* p, u32 v) { CUST_WRITE_FIELD(p, custRev, v); }
     // static inline bool cust_set_mtc_conf(const char* p, u32 v) { CUST_WRITE_FIELD(p, mtcConf, v); }
     static inline bool cust_set_hp_mode(const char* p, u32 v) { CUST_WRITE_FIELD(p, hpMode, v); }
 
@@ -295,6 +295,7 @@ namespace kip {
     #define CUST_GET_FIELD(table, field) ((table) ? (table)->field : 0)
 
     static inline u32 cust_get_cust_rev(const CustomizeTable* t) { return CUST_GET_FIELD(t, custRev); }
+    static inline u32 cust_get_kip_version(const CustomizeTable* t) { return CUST_GET_FIELD(t, kipVersion); }
     // static inline u32 cust_get_mtc_conf(const CustomizeTable* t) { return CUST_GET_FIELD(t, mtcConf); }
     static inline u32 cust_get_hp_mode(const CustomizeTable* t) { return CUST_GET_FIELD(t, hpMode); }
 

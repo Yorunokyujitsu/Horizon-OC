@@ -22,6 +22,8 @@
 #include "cat.h"
 #include "ult_ext.h"
 
+// tsl::elm::ListItem* custRevItem = NULL;
+tsl::elm::ListItem* kipVersionItem = NULL;
 tsl::elm::ListItem* SpeedoItem = NULL;
 tsl::elm::ListItem* IddqItem = NULL;
 tsl::elm::ListItem* DramModule = NULL;
@@ -61,7 +63,7 @@ void AboutGui::listUI()
 
     ramVoltItem =
         new tsl::elm::ListItem("RAM Voltage:");
-        
+
     if(IsMariko()) {
         this->listElement->addItem(ramVoltItem);
     }
@@ -98,11 +100,11 @@ void AboutGui::listUI()
     ramBWItemCpu =
         new tsl::elm::ListItem("RAM BW (CPU):");
     this->listElement->addItem(ramBWItemCpu);
-    
+
     ramBWItemGpu =
         new tsl::elm::ListItem("RAM BW (GPU):");
     this->listElement->addItem(ramBWItemGpu);
-    
+
 
     this->listElement->addItem(
         new tsl::elm::CategoryHeader("HW Info")
@@ -132,6 +134,12 @@ void AboutGui::listUI()
     this->listElement->addItem(
         new tsl::elm::CategoryHeader("Software Info")
     );
+
+    // custRevItem = new tsl::elm::ListItem("CUST revision:");
+    // this->listElement->addItem(custRevItem);
+
+    kipVersionItem = new tsl::elm::ListItem("Kip version:");
+    this->listElement->addItem(kipVersionItem);
 
     if(!IsHoag()) {
         sysdockStatusItem =
@@ -210,7 +218,7 @@ void AboutGui::listUI()
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("Delta")
+        new tsl::elm::ListItem("arcdelta")
     );
 
     this->listElement->addItem(
@@ -255,7 +263,7 @@ void AboutGui::listUI()
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("ScriesM - Atmosphere CFW")
+        new tsl::elm::ListItem("SciresM - Atmosphere CFW")
     );
 
     this->listElement->addItem(
@@ -263,7 +271,7 @@ void AboutGui::listUI()
     );
 
     this->listElement->addItem(
-        new tsl::elm::ListItem("hanai3bi - Switch OC Suite & EOS")
+        new tsl::elm::ListItem("hanai3Bi - Switch OC Suite & EOS")
     );
 
     this->listElement->addItem(
@@ -347,7 +355,7 @@ void AboutGui::update()
 void AboutGui::refresh()
 {
     BaseMenuGui::refresh();
-    
+
     if (!this->context)
         return;
     // Format strings once per refresh
@@ -357,11 +365,15 @@ void AboutGui::refresh()
     SpeedoItem->setValue(strings[0]);
     IddqItem->setValue(strings[1]);
     DramModule->setValue(formatRamModule());
+
+    // custRevItem->setValue(std::to_string(this->context->custRev));
+
+    kipVersionItem->setValue(std::to_string((this->context->kipVersion / 100) % 10) + "." + std::to_string((this->context->kipVersion / 10) % 10) + "." + std::to_string( this->context->kipVersion % 10));
     if(!IsHoag())
         sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "Installed" : "Not Installed");
 
     saltyNXStatusItem->setValue(this->context->isSaltyNXInstalled ? "Installed" : "Not Installed");
-    
+
     if(IsHoag())
         RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "Installed" : "Not Installed");
 
@@ -384,7 +396,7 @@ void AboutGui::refresh()
 
     sprintf(strings[4], "%u.%u / %u mV", context->voltages[HocClkVoltage_EMCVDD2] / 1000U, (context->voltages[HocClkVoltage_EMCVDD2] % 1000U) / 100U, context->voltages[HocClkVoltage_EMCVDDQ] / 1000);
     ramVoltItem->setValue(strings[4]);
-    
+
     sprintf(strings[5], "%u.%u mV", context->voltages[HocClkVoltage_Display] / 1000U, (context->voltages[HocClkVoltage_Display] % 1000U) / 100U);
     dispVoltItem->setValue(strings[5]);
 
@@ -401,19 +413,19 @@ void AboutGui::refresh()
     ramBWItemMax->setValue(strings[9]);
 
     switch(context->temps[HocClkThermalSensor_BQ24193]) {
-        case BQ24193Temp_Normal: 
-            strcpy(strings[10], "Normal"); 
+        case BQ24193Temp_Normal:
+            strcpy(strings[10], "Normal");
             break;
-        case BQ24193Temp_Warm: 
-            strcpy(strings[10], "Warm"); 
+        case BQ24193Temp_Warm:
+            strcpy(strings[10], "Warm");
             break;
-        case BQ24193Temp_Hot: 
-            strcpy(strings[10], "Hot"); 
+        case BQ24193Temp_Hot:
+            strcpy(strings[10], "Hot");
             break;
-        case BQ24193Temp_Overheat: 
-            strcpy(strings[10], "Overheat"); 
+        case BQ24193Temp_Overheat:
+            strcpy(strings[10], "Overheat");
             break;
-        default: 
+        default:
             strcpy(strings[10], "Unknown");
     }
 

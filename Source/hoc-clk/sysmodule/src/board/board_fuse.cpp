@@ -41,7 +41,7 @@ namespace board {
         /* >= 1754 */
         gpuBracket = 3;
     }
-
+    // TODO: read the fuses without the USB debug hack
     void ReadFuses(FuseData &speedo) {
         u64 pid = 0;
         constexpr u64 UsbID = 0x0100000000000006;
@@ -78,15 +78,6 @@ namespace board {
                         break;
                     }
 
-                    speedo.cpuSpeedo = *reinterpret_cast<u16*>(dump + FUSE_CPU_SPEEDO_0_CALIB);
-                    speedo.gpuSpeedo = *reinterpret_cast<u16*>(dump + FUSE_CPU_SPEEDO_2_CALIB);
-                    speedo.socSpeedo = *reinterpret_cast<u16*>(dump + FUSE_SOC_SPEEDO_0_CALIB);
-
-                    speedo.cpuIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_CPU_IDDQ_CALIB) * 4;
-                    speedo.gpuIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_GPU_IDDQ_CALIB) * 5;
-                    speedo.socIDDQ   = *reinterpret_cast<u16*>(dump + FUSE_SOC_IDDQ_CALIB) * 4;
-                    speedo.waferX    = *reinterpret_cast<u16*>(dump + FUSE_OPT_X_COORDINATE);
-                    speedo.waferY    = *reinterpret_cast<u16*>(dump + FUSE_OPT_Y_COORDINATE);
 
                     svcCloseHandle(debug);
                     return;

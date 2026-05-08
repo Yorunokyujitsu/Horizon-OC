@@ -197,6 +197,7 @@ typedef enum AulaColorMode {
     AulaDisplayColorMode_Night2 = 0x35,
     AulaDisplayColorMode_Night3 = 0x75,
 } AulaColorMode;
+
 // typedef enum {
 // 	PANEL_JDI_XXX062M     = 0x10,
 // 	PANEL_JDI_LAM062M109A = 0x0910, // SI.

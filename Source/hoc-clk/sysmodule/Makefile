@@ -27,6 +27,9 @@ DATA		:=	data
 INCLUDES	:=	../common/include
 EXEFS_SRC	:=	exefs_src
 LIBNAMES	:=	minIni nxExt
+# major minor patch
+KIP_VERSION :=  220
+CUST_REV    :=  2
 
 #---------------------------------------------------------------------------------
 # version control constants
@@ -36,7 +39,7 @@ TARGET_VERSION	:= $(shell git describe --dirty --always --tags)
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-DEFINES	:=	-DDISABLE_IPC -DTARGET="\"$(TARGET)\"" -DTARGET_VERSION="\"$(TARGET_VERSION)\"" -DCONFIG_DIR="\"$(CONFIG_DIR)\""
+DEFINES	:=	-DDISABLE_IPC -DKIP_VERSION=$(KIP_VERSION) -DCUST_REV=$(CUST_REV) -DTARGET="\"$(TARGET)\"" -DTARGET_VERSION="\"$(TARGET_VERSION)\"" -DCONFIG_DIR="\"$(CONFIG_DIR)\""
 
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 

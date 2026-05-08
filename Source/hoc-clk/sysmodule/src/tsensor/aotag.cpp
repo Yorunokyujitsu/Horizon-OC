@@ -211,7 +211,7 @@ namespace tsensor {
 
     s32 ReadAotag() {
         if (!wasInit) {
-            return -125;
+            return -126;
         }
 
         u32 regval = 0, abs = 0, fraction = 0, valid = 0, sign = 0;

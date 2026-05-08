@@ -138,7 +138,7 @@ void AboutGui::listUI()
     // custRevItem = new tsl::elm::ListItem("CUST revision:");
     // this->listElement->addItem(custRevItem);
 
-    kipVersionItem = new tsl::elm::ListItem("Kip version:");
+    kipVersionItem = new tsl::elm::ListItem("KIP version:");
     this->listElement->addItem(kipVersionItem);
 
     if(!IsHoag()) {
@@ -386,11 +386,13 @@ void AboutGui::refresh()
         eristaPLLXItem->setValue(strings[3]);
     }
 
-    u32 millis = context->temps[HocClkThermalSensor_AO];
+    s32 millis = context->temps[HocClkThermalSensor_AO];
     if(millis > 0) {
         sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
-    } else {
-        sprintf(strings[11], "N/A");
+    } else if (millis == -125) {
+        sprintf(strings[11], "Not Valid");
+    } else if (millis == -126) {
+        sprintf(strings[11], "Not Patched");
     }
     aotagTempItem->setValue(strings[11]);
 

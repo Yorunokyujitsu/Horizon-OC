@@ -17,7 +17,7 @@
  *
  */
 
-#include "board.hpp"
+#include "../board/board.hpp"
 #include <i2c.h>
 
 namespace bq24193 {

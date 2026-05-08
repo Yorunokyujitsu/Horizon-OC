@@ -20,9 +20,6 @@
 #include "file_utils.hpp"
 #include "clock_manager.hpp"
 
-#define CUST_REV 2
-#define KIP_VERSION 220
-
 namespace kip {
 
     bool kipAvailable = false;

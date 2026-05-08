@@ -33,7 +33,7 @@
 #include "board.hpp"
 #include "../tsensor/soctherm.hpp"
 #include "../tsensor/aotag.hpp"
-#include "bq24193.hpp"
+#include "../tsensor/bq24193.hpp"
 #include "../config.hpp"
 
 namespace board {
@@ -81,7 +81,7 @@ namespace board {
             }
             case HocClkThermalSensor_MEM: {
                 if (board::GetSocType() == HocClkSocType_Mariko && tsensor::IsInitialized() && tsensor::ReadAotag() > 0) {
-                    millis = (temps.gpu * 0.45f) + (temps.pllx * 0.30f) + (temps.cpu * 0.15f) + (tsensor::ReadAotag() * 0.10f) + 3000;
+                    millis = (temps.pllx * 0.10f) + (tsensor::ReadAotag() * 0.90f);
                 } else {
                     millis = board::GetSocType() == HocClkSocType_Mariko ? temps.pllx : temps.mem;
                 }

@@ -20,6 +20,7 @@
 
 #pragma once
 
+// Ensure to set KIP_VERSION and CUST_REV in sysmodule Makefile when updating these
 #define CUST_REV 2
 #define HOC_VERSION 220
 

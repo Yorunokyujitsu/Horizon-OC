@@ -32,6 +32,10 @@
 
 typedef struct {
 
+    /*
+     * This "stable struct" must never be modified. It provides a fixed memory layout so external clients can safely read the expected fields even
+     * if HocClkContext changes in newer versions and the client is not recompiled.
+     */
     struct {
         #define HocClkModuleStable_EnumMax 5
         #define HocClkThermalSensorStable_EnumMax 11

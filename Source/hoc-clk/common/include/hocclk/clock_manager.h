@@ -63,8 +63,8 @@ typedef struct {
     uint32_t voltages[HocClkVoltage_EnumMax];
     u16 speedos[HocClkSpeedo_EnumMax];
     u16 iddq[HocClkSpeedo_EnumMax];
-    u16 waferX;
-    u16 waferY;
+    s16 waferX;
+    s16 waferY;
 
     // Misc stuff
     GpuSchedulingMode gpuSchedulingMode;

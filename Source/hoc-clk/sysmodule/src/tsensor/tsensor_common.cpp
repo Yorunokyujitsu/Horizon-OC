@@ -60,7 +60,7 @@ namespace tsensor {
         shifted_ft = sign_extend32(shifted_ft, 4);
 
         if (tfuse->fuse_spare_realignment) {
-            val = ReadReg(fuseVa, tfuse->fuse_spare_realignment + FUSE_CACHE_OFFSET);
+            val = ReadReg(fuseVa, tfuse->fuse_spare_realignment + FUSE_OFFSET);
         }
 
         shifted_cp = sign_extend32(val, 5);
@@ -83,7 +83,7 @@ namespace tsensor {
         s16 therma, thermb;
         s64 temp;
 
-        val = ReadReg(fuseVa, offset + FUSE_CACHE_OFFSET);
+        val = ReadReg(fuseVa, offset + FUSE_OFFSET);
 
         actual_tsensor_cp = (shared->base_cp * 64) + sign_extend32(val, 12);
         val = (val & FUSE_TSENSOR_CALIB_FT_TS_BASE_MASK) >> FUSE_TSENSOR_CALIB_FT_TS_BASE_SHIFT;

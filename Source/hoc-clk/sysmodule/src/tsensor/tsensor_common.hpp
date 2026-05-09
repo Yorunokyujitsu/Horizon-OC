@@ -27,7 +27,7 @@
 namespace tsensor {
 
     #define FUSE_TSENSOR_COMMON 0xA80
-    #define FUSE_CACHE_OFFSET 0x800
+    #define FUSE_OFFSET 0x800
 
     struct TSensorConfig {
         u32 tall;

@@ -68,9 +68,9 @@ namespace board {
     #define GP_HIDREV_MAJOR_T210B01 0x2
     #define APB_BASE 0x70000000
     #define FUSE_RESERVED_ODMX(x) (0x1C8 + 4 * (x))
-    #define FUSE_CACHE_OFFSET 0x800
+    #define FUSE_OFFSET 0x800
     void FetchHardwareInfos() {
-        ReadFuses(fuseData);
+        ReadFuses(fuseData, fuseVirtAddr);
         SetGpuBracket(fuseData.gpuSpeedo, speedoBracket);
 
         u32 hidrev = *(u32*)(apbVirtAddr + APB_MISC_GP_HIDREV);
@@ -80,8 +80,8 @@ namespace board {
         } else {
             gSocType = HocClkSocType_Erista;
         }
-        
-        u32 odm4 = *(u32*)(fuseVirtAddr + FUSE_CACHE_OFFSET + FUSE_RESERVED_ODMX(4));
+
+        u32 odm4 = *(u32*)(fuseVirtAddr + FUSE_OFFSET + FUSE_RESERVED_ODMX(4));
 
         if (gSocType == HocClkSocType_Mariko) {
             switch ((odm4 & 0xF0000) >> 16) {

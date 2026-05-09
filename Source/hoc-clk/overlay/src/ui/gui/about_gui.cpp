@@ -391,7 +391,7 @@ void AboutGui::refresh()
     if(IsHoag())
         RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "Installed" : "Not Installed");
 
-    sprintf(strings[2], "X: %u Y: %u", this->context->waferX, this->context->waferY);
+    sprintf(strings[2], "X: %d Y: %d", this->context->waferX, this->context->waferY);
     waferCordsItem->setValue(strings[2]);
 
     s32 millis = context->temps[HocClkThermalSensor_PLLX];

@@ -74,7 +74,6 @@ namespace board {
     }
 
     void SetHz(HocClkModule module, u32 hz) {
-        return;
         Result rc = 0;
         bool usesGovenor = module > HocClkModule_MEM;
 

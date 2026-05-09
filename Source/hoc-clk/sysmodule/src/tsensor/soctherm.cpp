@@ -463,9 +463,6 @@ namespace tsensor {
 
             pdiv    = (ReadReg(socthermVa, SENSOR_PDIV) & PDIV_MASK_T210) | PDIV_RATE_T210;
             hotspot = (ReadReg(socthermVa, SENSOR_HOTSPOT_OFF) & HOTSPOT_MASK_T210) | HOTSPOT_VAL;
-
-            EnableSensor(&eristaTSensors[SocthermTSensor_MEM0], SocthermTSensor_MEM0);
-            EnableSensor(&eristaTSensors[SocthermTSensor_MEM1], SocthermTSensor_MEM1);
         }
 
         WriteReg(socthermVa, SENSOR_PDIV, pdiv);

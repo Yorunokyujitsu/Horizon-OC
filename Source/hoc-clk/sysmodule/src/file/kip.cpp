@@ -53,11 +53,11 @@ namespace kip {
             return;
         }
 
-        // if(cust_get_cust_rev(&table) != CUST_REV) {
-        //     fileUtils::LogLine("Revision: %u", cust_get_cust_rev(&table));
-        //     notification::writeNotification("Horizon OC\nKip version mismatch\nPlease reinstall Horizon OC");
-        //     return;
-        // }
+        if(cust_get_cust_rev(&table) != CUST_REV || cust_get_kip_version(&table) != KIP_VERSION) {
+            fileUtils::LogLine("Revision: %u", cust_get_cust_rev(&table));
+            notification::writeNotification("Horizon OC\nKip version mismatch\nPlease reinstall Horizon OC");
+            return;
+        }
 
         // CUST_WRITE_FIELD_BATCH(&table, mtcConf, config::GetConfigValue(KipConfigValue_mtcConf));
         CUST_WRITE_FIELD_BATCH(&table, hpMode, config::GetConfigValue(KipConfigValue_hpMode));
@@ -202,11 +202,13 @@ namespace kip {
         clockManager::gContext.custRev    = cust_get_cust_rev(&table);
 
         u16 kipVersion = cust_get_kip_version(&table);
-        if (kipVersion != KIP_VERSION) {
+        if (kipVersion != KIP_VERSION || cust_get_cust_rev(&table) != CUST_REV) {
             notification::writeNotification("Horizon OC\nKip version mismatch detected!");
+            return;
         }
 
         clockManager::gContext.kipVersion = kipVersion;
+        configValues.values[KipConfigValue_custRev] = cust_get_cust_rev(&table);
         configValues.values[KipConfigValue_hpMode] = cust_get_hp_mode(&table);
 
         configValues.values[KipConfigValue_commonEmcMemVolt] = cust_get_common_emc_volt(&table);
@@ -279,11 +281,6 @@ namespace kip {
 
         configValues.values[KipConfigValue_t7_tWTR_fine_tune] = cust_get_tWTR_fine_tune(&table);
         configValues.values[KipConfigValue_t6_tRTW_fine_tune] = cust_get_tRTW_fine_tune(&table);
-
-
-
-        // if(cust_get_cust_rev(&table) == KIP_CUST_REV)
-        //     return;
 
         if (sizeof(HocClkConfigValueList) <= sizeof(configValues)) {
             if (config::SetConfigValues(&configValues, false)) {

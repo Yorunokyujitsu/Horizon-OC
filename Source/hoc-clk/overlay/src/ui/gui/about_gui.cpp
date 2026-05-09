@@ -382,7 +382,7 @@ void AboutGui::refresh()
 
     // custRevItem->setValue(std::to_string(this->context->custRev));
 
-    kipVersionItem->setValue(std::to_string((this->context->kipVersion / 100) % 10) + "." + std::to_string((this->context->kipVersion / 10) % 10) + "." + std::to_string( this->context->kipVersion % 10));
+    kipVersionItem->setValue(std::to_string((this->context->kipVersion / 100) % 10) + "." + std::to_string((this->context->kipVersion / 10) % 10) + "." + std::to_string( this->context->kipVersion % 10) + " (Cust Rev " + std::to_string(this->context->custRev) + ")");
     if(!IsHoag())
         sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "Installed" : "Not Installed");
 
@@ -402,7 +402,7 @@ void AboutGui::refresh()
     if(millis > 0) {
         sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
     } else if (millis == -125) {
-        sprintf(strings[11], "Not Valid");
+        sprintf(strings[11], "Invalid");
     } else if (millis == -126) {
         sprintf(strings[11], "Not Patched");
     }

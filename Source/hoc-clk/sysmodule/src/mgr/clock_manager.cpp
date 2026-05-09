@@ -189,7 +189,8 @@ namespace clockManager {
 
             for (u32 f = kPcvStep; f <= kMax && gFreqTable[module].count < HOCCLK_FREQ_LIST_MAX; f += kStep) {
                 if (f % kPcvStep != 0) {
-                    if (!middleFreqs) continue;
+                    if (!config::GetConfigValue(HocClkConfigValue_MarikoMiddleFreqs)) 
+                        continue;
                     *hz = f;
                     gFreqTable[module].count++;
                     hz++;

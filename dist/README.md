@@ -11,7 +11,7 @@
 ![VSCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge\&logo=visual%20studio%20code\&logoColor=white)
 ![Made with Notepad++](assets/np++.png?raw=true)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge\&logo=c%2B%2B\&logoColor=white)
-![Downloads](https://img.shields.io/github/downloads/souldbminersmwc/Horizon-OC/total.svg?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/Horizon-OC/Horizon-OC/total.svg?style=for-the-badge)
 
 ---
 

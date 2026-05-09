@@ -10,7 +10,6 @@ if [[ -n "$1" ]]; then
 fi
 
 echo "DIST_DIR: $DIST_DIR"
-echo "CORES: $CORES"
 
 echo "*** sysmodule ***"
 TITLE_ID="$(grep -oP '"title_id":\s*"0x\K(\w+)' "$ROOT_DIR/sysmodule/perms.json")"

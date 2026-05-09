@@ -79,16 +79,17 @@ namespace ams::ldr::hoc::pcv::mariko {
     Result CpuFreqVdd(u32 *ptr) {
         dvfs_rail *entry = reinterpret_cast<dvfs_rail *>(reinterpret_cast<u8 *>(ptr) - offsetof(dvfs_rail, freq));
 
-        R_UNLESS(entry->id == 1, ldr::ResultInvalidCpuFreqVddEntry());
-        R_UNLESS(entry->min_mv == 250'000, ldr::ResultInvalidCpuFreqVddEntry());
-        R_UNLESS(entry->step_mv == 5000, ldr::ResultInvalidCpuFreqVddEntry());
-        R_UNLESS(entry->max_mv == 1525'000, ldr::ResultInvalidCpuFreqVddEntry());
+        R_UNLESS(entry->id      == 1,        ldr::ResultInvalidCpuFreqVddEntry());
+        R_UNLESS(entry->min_mv  == 250'000,  ldr::ResultInvalidCpuFreqVddEntry());
+        R_UNLESS(entry->step_mv == 5000,     ldr::ResultInvalidCpuFreqVddEntry());
+        R_UNLESS(entry->max_mv  == 1525'000, ldr::ResultInvalidCpuFreqVddEntry());
 
         if (C.marikoCpuUVHigh) {
             PATCH_OFFSET(ptr, CapCpuClock());
         } else {
             PATCH_OFFSET(ptr, GetDvfsTableLastEntry(C.marikoCpuDvfsTable)->freq);
         }
+
         R_SUCCEED();
     }
 
@@ -373,7 +374,7 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         WRITE_PARAM_ALL_REG(table, emc_rd_rcd, GET_CYCLE_CEIL(tRCD));
         WRITE_PARAM_ALL_REG(table, emc_wr_rcd, GET_CYCLE_CEIL(tRCD));
-        WRITE_PARAM_ALL_REG(table, emc_rc, MIN(GET_CYCLE_CEIL(tRC), static_cast<u32>(0xB8)));
+        WRITE_PARAM_ALL_REG(table, emc_rc, MIN(GET_CYCLE_CEIL(tRC), static_cast<u32>(0xB9)));
         WRITE_PARAM_ALL_REG(table, emc_ras, MIN(GET_CYCLE_CEIL(tRAS), static_cast<u32>(0x7F)));
         WRITE_PARAM_ALL_REG(table, emc_rrd, GET_CYCLE_CEIL(tRRD));
         WRITE_PARAM_ALL_REG(table, emc_rfcpb, GET_CYCLE_CEIL(tRFCpb));
@@ -432,22 +433,21 @@ namespace ams::ldr::hoc::pcv::mariko {
         WRITE_PARAM_ALL_REG(table, emc_rdv_early_mask, rdv);
         WRITE_PARAM_ALL_REG(table, emc_rdv_mask, rdv + 2);
         WRITE_PARAM_ALL_REG(table, emc_tr_rdv, rdv);
-        /* TODO: Check this out again at some point. */
         WRITE_PARAM_ALL_REG(table, emc_cmd_brlshft_2, 0x24);
         WRITE_PARAM_ALL_REG(table, emc_cmd_brlshft_3, 0x24);
 
         /* This needs some clean up. */
         constexpr double MC_ARB_DIV = 4.0;
-        constexpr u32 MC_ARB_SFA = 2;
+        constexpr u32 MC_ARB_SFA    = 2;
 
-        table->burst_mc_regs.mc_emem_arb_cfg          = table->rate_khz             / (33.3 * 1000) / MC_ARB_DIV;
-        table->burst_mc_regs.mc_emem_arb_timing_rcd   = CEIL(GET_CYCLE_CEIL(tRCD)   / MC_ARB_DIV) - 2;
-        table->burst_mc_regs.mc_emem_arb_timing_rp    = CEIL(GET_CYCLE_CEIL(tRPpb)  / MC_ARB_DIV) - 1;
-        table->burst_mc_regs.mc_emem_arb_timing_rc    = CEIL(GET_CYCLE_CEIL(tRC)    / MC_ARB_DIV) - 1;
-        table->burst_mc_regs.mc_emem_arb_timing_ras   = CEIL(GET_CYCLE_CEIL(tRAS)   / MC_ARB_DIV) - 2;
-        table->burst_mc_regs.mc_emem_arb_timing_faw   = CEIL(GET_CYCLE_CEIL(tFAW)   / MC_ARB_DIV) - 1;
-        table->burst_mc_regs.mc_emem_arb_timing_rrd   = CEIL(GET_CYCLE_CEIL(tRRD)   / MC_ARB_DIV) - 1;
-        table->burst_mc_regs.mc_emem_arb_timing_rfcpb = CEIL(GET_CYCLE_CEIL(tRFCpb) / MC_ARB_DIV) - 1;
+        table->burst_mc_regs.mc_emem_arb_cfg            = table->rate_khz             / (33.3 * 1000) / MC_ARB_DIV;
+        table->burst_mc_regs.mc_emem_arb_timing_rcd     = CEIL(GET_CYCLE_CEIL(tRCD)   / MC_ARB_DIV) - 2;
+        table->burst_mc_regs.mc_emem_arb_timing_rp      = CEIL(GET_CYCLE_CEIL(tRPpb)  / MC_ARB_DIV) - 1;
+        table->burst_mc_regs.mc_emem_arb_timing_rc      = CEIL(GET_CYCLE_CEIL(tRC)    / MC_ARB_DIV) - 1;
+        table->burst_mc_regs.mc_emem_arb_timing_ras     = CEIL(GET_CYCLE_CEIL(tRAS)   / MC_ARB_DIV) - 2;
+        table->burst_mc_regs.mc_emem_arb_timing_faw     = CEIL(GET_CYCLE_CEIL(tFAW)   / MC_ARB_DIV) - 1;
+        table->burst_mc_regs.mc_emem_arb_timing_rrd     = CEIL(GET_CYCLE_CEIL(tRRD)   / MC_ARB_DIV) - 1;
+        table->burst_mc_regs.mc_emem_arb_timing_rfcpb   = CEIL(GET_CYCLE_CEIL(tRFCpb) / MC_ARB_DIV) - 1;
         table->burst_mc_regs.mc_emem_arb_timing_rap2pre = CEIL(tR2P / MC_ARB_DIV);
         table->burst_mc_regs.mc_emem_arb_timing_wap2pre = CEIL(tW2P / MC_ARB_DIV) + MC_ARB_SFA;
 
@@ -520,12 +520,12 @@ namespace ams::ldr::hoc::pcv::mariko {
         table->la_scale_regs.mc_latency_allowance_hc_1      =              (table->la_scale_regs.mc_latency_allowance_hc_1      & Mask2)    |  allowance1;
         table->la_scale_regs.mc_latency_allowance_vi2_0     =              (table->la_scale_regs.mc_latency_allowance_vi2_0     & Mask2)    |  allowance1;
 
-        table->dram_timings.t_rp = tRFCpb;
+        table->dram_timings.t_rp  = tRFCpb;
         table->dram_timings.t_rfc = tRFCab;
 
         table->dram_timings.rl = RL;
-        table->emc_mrw2 = (table->emc_mrw2 & ~0xFFu) | static_cast<u32>(mrw2);
-        table->emc_cfg_2 = 0x11083D;
+        table->emc_mrw2        = (table->emc_mrw2 & ~0xFFu) | static_cast<u32>(mrw2);
+        table->emc_cfg_2       = 0x11083D;
     }
 
     void MemMtcPllmbDivisor(MarikoMtcTable *table) {
@@ -538,11 +538,11 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         bool remainder_check = (table->rate_khz - PllOscInKHz * (table->rate_khz / PllOscInKHz)) > (table->rate_khz - PllOscHalfKHz * divm_candidate_half) && static_cast<int>(((target_freq_d / PllOscHalfKHz - divm_candidate_half - 0.5) * 8192.0)) != 0;
 
-        u32 divm_final = remainder_check + 1;
+        u32 divm_final    = remainder_check + 1;
         table->pllmb_divm = divm_final;
 
         double div_step_d = static_cast<double>(PllOscInKHz) / divm_final;
-        s32 divn_integer = static_cast<u8>(table->rate_khz / div_step_d);
+        s32 divn_integer  = static_cast<u8>(table->rate_khz  / div_step_d);
         table->pllmb_divn = divn_integer;
 
         u32 divn_fraction = static_cast<s32>((target_freq_d / div_step_d - divn_integer - 0.5) * 8192.0);
@@ -553,34 +553,34 @@ namespace ams::ldr::hoc::pcv::mariko {
             s32 divn_fraction_ssc = static_cast<s32>((actual_freq_khz * 0.997 / div_step_d - divn_integer - 0.5) * 8192.0);
 
             double delta_scaled = (0.3 / div_step_d + 0.3 / div_step_d) * (divn_fraction - divn_fraction_ssc);
-            s32 delta_int = static_cast<s32>(delta_scaled);
-            double delta_frac = delta_scaled - delta_int;
+            s32 delta_int       = static_cast<s32>(delta_scaled);
+            double delta_frac   = delta_scaled - delta_int;
 
             u32 setup_value = 0;
             if (delta_frac <= 0.5) {
                 double round_val = (delta_int + ROUND(delta_frac + delta_frac)) ? 0.5 : 0.0;
-                setup_value = ROUND(delta_frac + delta_frac) ? static_cast<u32>(round_val + round_val) | 0x1000 : static_cast<u32>(round_val);
+                setup_value      = ROUND(delta_frac + delta_frac) ? static_cast<u32>(round_val + round_val) | 0x1000 : static_cast<u32>(round_val);
             } else {
                 s32 frac_doubled = ROUND(delta_frac - 0.5 + delta_frac - 0.5);
                 double round_val = 1.0;
-                setup_value = frac_doubled ? static_cast<u32>(round_val) : static_cast<u32>(round_val + round_val) | 0x1000;
+                setup_value      = frac_doubled ? static_cast<u32>(round_val) : static_cast<u32>(round_val + round_val) | 0x1000;
             }
 
             u32 ctrl1 = static_cast<u16>(divn_fraction_ssc) | (static_cast<u16>(divn_fraction) << 16);
-            u32 ctrl2 = static_cast<u16>(divn_fraction) | (static_cast<u16>(setup_value) << 16);
+            u32 ctrl2 = static_cast<u16>(divn_fraction)     | (static_cast<u16>(setup_value) << 16);
 
-            table->pllm_ss_ctrl1 = ctrl1;
-            table->pllm_ss_ctrl2 = ctrl2;
+            table->pllm_ss_ctrl1  = ctrl1;
+            table->pllm_ss_ctrl2  = ctrl2;
             table->pllmb_ss_ctrl1 = ctrl1;
             table->pllmb_ss_ctrl2 = ctrl2;
         } else {
-            table->pllm_ss_cfg &= 0xBFFFFFFF;
+            table->pllm_ss_cfg  &= 0xBFFFFFFF;
             table->pllmb_ss_cfg &= 0xBFFFFFFF;
 
-            u64 pair = (static_cast<u64>(divn_fraction) << 32) | static_cast<u64>(table->rate_khz);
-            u32 pll_misc = (table->pllm_ss_ctrl2 & 0xFFFF0000) | static_cast<u32>((pair - actual_freq_khz) >> 32);
+            u64 pair     = (static_cast<u64>(divn_fraction) << 32) | static_cast<u64>(table->rate_khz);
+            u32 pll_misc = (table->pllm_ss_ctrl2 & 0xFFFF0000)     | static_cast<u32>((pair - actual_freq_khz) >> 32);
 
-            table->pllm_ss_ctrl2 = pll_misc;
+            table->pllm_ss_ctrl2  = pll_misc;
             table->pllmb_ss_ctrl2 = pll_misc;
         }
     }
@@ -945,8 +945,9 @@ namespace ams::ldr::hoc::pcv::mariko {
         u8  movRd         = asm_get_rd(mov);
         u32 movCountPatch = asm_set_rd(asm_set_imm16(MtcMovAsm, newEmcList.size()), movRd);
 
-        PATCH_OFFSET(ptr - BrOffset, NopIns);
+        PATCH_OFFSET(ptr - BrOffset,  NopIns);
         PATCH_OFFSET(ptr - MovOffset, movCountPatch);
+
         R_SUCCEED();
     }
 

@@ -216,7 +216,7 @@ namespace ams::ldr::hoc::pcv::erista {
 
         WRITE_PARAM_ALL_REG(table, emc_rd_rcd, GET_CYCLE_CEIL(tRCD));
         WRITE_PARAM_ALL_REG(table, emc_wr_rcd, GET_CYCLE_CEIL(tRCD));
-        WRITE_PARAM_ALL_REG(table, emc_rc, MIN(GET_CYCLE_CEIL(tRC), static_cast<u32>(0xB8)));
+        WRITE_PARAM_ALL_REG(table, emc_rc, MIN(GET_CYCLE_CEIL(tRC), static_cast<u32>(0xB9)));
         WRITE_PARAM_ALL_REG(table, emc_ras, MIN(GET_CYCLE_CEIL(tRAS), static_cast<u32>(0x7F)));
         WRITE_PARAM_ALL_REG(table, emc_rrd, GET_CYCLE_CEIL(tRRD));
         WRITE_PARAM_ALL_REG(table, emc_rfcpb, GET_CYCLE_CEIL(tRFCpb));
@@ -362,10 +362,6 @@ namespace ams::ldr::hoc::pcv::erista {
 
     /* Probably more intuitive to point to 40800 rather than 1600000, but oh well. */
     Result MemFreqMtcTable(u32 *ptr) {
-        if (GET_MAX_OF_ARR(maxEmcClocks) <= EmcClkOSLimit) {
-            R_SKIP();
-        }
-
         u32 khz_list[] = { 40800, 68000, 102000, 204000, 408000, 665600, 800000, 1065600, 1331200, 1600000 };
         std::sort(maxEmcClocks, maxEmcClocks + std::size(maxEmcClocks));
         u32 khz_list_size = std::size(khz_list);
@@ -378,6 +374,10 @@ namespace ams::ldr::hoc::pcv::erista {
             table_list[mtcIndex] = reinterpret_cast<EristaMtcTable *>(table);
             R_UNLESS(table_list[mtcIndex]->rate_khz == khz_list[mtcIndex], ldr::ResultInvalidMtcTable());
             R_UNLESS(table_list[mtcIndex]->rev == MTC_TABLE_REV, ldr::ResultInvalidMtcTable());
+        }
+
+        if (GET_MAX_OF_ARR(maxEmcClocks) <= EmcClkOSLimit) {
+            R_SKIP();
         }
 
         /* If we oc ram at all, tables are always shifted by at least 1. */
@@ -451,21 +451,24 @@ namespace ams::ldr::hoc::pcv::erista {
     // }
 
     void Patch(uintptr_t mapped_nso, size_t nso_size) {
+        u32 CpuCvbDefaultMaxFreq = static_cast<u32>(GetDvfsTableLastEntry(CpuCvbTableDefault)->freq);
+        u32 GpuCvbDefaultMaxFreq = static_cast<u32>(GetDvfsTableLastEntry(GpuCvbTableDefault)->freq);
+
         PatcherEntry<u32> patches[] = {
-            {"CPU Freq Table", CpuFreqCvbTable<false>, 1, nullptr, static_cast<u32>(GetDvfsTableLastEntry(CpuCvbTableDefault)->freq)},
-            {"CPU Volt DVFS", &CpuVoltDvfs, 1, nullptr, CpuVminOfficial},
-            {"CPU Volt Thermals", &CpuVoltThermals, 1, nullptr, CpuVminOfficial},
-            {"CPU Volt Dfll", &CpuVoltDfll, 1, nullptr, 0xFFEAD0FF},
-            {"GPU Volt DVFS", &GpuVoltDVFS, 1, nullptr, GpuVminOfficial},
-            {"GPU Volt Thermals", &GpuVoltThermals, 1, nullptr, GpuVminOfficial},
-            {"GPU Freq Table", GpuFreqCvbTable<false>, 1, nullptr, static_cast<u32>(GetDvfsTableLastEntry(GpuCvbTableDefault)->freq)},
-            {"GPU Freq Asm", &GpuFreqMaxAsm, 2, &GpuMaxClockPatternFn},
-            {"GPU PLL Max", &GpuFreqPllMax, 1, nullptr, GpuClkPllMax},
-            // {"GPU PLL Limit", &GpuFreqPllLimit, 4, nullptr, GpuClkPllLimit},
-            {"MEM Freq Mtc", &MemFreqMtcTable, 0, nullptr, EmcClkOSLimit},
-            {"MEM Freq Max", &MemFreqMax, 0, nullptr, EmcClkOSLimit},
-            {"MEM Freq PLLM", &MemFreqPllmLimit, 2, nullptr, EmcClkPllmLimit},
-            {"MEM Volt", &MemVoltHandler, 2, nullptr, MemVoltHOS},
+            {"CPU Freq Table",     CpuFreqCvbTable<false>, 1, nullptr,  CpuCvbDefaultMaxFreq },
+            {"CPU Volt DVFS",     &CpuVoltDvfs,            1, nullptr,  CpuVminOfficial      },
+            {"CPU Volt Thermals", &CpuVoltThermals,        1, nullptr,  CpuVminOfficial      },
+            {"CPU Volt Dfll",     &CpuVoltDfll,            1, nullptr,  CpuTune0Low          },
+            {"GPU Volt DVFS",     &GpuVoltDVFS,            1, nullptr,  GpuVminOfficial      },
+            {"GPU Volt Thermals", &GpuVoltThermals,        1, nullptr,  GpuVminOfficial      },
+            {"GPU Freq Table",     GpuFreqCvbTable<false>, 1, nullptr,  GpuCvbDefaultMaxFreq },
+            {"GPU Freq Asm",      &GpuFreqMaxAsm,          2,          &GpuMaxClockPatternFn },
+            {"GPU PLL Max", &      GpuFreqPllMax,          1, nullptr,  GpuClkPllMax         },
+            // {"GPU PLL Limit",  &GpuFreqPllLimit,        4, nullptr,  GpuClkPllLimit       },
+            {"MEM Freq Mtc",      &MemFreqMtcTable,        0, nullptr,  EmcClkOSLimit        },
+            {"MEM Freq Max",      &MemFreqMax,             0, nullptr,  EmcClkOSLimit        },
+            {"MEM Freq PLLM",     &MemFreqPllmLimit,       2, nullptr,  EmcClkPllmLimit      },
+            {"MEM Volt",          &MemVoltHandler,         2, nullptr,  MemVoltHOS           },
         };
 
         for (uintptr_t ptr = mapped_nso; ptr <= mapped_nso + nso_size - sizeof(EristaMtcTable); ptr += sizeof(u32)) {

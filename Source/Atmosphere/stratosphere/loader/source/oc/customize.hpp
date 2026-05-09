@@ -20,9 +20,8 @@
 
 #pragma once
 
-// Ensure to set KIP_VERSION and CUST_REV in sysmodule Makefile when updating these
 #define CUST_REV 2
-#define HOC_VERSION 220
+#define KIP_VERSION 220
 
 #include "oc_common.hpp"
 #include "pcv/pcv_common.hpp"
@@ -78,10 +77,10 @@ static_assert(sizeof(CustomizeCpuDvfsTable) == sizeof(pcv::cvb_entry_t) * pcv::D
 constexpr uint32_t ERISTA_MTC_MAGIC = 0x43544D45; // EMTC
 constexpr uint32_t MARIKO_MTC_MAGIC = 0x43544D4D; // MMTC
 
-typedef struct CustomizeTable {
+struct CustomizeTable {
     u8  cust[4] = {'C', 'U', 'S', 'T'};
-    u32 custRev = CUST_REV;
-    u32 hocVersion = HOC_VERSION;
+    u32 custRev    = CUST_REV;
+    u32 kipVersion = KIP_VERSION;
 
     u32 hpMode;
 
@@ -169,7 +168,7 @@ typedef struct CustomizeTable {
     CustomizeGpuDvfsTable marikoGpuDvfsTableSLT;
     CustomizeGpuDvfsTable marikoGpuDvfsTableHiOPT;
 
-} CustomizeTable;
+};
 
 extern volatile CustomizeTable C;
 

@@ -22,23 +22,23 @@
 
 namespace ams::ldr::hoc::pcv {
 
-    typedef struct cvb_coefficients {
+    struct cvb_coefficients {
         s32 c0 = 0;
         s32 c1 = 0;
         s32 c2 = 0;
         s32 c3 = 0;
         s32 c4 = 0;
         s32 c5 = 0;
-    } cvb_coefficients;
+    };
 
-    typedef struct cvb_entry_t {
+    struct cvb_entry_t {
         u64 freq;
         cvb_coefficients cvb_dfll_param;
         cvb_coefficients cvb_pll_param;
-    } cvb_entry_t;
+    };
     static_assert(sizeof(cvb_entry_t) == 0x38);
 
-    typedef struct cvb_cpu_dfll_data {
+    struct cvb_cpu_dfll_data {
         u32 tune0_low;
         u32 tune0_high;
         u32 tune1_low;
@@ -46,9 +46,9 @@ namespace ams::ldr::hoc::pcv {
         unsigned int tune_high_min_millivolts;
         unsigned int tune_high_margin_millivolts;
         unsigned long dvco_calibration_max;
-    } cvb_cpu_dfll_data;
+    };
 
-    typedef struct __attribute__((packed)) div_nmp {
+    struct __attribute__((packed)) div_nmp {
         u8 divn_shift;
         u8 divn_width;
         u8 divm_shift;
@@ -58,9 +58,9 @@ namespace ams::ldr::hoc::pcv {
         u8 override_divn_shift;
         u8 override_divm_shift;
         u8 override_divp_shift;
-    } div_nmp;
+    };
 
-    typedef struct __attribute__((packed)) clk_pll_param {
+    struct __attribute__((packed)) clk_pll_param {
         u32 freq;
         u32 input_min;
         u32 input_max;
@@ -74,9 +74,9 @@ namespace ams::ldr::hoc::pcv {
         struct div_nmp *div_nmp;
         u32 unk_1[4];
         void (*unk_fn)(u64* unk_struct); // set_defaults?
-    } clk_pll_param;
+    };
 
-    typedef struct __attribute__((packed)) dvfs_rail {
+    struct __attribute__((packed)) dvfs_rail {
         u32 id;
         u32 unk_0[5];
         u32 freq;
@@ -86,9 +86,9 @@ namespace ams::ldr::hoc::pcv {
         u32 step_mv;
         u32 max_mv;
         u32 unk_2[11];
-    } dvfs_rail;
+    };
 
-    typedef struct __attribute__((packed)) regulator {
+    struct __attribute__((packed)) regulator {
         u64 id;
         const char* name;
         u32 type;
@@ -112,7 +112,7 @@ namespace ams::ldr::hoc::pcv {
             } type_2_3;
         };
         u32 unk_x[60];
-    } regulator;
+    };
     static_assert(sizeof(regulator) == 0x120);
 
     constexpr u32 CpuClkOSLimit = 1785'000;

@@ -135,7 +135,7 @@ int main(int argc, char** argv)
         return 1;
     }
     config::Initialize();
-
+    config::Refresh(); // Get config from file
     board::Initialize();
     processManagement::Initialize();
 

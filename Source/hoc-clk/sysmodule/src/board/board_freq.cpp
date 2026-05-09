@@ -40,6 +40,7 @@
 #include "../file/errors.hpp"
 #include "../soc/pllmb.hpp"
 #include "../file/config.hpp"
+#include "../soc/gm20b.hpp"
 namespace board {
 
     PcvModule GetPcvModule(HocClkModule hocclkModule) {
@@ -77,7 +78,6 @@ namespace board {
         Result rc = 0;
         bool usesGovenor = module > HocClkModule_MEM;
 
-
         if (module == HocClkModule_Display) {
             display::SetRate(hz);
             return;
@@ -87,26 +87,34 @@ namespace board {
             return;
         }
 
+        bool useGm20b = (module == HocClkModule_GPU) && (GetSocType() == HocClkSocType_Mariko) && (hz % 38400000 == 0) && (hz % 76800000 != 0);
+
+        u32 pcvHz = useGm20b ? ((hz + 76800000 - 1) / 76800000) * 76800000 : hz;
+
         if (HOSSVC_HAS_CLKRST) {
             ClkrstSession session = {};
             rc = clkrstOpenSession(&session, GetPcvModuleId(module), 3);
             ASSERT_RESULT_OK(rc, "clkrstOpenSession");
-            ClkrstSetHz(session, hz);
+            ClkrstSetHz(session, pcvHz);
 
             /* Voltage bug workaround. */
             if (module == HocClkModule_CPU) {
                 svcSleepThread(300'000);
-                ClkrstSetHz(session, hz);
+                ClkrstSetHz(session, pcvHz);
             }
 
             clkrstCloseSession(&session);
         } else {
-            PcvSetHz(GetPcvModule(module), hz);
+            PcvSetHz(GetPcvModule(module), pcvHz);
 
             if (module == HocClkModule_CPU) {
                 svcSleepThread(300'000);
-                PcvSetHz(GetPcvModule(module), hz);
+                PcvSetHz(GetPcvModule(module), pcvHz);
             }
+        }
+
+        if (useGm20b) {
+            gm20b::setClock(hz / 1000);
         }
     }
 

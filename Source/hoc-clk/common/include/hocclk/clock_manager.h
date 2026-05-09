@@ -94,7 +94,7 @@ typedef struct
     };
 } HocClkTitleProfileList;
 
-#define HOCCLK_FREQ_LIST_MAX 32
+#define HOCCLK_FREQ_LIST_MAX 48
 
 #define HOCCLK_GLOBAL_PROFILE_TID 0xA111111111111111
 

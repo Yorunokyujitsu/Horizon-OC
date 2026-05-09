@@ -181,6 +181,40 @@ namespace clockManager {
 
         std::uint32_t *hz = &gFreqTable[module].list[0];
         gFreqTable[module].count = 0;
+
+        if (module == HocClkModule_GPU && board::GetSocType() == HocClkSocType_Mariko) {
+            constexpr u32 kStep = 38400000;
+            constexpr u32 kPcvStep = 76800000;
+            constexpr u32 kMax = 1228800000;
+
+            for (u32 f = kPcvStep; f <= kMax && gFreqTable[module].count < HOCCLK_FREQ_LIST_MAX; f += kStep) {
+                if (f % kPcvStep != 0) {
+                    if (!middleFreqs) continue;
+                    *hz = f;
+                    gFreqTable[module].count++;
+                    hz++;
+                } else {
+                    for (u32 i = 0; i < count; i++) {
+                        if (freqs[i] == f) {
+                            *hz = f;
+                            gFreqTable[module].count++;
+                            hz++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (u32 i = 0; i < count && gFreqTable[module].count < HOCCLK_FREQ_LIST_MAX; i++) {
+                if (freqs[i] > kMax && IsAssignableHz(module, freqs[i])) {
+                    *hz = freqs[i];
+                    gFreqTable[module].count++;
+                    hz++;
+                }
+            }
+            return;
+        }
+
         for (std::uint32_t i = 0; i < count; i++) {
             if (!IsAssignableHz(module, freqs[i])) {
                 continue;

@@ -649,7 +649,9 @@ protected:
         if (R_FAILED(rc)) [[unlikely]] { FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc); return; }
         this->listElement->addItem(new tsl::elm::CategoryHeader("Experimental Settings"));
         ValueThresholds thresholdsDisabled(0, 0);
-
+        if(IsMariko()) {
+            addConfigToggle(HocClkConfigValue_MarikoMiddleFreqs, nullptr, true);
+        }
         addConfigToggle(HocClkConfigValue_LiveCpuUv, nullptr);
         std::vector<NamedValue> gpuSchedMethodValues = {
             NamedValue("INI", GpuSchedulingOverrideMethod_Ini),

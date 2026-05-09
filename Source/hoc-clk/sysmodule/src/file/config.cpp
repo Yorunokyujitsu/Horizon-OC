@@ -37,8 +37,14 @@
 #include <atomic>
 #include <initializer_list>
 #include <minIni.h>
-#include <nxExt.h>
-#include "board/board.hpp"
+#include "../hos/apm_ext.h"
+#include <i2c.h>
+#include <t210.h>
+#include <max17050.h>
+#include <tmp451.h>
+#include <ipc_server.h>
+#include <lockable_mutex.h>
+#include "../board/board.hpp"
 #include "errors.hpp"
 #include "file_utils.hpp"
 

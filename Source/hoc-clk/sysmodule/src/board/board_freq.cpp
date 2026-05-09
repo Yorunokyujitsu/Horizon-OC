@@ -26,13 +26,20 @@
 
 #include <switch.h>
 #include <hocclk.h>
-#include <nxExt.h>
-#include "display_refresh_rate.hpp"
+#include "../hos/apm_ext.h"
+#include <i2c.h>
+#include "../i2c/i2cDrv.h"
+#include <t210.h>
+#include <max17050.h>
+#include <tmp451.h>
+#include <ipc_server.h>
+#include <lockable_mutex.h>
+#include "../display/display_refresh_rate.hpp"
 #include "board.hpp"
 #include "board_name.hpp"
-#include "../errors.hpp"
-#include "pllmb.hpp"
-#include "../config.hpp"
+#include "../file/errors.hpp"
+#include "../soc/pllmb.hpp"
+#include "../file/config.hpp"
 namespace board {
 
     PcvModule GetPcvModule(HocClkModule hocclkModule) {
@@ -67,6 +74,7 @@ namespace board {
     }
 
     void SetHz(HocClkModule module, u32 hz) {
+        return;
         Result rc = 0;
         bool usesGovenor = module > HocClkModule_MEM;
 

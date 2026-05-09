@@ -28,7 +28,7 @@
 
 #include <hocclk.h>
 #include <switch.h>
-#include <nxExt/cpp/lockable_mutex.h>
+#include "../util/lockable_mutex.h"
 
 namespace clockManager {
 

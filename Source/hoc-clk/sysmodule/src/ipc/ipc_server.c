@@ -25,7 +25,7 @@
  */
 
 
-#include "nxExt/ipc_server.h"
+#include "ipc_server.h"
 #include <string.h>
 
 Result ipcServerInit(IpcServer* server, const char* name, u32 max_sessions)

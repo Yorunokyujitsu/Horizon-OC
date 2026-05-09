@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <switch.h>
 #include <hocclk.h>
-#include "board.hpp"  
+#include "../board/board.hpp"
 #include <registers.h>
 namespace pllmb {
 

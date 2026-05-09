@@ -25,12 +25,59 @@
  */
 
 
-#pragma once
+#include "apm_ext.h"
 
-#include "nxExt/apm_ext.h"
-#include "nxExt/i2c.h"
-#include "nxExt/t210.h"
-#include "nxExt/max17050.h"
-#include "nxExt/tmp451.h"
-#include "nxExt/ipc_server.h"
-#include "nxExt/cpp/lockable_mutex.h"
+#include <stdatomic.h>
+
+static Service g_apmSrv;
+static Service g_apmSysSrv;
+static atomic_size_t g_refCnt;
+
+Result apmExtInitialize(void)
+{
+    g_refCnt++;
+
+    if (serviceIsActive(&g_apmSrv))
+    {
+        return 0;
+    }
+
+    Result rc = 0;
+
+    rc = smGetService(&g_apmSrv, "apm");
+    if(R_SUCCEEDED(rc))
+    {
+        rc = smGetService(&g_apmSysSrv, "apm:sys");
+    }
+
+    if (R_FAILED(rc))
+    {
+        apmExtExit();
+    }
+
+    return rc;
+}
+
+void apmExtExit(void)
+{
+    if (--g_refCnt == 0)
+    {
+        serviceClose(&g_apmSrv);
+        serviceClose(&g_apmSysSrv);
+    }
+}
+
+Result apmExtGetPerformanceMode(u32* out_mode)
+{
+    return serviceDispatchOut(&g_apmSrv, 1, *out_mode);
+}
+
+Result apmExtSysRequestPerformanceMode(u32 mode)
+{
+    return serviceDispatchIn(&g_apmSysSrv, 0, mode);
+}
+
+Result apmExtGetCurrentPerformanceConfiguration(u32* out_conf)
+{
+    return serviceDispatchOut(&g_apmSysSrv, 7, *out_conf);
+}

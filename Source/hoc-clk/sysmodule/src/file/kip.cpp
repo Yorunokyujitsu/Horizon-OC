@@ -16,9 +16,10 @@
  */
 
 #include "kip.hpp"
-#include "board/board.hpp"
+#include "../i2c/i2cDrv.h"
+#include "../board/board.hpp"
 #include "file_utils.hpp"
-#include "clock_manager.hpp"
+#include "../mgr/clock_manager.hpp"
 
 namespace kip {
 

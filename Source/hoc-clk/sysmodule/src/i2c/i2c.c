@@ -25,7 +25,7 @@
  */
 
 
-#include "nxExt/i2c.h"
+#include "i2c.h"
 
 #define I2C_CMD_SND 0
 #define I2C_CMD_RCV 1

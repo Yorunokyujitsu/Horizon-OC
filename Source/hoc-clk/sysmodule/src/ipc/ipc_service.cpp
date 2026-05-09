@@ -27,12 +27,18 @@
 #include "ipc_service.hpp"
 #include <cstring>
 #include <switch.h>
-#include <nxExt.h>
-#include "file_utils.hpp"
-#include "errors.hpp"
-#include "clock_manager.hpp"
-#include "config.hpp"
-#include "kip.hpp"
+#include "../hos/apm_ext.h"
+#include <i2c.h>
+#include <t210.h>
+#include <max17050.h>
+#include <tmp451.h>
+#include <ipc_server.h>
+#include <lockable_mutex.h>
+#include "../file/file_utils.hpp"
+#include "../file/errors.hpp"
+#include "../mgr/clock_manager.hpp"
+#include "../file/config.hpp"
+#include "../file/kip.hpp"
 namespace ipcService {
 
     namespace {

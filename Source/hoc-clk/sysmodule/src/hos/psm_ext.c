@@ -15,7 +15,7 @@
  * 
  */
  
-#include <hocclk/psm_ext.h>
+#include "psm_ext.h"
 
 const char* PsmPowerRoleToStr(PsmPowerRole role) {
     switch (role) {

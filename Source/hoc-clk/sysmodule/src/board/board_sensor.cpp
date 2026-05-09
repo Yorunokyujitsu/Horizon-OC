@@ -26,7 +26,14 @@
 
 #include <hocclk.h>
 #include <switch.h>
-#include <nxExt.h>
+#include "../hos/apm_ext.h"
+#include <i2c.h>
+#include "../i2c/i2cDrv.h"
+#include <t210.h>
+#include <max17050.h>
+#include <tmp451.h>
+#include <ipc_server.h>
+#include <lockable_mutex.h>
 #include <cmath>
 #include <battery.h>
 #include <pwm.h>
@@ -34,7 +41,7 @@
 #include "../tsensor/soctherm.hpp"
 #include "../tsensor/aotag.hpp"
 #include "../tsensor/bq24193.hpp"
-#include "../config.hpp"
+#include "../file/config.hpp"
 
 namespace board {
 

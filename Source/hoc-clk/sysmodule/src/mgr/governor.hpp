@@ -16,22 +16,26 @@
  */
 
 #include <switch.h>
-#include "file_utils.hpp"
+#include <hocclk.h>
+#include "../board/board.hpp"
+#include "clock_manager.hpp"
+#include <cstring>
+#include "../file/file_utils.hpp"
+#include "../board/board.hpp"
+#include "../file/errors.hpp"
+#include "../file/config.hpp"
+#include "../hos/integrations.hpp"
+#include "../util/lockable_mutex.h"
 
-Result QueryMemoryMapping(u64* virtaddr, u64 physaddr, u64 size) {
-    if(hosversionAtLeast(10,0,0)) {
-        u64 out_size;
-        return svcQueryMemoryMapping(virtaddr, &out_size, physaddr, size);
-    } else {
-        return svcLegacyQueryIoMapping(virtaddr, physaddr, size);
-    }
-}
-
-Result MapAddress(u64 &va, const u64 &physAddr, const char *name) {
-    Result mapResult = QueryMemoryMapping(&va, physAddr, 0x1000);
-    if (R_FAILED(mapResult)) {
-        fileUtils::LogLine("Failed to map %s! %u", name, R_DESCRIPTION(mapResult));
-    }
-
-    return mapResult;
+namespace governor {
+    extern bool isCpuGovernorInBoostMode;
+    extern bool isVRREnabled;
+    extern bool isGpuGovernorEnabled;
+    extern bool isCpuGovernorEnabled;
+    extern bool lastGpuGovernorState;
+    extern bool lastCpuGovernorState;
+    extern bool lastVrrGovernorState;
+    void startThreads();
+    void exitThreads();
+    void HandleGovernor(uint32_t targetHz);
 }

@@ -26,22 +26,23 @@
 
 #include "clock_manager.hpp"
 #include <cstring>
-#include "file_utils.hpp"
-#include "board/board.hpp"
-#include "process_management.hpp"
-#include "errors.hpp"
-#include "ipc_service.hpp"
-#include "kip.hpp"
+#include "../file/file_utils.hpp"
+#include "../board/board.hpp"
+#include "../hos/process_management.hpp"
+#include "../file/errors.hpp"
+#include "../ipc/ipc_service.hpp"
+#include "../file/kip.hpp"
 #include <i2c.h>
-#include "board/display_refresh_rate.hpp"
+#include "../i2c/i2cDrv.h"
+#include "../display/display_refresh_rate.hpp"
 #include <cstdio>
 #include <crc32.h>
-#include "config.hpp"
-#include "integrations.hpp"
-#include <nxExt/cpp/lockable_mutex.h>
-#include "kip.hpp"
+#include "../file/config.hpp"
+#include "../hos/integrations.hpp"
+#include "../util/lockable_mutex.h"
+#include "../file/kip.hpp"
 #include "governor.hpp"
-#include "display/aula.hpp"
+#include "../display/aula.hpp"
 
 #define HOSPPC_HAS_BOOST (hosversionAtLeast(7,0,0))
 

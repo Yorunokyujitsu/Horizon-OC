@@ -16,7 +16,7 @@
  */
 
 #include "governor.hpp"
-#include "process_management.hpp"
+#include "../hos/process_management.hpp"
 #include <hocclk/clock_manager.h>
 namespace governor {
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nxExt/t210.h"
+#include "t210.h"
 
 #define WAIT_NS 1000000000UL
 
@@ -236,7 +236,7 @@ static void _clock_update_freqs(void)
     {
         return;
     }
-
+    
     const u32 osc = 38400000;
     u32 coeff = GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPCPLL_COEFF);
     u32 divm = coeff & 0xFF;

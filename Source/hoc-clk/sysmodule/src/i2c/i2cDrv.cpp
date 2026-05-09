@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-#include "i2c.h"
+#include "i2cDrv.h"
 
 Result I2cSet_U8(I2cDevice dev, u8 reg, u8 val) {
     // ams::fatal::srv::StopSoundTask::StopSound()

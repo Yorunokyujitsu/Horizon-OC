@@ -19,6 +19,7 @@
 
 #include "../board/board.hpp"
 #include <i2c.h>
+#include "../i2c/i2cDrv.h"
 
 namespace bq24193 {
     #define BQ24193_I2C_ADDR 0x6B

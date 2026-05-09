@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nxExt/tmp451.h"
-#include "nxExt/i2c.h"
+#include "tmp451.h"
+#include "i2c.h"
 
 #define TMP451_WAIT_NS 1000000000UL
 

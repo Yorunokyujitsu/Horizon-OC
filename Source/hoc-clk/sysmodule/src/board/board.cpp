@@ -24,13 +24,19 @@
  * --------------------------------------------------------------------------
  */
 
-#include <nxExt.h>
+#include "../hos/apm_ext.h"
+#include <i2c.h>
+#include <t210.h>
+#include <max17050.h>
+#include <tmp451.h>
+#include <ipc_server.h>
+#include <lockable_mutex.h>
 #include <hocclk.h>
 #include <switch.h>
 #include <pwm.h>
 #include <registers.h>
 #include <battery.h>
-#include "display_refresh_rate.hpp"
+#include "../display/display_refresh_rate.hpp"
 #include <rgltr.h>
 #include <notification.h>
 
@@ -41,8 +47,8 @@
 #include "board_misc.hpp"
 #include "../tsensor/soctherm.hpp"
 #include "../tsensor/aotag.hpp"
-#include "../integrations.hpp"
-#include "../file_utils.hpp"
+#include "../hos/integrations.hpp"
+#include "../file/file_utils.hpp"
 namespace board {
 
     u64 clkVirtAddr, dsiVirtAddr, apbVirtAddr, fuseVirtAddr;

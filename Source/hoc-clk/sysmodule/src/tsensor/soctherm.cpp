@@ -23,8 +23,8 @@
 #include <switch.h>
 #include <hocclk.h>
 #include "../board/board.hpp"
-#include "../file_utils.hpp"
-#include "../mem_map.hpp"
+#include "../file/file_utils.hpp"
+#include "../mapping/mem_map.hpp"
 #include "soctherm.hpp"
 #include "tsensor_common.hpp"
 

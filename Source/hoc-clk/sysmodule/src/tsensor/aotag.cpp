@@ -21,8 +21,8 @@
  */
 
 #include <notification.h>
-#include "../mem_map.hpp"
-#include "../file_utils.hpp"
+#include "../mapping/mem_map.hpp"
+#include "../file/file_utils.hpp"
 #include "tsensor_common.hpp"
 #include "aotag.hpp"
 

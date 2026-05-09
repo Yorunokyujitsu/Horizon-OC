@@ -22,7 +22,6 @@
 #include <cstdio>
 #include <cstring>
 #include <vector>
-#include <notification.h>
 #include "labels.h"
 
 // This workaround *may* not be nessasary, but it seems to help with reducing stutter

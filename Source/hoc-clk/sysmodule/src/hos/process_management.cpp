@@ -26,8 +26,8 @@
 
 
 #include "process_management.hpp"
-#include "file_utils.hpp"
-#include "errors.hpp"
+#include "../file/file_utils.hpp"
+#include "../file/errors.hpp"
 #include <cstring>
 
 namespace processManagement {

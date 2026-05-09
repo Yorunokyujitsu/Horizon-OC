@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 
@@ -28,7 +28,7 @@ namespace notification {
         }
         fclose(flagFile);
 
-        std::string filename = "Horizon OC -" + std::to_string(std::time(nullptr)) + ".notify";
+        std::string filename = "hoc-" + std::to_string(std::time(nullptr)) + ".notify";
         std::string fullPath = "sdmc:/config/ultrahand/notifications/" + filename;
 
         FILE* file = fopen(fullPath.c_str(), "w");

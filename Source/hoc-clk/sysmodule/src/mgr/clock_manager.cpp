@@ -43,6 +43,7 @@
 #include "../file/kip.hpp"
 #include "governor.hpp"
 #include "../display/aula.hpp"
+#include "../soc/gm20b.hpp"
 
 #define HOSPPC_HAS_BOOST (hosversionAtLeast(7,0,0))
 

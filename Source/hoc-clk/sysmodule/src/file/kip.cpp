@@ -53,9 +53,17 @@ namespace kip {
             return;
         }
 
-        if(cust_get_cust_rev(&table) != CUST_REV || cust_get_kip_version(&table) != KIP_VERSION) {
-            fileUtils::LogLine("Revision: %u", cust_get_cust_rev(&table));
-            notification::writeNotification("Horizon OC\nKip version mismatch\nPlease reinstall Horizon OC");
+        u32 custRev    = cust_get_cust_rev(&table);
+        u32 kipVersion = cust_get_kip_version(&table)
+        if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
+            notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
+            fileUtils::LogLine("Cust revision: %u", custRev);
+            fileUtils::LogLine("Kip version: %u", kipVersion);
+            return;
+        } else if (custRev > CUST_REV || kipVersion > KIP_VERSION) {
+            notification::writeNotification("Horizon OC\nOutdated sysmodule detected!\nPlease update Horizon OC");
+            fileUtils::LogLine("Cust revision: %u", custRev);
+            fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
         }
 
@@ -201,9 +209,17 @@ namespace kip {
         // configValues.values[KipConfigValue_mtcConf] = cust_get_mtc_conf(&table);
         clockManager::gContext.custRev    = cust_get_cust_rev(&table);
 
-        u16 kipVersion = cust_get_kip_version(&table);
-        if (kipVersion != KIP_VERSION || cust_get_cust_rev(&table) != CUST_REV) {
-            notification::writeNotification("Horizon OC\nKip version mismatch detected!");
+        u32 custRev    = cust_get_cust_rev(&table);
+        u32 kipVersion = cust_get_kip_version(&table)
+        if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
+            notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
+            fileUtils::LogLine("Cust revision: %u", custRev);
+            fileUtils::LogLine("Kip version: %u", kipVersion);
+            return;
+        } else if (custRev > CUST_REV || kipVersion > KIP_VERSION) {
+            notification::writeNotification("Horizon OC\nOutdated sysmodule detected!\nPlease update Horizon OC");
+            fileUtils::LogLine("Cust revision: %u", custRev);
+            fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
         }
 

@@ -43,6 +43,7 @@
 #include "../soc/gm20b.hpp"
 namespace board {
     #define MIDDLE_FREQ_TABLE_START_POINT 1228800000
+    static u32 currentInjectedHz = 0;
     PcvModule GetPcvModule(HocClkModule hocclkModule) {
         switch (hocclkModule) {
             case HocClkModule_CPU:
@@ -91,6 +92,9 @@ namespace board {
 
         u32 pcvHz = useGm20b ? ((hz + 76800000 - 1) / 76800000) * 76800000 : hz;
 
+        if (module == HocClkModule_GPU)
+            currentInjectedHz = 0;
+
         if (HOSSVC_HAS_CLKRST) {
             ClkrstSession session = {};
             rc = clkrstOpenSession(&session, GetPcvModuleId(module), 3);
@@ -115,6 +119,7 @@ namespace board {
 
         if (useGm20b) {
             gm20b::setClock(hz / 1000);
+            currentInjectedHz = hz;
         }
     }
 
@@ -129,6 +134,10 @@ namespace board {
 
         if (module == HocClkModule_Display) {
             return GetDisplayRate(hz);
+        }
+
+        if (module == HocClkModule_GPU && currentInjectedHz != 0) {
+            return currentInjectedHz;
         }
 
         if (HOSSVC_HAS_CLKRST) {

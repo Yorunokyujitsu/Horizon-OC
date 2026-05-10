@@ -25,16 +25,17 @@ namespace gm20b {
     u64 gpu_base = 0;
     #define GPU_PA 0x57000000
     #define GPU_SIZE 0x1000000
-    #define GPU_TRIM_SYS_GPCPLL_CFG             0x0
-    #define GPU_TRIM_SYS_GPCPLL_COEFF 0x4
-    #define GPU_TRIM_SYS_GPCPLL_CFG2            0x8
-    #define GPU_TRIM_SYS_GPCPLL_DVFS0           0x10
-    #define GPU_TRIM_SYS_GPCPLL_DVFS1           0x14
-    #define GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN   0x1c
-    #define GPU_TRIM_SYS_SEL_VCO                0x2c
-    #define GPU_TRIM_SYS_GPC2CLK_OUT            0x250
-    #define GPC_BCAST(x)                (*(volatile u32 *)(gpu_base + 0x132800ul + (x)))
+    #define GPU_TRIM_SYS_GPCPLL_CFG 0x00
+    #define GPU_TRIM_SYS_GPCPLL_COEFF 0x04
+    #define GPU_TRIM_SYS_GPCPLL_CFG3 0x0C
+    #define GPU_TRIM_SYS_GPCPLL_DVFS1 0x14
+    #define GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN 0x1C
+    #define GPU_TRIM_SYS_SEL_VCO 0x2C
+    #define GPU_TRIM_SYS_GPC2CLK_OUT 0x250
+
+    #define GPC_BCAST(x) (*(volatile u32 *)(gpu_base + 0x132800ul + (x)))
     #define GPU_TRIM_SYS_GPCPLL(x) (*(volatile u32 *)(gpu_base + 0x137000ul + (x)))
+
     #define GPC_BCAST_GPCPLL_DVFS2      0x20
     #define GPC_BCAST_NDIV_SLOWDOWN_DBG 0xa0
 
@@ -43,22 +44,24 @@ namespace gm20b {
     #define GPCPLL_CFG_SYNC_MODE        BIT(2)
     #define GPCPLL_CFG_LOCK             BIT(17)
 
-    #define GPCPLL_CFG2_SDM_DIN_MASK        0x000000FF
-    #define GPCPLL_CFG2_SDM_DIN_NEW_MASK    0x007FFF00
+    #define GPCPLL_CFG2_SDM_DIN_MASK        0x000000FFu
+    #define GPCPLL_CFG2_SDM_DIN_NEW_MASK    0x007FFF00u
+    #define GPCPLL_CFG2_STEPA_SHIFT         24
+    #define GPCPLL_CFG2_STEPA_MASK          0xFF000000u
 
-    #define GPCPLL_DVFS0_DFS_COEFF_MASK     0x0000007F
+    #define GPCPLL_CFG3_STEPB_SHIFT         16
+    #define GPCPLL_CFG3_STEPB_MASK          0x00FF0000u
+
+    #define GPCPLL_DVFS0_DFS_COEFF_MASK     0x0000007Fu
 
     #define NDIV_SLOWDOWN_SLOWDOWN_USING_PLL BIT(22)
-    #define NDIV_SLOWDOWN_EN_DYNRAMP         BIT(23)
+    #define NDIV_SLOWDOWN_EN_DYNRAMP BIT(23)
 
-    #define DYNRAMP_DONE_SYNCED             BIT(24)
+    #define DYNRAMP_DONE_SYNCED BIT(24)
 
-    #define SEL_VCO_GPC2CLK_OUT_BIT         BIT(0)
-    #define GPC2CLK_OUT_VCODIV_MASK         0x00003F00
-    #define GPC2CLK_OUT_VCODIV1             0x00000100
-    #define GPC2CLK_OUT_VCODIV2             0x00000200
+    #define GPCPLL_DVFS2_DFS_EXT_STROBE BIT(16)
 
-    #define GPCPLL_DVFS2_DFS_EXT_STROBE     BIT(16)
+    #define RAMP_TIMEOUT_US 500
 
     static inline void _gpu_mask(u32 reg, u32 mask, u32 val) {
         u32 tmp = GPU_TRIM_SYS_GPCPLL(reg);
@@ -72,6 +75,15 @@ namespace gm20b {
         (void)GPC_BCAST(reg);
     }
 
+    static void _clk_setup_slide() {
+        _gpu_mask(GPU_TRIM_SYS_GPCPLL_CFG2,
+                  GPCPLL_CFG2_STEPA_MASK,
+                  0x04u << GPCPLL_CFG2_STEPA_SHIFT);
+        _gpu_mask(GPU_TRIM_SYS_GPCPLL_CFG3,
+                  GPCPLL_CFG3_STEPB_MASK,
+                  0x05u << GPCPLL_CFG3_STEPB_SHIFT);
+    }
+
     static bool _gpu_pllg_slide(u32 new_divn) {
         u32 coeff = GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPCPLL_COEFF);
         u32 cur_divn = (coeff >> 8) & 0xFF;
@@ -79,58 +91,51 @@ namespace gm20b {
         if (new_divn == cur_divn)
             return true;
 
-        _gbc_mask(GPC_BCAST_GPCPLL_DVFS2, GPCPLL_DVFS2_DFS_EXT_STROBE, GPCPLL_DVFS2_DFS_EXT_STROBE);
-        _gpu_mask(GPU_TRIM_SYS_GPCPLL_DVFS0, GPCPLL_DVFS0_DFS_COEFF_MASK, 0);
-        usleep(1);
-        _gbc_mask(GPC_BCAST_GPCPLL_DVFS2, GPCPLL_DVFS2_DFS_EXT_STROBE, 0);
-
-        _gpu_mask(GPU_TRIM_SYS_GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK, GPC2CLK_OUT_VCODIV2);
-        _gpu_mask(GPU_TRIM_SYS_GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK, GPC2CLK_OUT_VCODIV2);
-        (void)GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPC2CLK_OUT);
-        usleep(2);
+        _clk_setup_slide();
 
         _gpu_mask(GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN,
-                NDIV_SLOWDOWN_SLOWDOWN_USING_PLL, NDIV_SLOWDOWN_SLOWDOWN_USING_PLL);
+                  NDIV_SLOWDOWN_SLOWDOWN_USING_PLL,
+                  NDIV_SLOWDOWN_SLOWDOWN_USING_PLL);
 
         _gpu_mask(GPU_TRIM_SYS_GPCPLL_CFG2, GPCPLL_CFG2_SDM_DIN_NEW_MASK, 0);
 
-        coeff = (coeff & ~(0xFF << 8)) | (new_divn << 8);
+        coeff = (coeff & ~(0xFFu << 8)) | (new_divn << 8);
         usleep(1);
         GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPCPLL_COEFF) = coeff;
 
         usleep(1);
         _gpu_mask(GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN,
-                NDIV_SLOWDOWN_EN_DYNRAMP, NDIV_SLOWDOWN_EN_DYNRAMP);
+                  NDIV_SLOWDOWN_EN_DYNRAMP,
+                  NDIV_SLOWDOWN_EN_DYNRAMP);
 
+        int ramp_timeout = RAMP_TIMEOUT_US;
         bool success = false;
-        for (u32 i = 0; i < 500; i++) {
+        do {
+            usleep(1);
+            ramp_timeout--;
             if (GPC_BCAST(GPC_BCAST_NDIV_SLOWDOWN_DBG) & DYNRAMP_DONE_SYNCED) {
                 success = true;
                 break;
             }
-            usleep(1);
+        } while (ramp_timeout > 0);
+
+        if (success) {
+            _gpu_mask(GPU_TRIM_SYS_GPCPLL_CFG2, GPCPLL_CFG2_SDM_DIN_MASK, 0);
         }
 
-        _gpu_mask(GPU_TRIM_SYS_GPCPLL_CFG2, GPCPLL_CFG2_SDM_DIN_MASK, 0);
-
         _gpu_mask(GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN,
-                NDIV_SLOWDOWN_SLOWDOWN_USING_PLL | NDIV_SLOWDOWN_EN_DYNRAMP, 0);
+                  NDIV_SLOWDOWN_SLOWDOWN_USING_PLL | NDIV_SLOWDOWN_EN_DYNRAMP,
+                  0);
         (void)GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPCPLL_NDIV_SLOWDOWN);
-
-        usleep(2);
-        _gpu_mask(GPU_TRIM_SYS_GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK, GPC2CLK_OUT_VCODIV1);
-        _gpu_mask(GPU_TRIM_SYS_GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK, GPC2CLK_OUT_VCODIV1);
-        (void)GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPC2CLK_OUT);
 
         return success;
     }
 
     bool setClock(u32 khz) {
-        if(!gpu_base) {
-            QueryMemoryMapping(&gpu_base, GPU_PA, 0x1000000);
-        }
-        const u32 osc = 38400000;
-        u32 hz = khz * 1000;
+        if (!gpu_base)
+            QueryMemoryMapping(&gpu_base, GPU_PA, GPU_SIZE);
+
+        const u32 osc_khz = 38400; // PLL Hz
 
         u32 coeff = GPU_TRIM_SYS_GPCPLL(GPU_TRIM_SYS_GPCPLL_COEFF);
         u32 divm  =  coeff        & 0xFF;
@@ -139,11 +144,12 @@ namespace gm20b {
         if (divm == 0 || divp == 0)
             return false;
 
-        u32 new_divn = (u64)hz * divm * divp * 2 / osc;
+        u32 new_divn = (u64)khz * divm * divp * 2 / osc_khz;
 
-        if (!_gpu_pllg_slide(new_divn))
-            return false;
+        // L4T clamps the registers here for some reason, do that
+        if (new_divn < 8) new_divn = 8;
+        if (new_divn > 255) new_divn = 255;
 
-        return true;
+        return _gpu_pllg_slide(new_divn);
     }
 }

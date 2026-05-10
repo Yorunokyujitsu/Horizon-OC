@@ -136,6 +136,7 @@ int main(int argc, char** argv)
     }
     config::Initialize();
     config::Refresh(); // Get config from file
+
     board::Initialize();
     processManagement::Initialize();
 
@@ -144,7 +145,6 @@ int main(int argc, char** argv)
     clockManager::Initialize();
     ipcService::Initialize();
 
-    fileUtils::LogLine("Ready");
 
     clockManager::SetRunning(true);
     config::SetEnabled(true);
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
     processManagement::Exit();
     board::Exit();
     config::Exit();
-    fileUtils::LogLine("Exit");
+    fileUtils::LogLine("Exiting hoc-clk");
     svcSleepThread(1000000ULL);
     fileUtils::Exit();
 

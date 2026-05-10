@@ -35,7 +35,6 @@ echo
 echo "*** Copying assets ***"
 mkdir -p "$DIST_DIR/config/horizon-oc"
 cp -vf "$ROOT_DIR/config.ini.template" "$DIST_DIR/config/horizon-oc/config.ini.template"
-cp -vf "$ROOT_DIR/../../README.md" "$DIST_DIR/README.md"
 mkdir -p "$DIST_DIR/config/ultrahand/assets/notifications"
 cp -vf  "$ROOT_DIR/assets/hoc.rgba" "$DIST_DIR/config/ultrahand/assets/notifications/hoc.rgba"
 

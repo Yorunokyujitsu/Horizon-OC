@@ -54,7 +54,7 @@ namespace kip {
         }
 
         u32 custRev    = cust_get_cust_rev(&table);
-        u32 kipVersion = cust_get_kip_version(&table)
+        u32 kipVersion = cust_get_kip_version(&table);
         if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
             notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
             fileUtils::LogLine("Cust revision: %u", custRev);
@@ -210,7 +210,7 @@ namespace kip {
         clockManager::gContext.custRev    = cust_get_cust_rev(&table);
 
         u32 custRev    = cust_get_cust_rev(&table);
-        u32 kipVersion = cust_get_kip_version(&table)
+        u32 kipVersion = cust_get_kip_version(&table);
         if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
             notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
             fileUtils::LogLine("Cust revision: %u", custRev);

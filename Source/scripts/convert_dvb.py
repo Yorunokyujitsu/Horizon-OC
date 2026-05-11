@@ -22,6 +22,7 @@ oldDvbTable = [
     DvbEntry(2666000, [775, 750, 725]),
     DvbEntry(2933000, [800, 775, 750]),
     DvbEntry(3200000, [800, 800, 775]),
+    DvbEntry(0xFFFFFFFF,      []),
 ]
 
 newDvbTable = [
@@ -34,6 +35,7 @@ newDvbTable = [
     DvbEntry(2666000, [850, 825, 800]),
     DvbEntry(2933000, [950, 925, 900]),
     DvbEntry(3200000, [1050, 1025, 1000]),
+    DvbEntry(0xFFFFFFFF,      []),
 ]
 
 DVB_TABLE_SIZE = len(oldDvbTable)
@@ -77,7 +79,10 @@ def get_shift(
     dvb_table: List[DvbEntry],
     index: u32,
 ) -> s32:
-    return (old_voltage - dvb_table[index].volts[process_id]) // 25
+    return (
+        int(old_voltage)
+        - int(dvb_table[index].volts[process_id])
+    ) // 25
 
 
 def main():
@@ -88,6 +93,8 @@ def main():
     emc_max_khz = emc_max_mhz * 1000
     process_id = get_process_id(speedo)
 
+    table_index = INVALID_TABLE_INDEX
+
     old_voltage, table_index = get_voltage_and_index(
         old_dvb,
         emc_max_khz,
@@ -97,7 +104,7 @@ def main():
 
     if old_voltage == 0 or table_index == INVALID_TABLE_INDEX:
         print("Invalid values!")
-        return
+        return -1
 
     new_shift = get_shift(
         old_voltage,

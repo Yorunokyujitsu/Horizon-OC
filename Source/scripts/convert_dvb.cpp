@@ -70,7 +70,7 @@ u32 GetVoltageAndIndex(u32 dvbShift, u32 emc, u32 processId, DvbEntry *dvbTable,
 }
 
 s32 GetShift(u32 oldVoltage, u32 processId, DvbEntry *dvbTable, u32 index) {
-    return (oldVoltage - dvbTable[index].volts[processId]) / 25;
+    return (static_cast<s32>(oldVoltage) - static_cast<s32>(dvbTable[index].volts[processId])) / 25;
 }
 
 int main() {
@@ -81,10 +81,11 @@ int main() {
     u32 emcMaxKhz = emcMaxMhz * 1000;
     u32 processId = GetProcessId(speedo);
 
-    u32 tableIndex = 0;
+    #define INVALID_TABLE_INDEX 32
+    u32 tableIndex = INVALID_TABLE_INDEX;
     u32 oldVoltage = GetVoltageAndIndex(oldDvb, emcMaxKhz, processId, oldDvbTable, tableIndex);
 
-    if (oldVoltage == 0 || tableIndex == 0) {
+    if (oldVoltage == 0 || tableIndex == INVALID_TABLE_INDEX) {
         printf("Invalid values!\n");
         return -1;
     }

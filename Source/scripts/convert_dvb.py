@@ -12,7 +12,7 @@ class DvbEntry:
     volts: List[u32]
 
 
-old_dvb_table = [
+oldDvbTable = [
     DvbEntry(204000,  [637, 637, 637]),
     DvbEntry(1331200, [650, 637, 637]),
     DvbEntry(1600000, [675, 650, 637]),
@@ -24,7 +24,7 @@ old_dvb_table = [
     DvbEntry(3200000, [800, 800, 775]),
 ]
 
-new_dvb_table = [
+newDvbTable = [
     DvbEntry(204000,  [637, 637, 637]),
     DvbEntry(1331200, [650, 637, 637]),
     DvbEntry(1600000, [675, 650, 637]),
@@ -36,7 +36,8 @@ new_dvb_table = [
     DvbEntry(3200000, [1050, 1025, 1000]),
 ]
 
-DVB_TABLE_SIZE = len(old_dvb_table)
+DVB_TABLE_SIZE = len(oldDvbTable)
+INVALID_TABLE_INDEX = 32
 
 
 def print_and_scan(message: str) -> u32:
@@ -67,7 +68,7 @@ def get_voltage_and_index(
         voltage = dvb_table[i].volts[process_id] + (25 * dvb_shift)
         return voltage, i
 
-    return 0, 0
+    return 0, INVALID_TABLE_INDEX
 
 
 def get_shift(
@@ -91,17 +92,17 @@ def main():
         old_dvb,
         emc_max_khz,
         process_id,
-        old_dvb_table,
+        oldDvbTable,
     )
 
-    if old_voltage == 0 or table_index == 0:
+    if old_voltage == 0 or table_index == INVALID_TABLE_INDEX:
         print("Invalid values!")
         return
 
     new_shift = get_shift(
         old_voltage,
         process_id,
-        new_dvb_table,
+        newDvbTable,
         table_index,
     )
 

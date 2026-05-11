@@ -211,5 +211,5 @@ Refer to COMPILATION.md
 * **Samybigio2011, Miki** - Italian translations
 * **angelblaster** - Korean translations
 * **q1332348216-glitch** - Chinese translations
-* **th3-ne0undr5c0r** - French Canadian translations
+* **th3-ne0undr5c0r** - French translations
 * **Nvidia** - [Tegra X1 Technical Reference Manual](https://developer.nvidia.com/embedded/dlc/tegra-x1-technical-reference-manual), soctherm driver, L4T

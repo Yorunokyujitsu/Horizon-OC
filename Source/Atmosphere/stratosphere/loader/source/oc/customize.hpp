@@ -20,8 +20,8 @@
 
 #pragma once
 
-#define CUST_REV 2
-#define KIP_VERSION 220
+#define CUST_REV 3
+#define KIP_VERSION 230
 
 #include "oc_common.hpp"
 #include "pcv/pcv_common.hpp"
@@ -92,7 +92,7 @@ struct CustomizeTable {
     StepMode stepMode;
     u32 marikoEmcMaxClock;
     u32 marikoEmcVddqVolt;
-    u32 emcDvbShift;
+    s32 emcDvbShift;
     u32 marikoSocVmax;
     // advanced config
     u32 t1_tRCD;

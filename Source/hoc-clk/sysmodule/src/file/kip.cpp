@@ -76,7 +76,7 @@ namespace kip {
         CUST_WRITE_FIELD_BATCH(&table, eristaEmcMaxClock2, config::GetConfigValue(KipConfigValue_eristaEmcMaxClock2));
         CUST_WRITE_FIELD_BATCH(&table, marikoEmcMaxClock, config::GetConfigValue(KipConfigValue_marikoEmcMaxClock));
         CUST_WRITE_FIELD_BATCH(&table, marikoEmcVddqVolt, config::GetConfigValue(KipConfigValue_marikoEmcVddqVolt));
-        CUST_WRITE_FIELD_BATCH(&table, emcDvbShift, config::GetConfigValue(KipConfigValue_emcDvbShift));
+        CUST_WRITE_FIELD_BATCH(&table, emcDvbShift, config::GetConfigValue(KipConfigValue_emcDvbShift) > 8 && config::GetConfigValue(KipConfigValue_emcDvbShift) <= 16 ? 8 : config::GetConfigValue(KipConfigValue_emcDvbShift)); // 2.2.0 -> 2.3.0 compat
         CUST_WRITE_FIELD_BATCH(&table, marikoSocVmax, config::GetConfigValue(KipConfigValue_marikoSocVmax));
 
         CUST_WRITE_FIELD_BATCH(&table, t1_tRCD, config::GetConfigValue(KipConfigValue_t1_tRCD));
@@ -233,7 +233,7 @@ namespace kip {
         configValues.values[KipConfigValue_eristaEmcMaxClock2] = cust_get_erista_emc_max2(&table);
         configValues.values[KipConfigValue_marikoEmcMaxClock] = cust_get_mariko_emc_max(&table);
         configValues.values[KipConfigValue_marikoEmcVddqVolt] = cust_get_mariko_emc_vddq(&table);
-        configValues.values[KipConfigValue_emcDvbShift] = cust_get_emc_dvb_shift(&table);
+        configValues.values[KipConfigValue_emcDvbShift] = cust_get_emc_dvb_shift(&table) > 8 && cust_get_emc_dvb_shift(&table) <= 16 ? 8 : cust_get_emc_dvb_shift(&table); // 2.2.0 -> 2.3.0 compat
         configValues.values[KipConfigValue_marikoSocVmax] = cust_get_marikoSocVmax(&table);
 
         configValues.values[KipConfigValue_t1_tRCD] = cust_get_tRCD(&table);
@@ -314,3 +314,4 @@ namespace kip {
         }
     }
 }
+

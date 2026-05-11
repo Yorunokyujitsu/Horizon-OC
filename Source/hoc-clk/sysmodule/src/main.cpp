@@ -38,7 +38,7 @@
 #include "ipc/ipc_service.hpp"
 #include "file/config.hpp"
 
-#define INNER_HEAP_SIZE 0x3A000
+#define INNER_HEAP_SIZE 0x40000
 
 extern "C"
 {

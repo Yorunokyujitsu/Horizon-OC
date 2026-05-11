@@ -809,9 +809,9 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         auto DvbVolt = [&](u32 zero, u32 one, u32 two) {
             return std::array<u32, 3>{
-                std::min(zero + voltAdd, max0),
-                std::min(one  + voltAdd, max1),
-                std::min(two  + voltAdd, max2)
+                std::min((u32)((s32)zero + voltAdd), max0),
+                std::min((u32)((s32)one  + voltAdd), max1),
+                std::min((u32)((s32)two  + voltAdd), max2)
             };
         };
 

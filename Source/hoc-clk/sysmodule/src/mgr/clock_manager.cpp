@@ -252,7 +252,6 @@ namespace clockManager {
             return;
         }
     }
-
     void HandleMiscFeatures()
     {
         // these dont need to run that often, so dont bother
@@ -381,7 +380,6 @@ namespace clockManager {
             board::SetHz(HocClkModule_CPU, board::GetHz(HocClkModule_CPU));
             prepareBoostExit = false;
         }
-
         bool returnRaw = false; // Return a value scaled to MHz instead of raw value
         for (unsigned int module = 0; module < HocClkModule_EnumMax; module++) {
             u32 oldHz = board::GetHz((HocClkModule)module); // Get Old hz (used primarily for DVFS Logic)
@@ -715,8 +713,9 @@ namespace clockManager {
 
         HandleSafetyFeatures();
         HandleMiscFeatures();
-
-        if (RefreshContext() || config::Refresh()) {
+        
+        // GPU clock should always be the same unless PCV has overwriten our change, so reset it
+        if (RefreshContext() || config::Refresh() || board::GetRealHz(HocClkModule_GPU) != gContext.freqs[HocClkModule_GPU]) {
             SetClocks(isBoost);
         }
     }

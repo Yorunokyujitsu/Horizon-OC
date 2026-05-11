@@ -357,7 +357,7 @@ namespace ams::ldr::hoc::pcv::erista {
         table->dram_timings.t_rp = tRFCpb;
         table->dram_timings.t_rfc = tRFCab;
         table->emc_cfg_2 = 0x11083D;
-        table->min_volt = std::min(static_cast<u32>(1050), 900 + C.emcDvbShift * 25);
+        table->min_volt = (u32)std::min(static_cast<s32>(1050), 900 + C.emcDvbShift * 25);
     }
 
     /* Probably more intuitive to point to 40800 rather than 1600000, but oh well. */

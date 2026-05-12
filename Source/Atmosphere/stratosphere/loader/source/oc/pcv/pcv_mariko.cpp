@@ -796,9 +796,9 @@ namespace ams::ldr::hoc::pcv::mariko {
             R_SKIP();
         }
 
-        u32 max0    = 1050;
-        u32 max1    = 1025;
-        u32 max2    = 1000;
+        s32 max0    = 1050;
+        s32 max1    = 1025;
+        s32 max2    = 1000;
         s32 voltAdd = 25 * C.emcDvbShift;
 
         if (C.marikoSocVmax && C.marikoSocVmax > 1000) {
@@ -807,11 +807,17 @@ namespace ams::ldr::hoc::pcv::mariko {
             max2 = C.marikoSocVmax;
         }
 
-        auto DvbVolt = [&](u32 zero, u32 one, u32 two) {
-            return std::array<u32, 3>{
-                std::min((u32)((s32)zero + voltAdd), max0),
-                std::min((u32)((s32)one  + voltAdd), max1),
-                std::min((u32)((s32)two  + voltAdd), max2)
+        constexpr s32 minVolt = 637;
+
+        auto ClampVolt = [&](s32 value, s32 max) {
+            return std::clamp(value + voltAdd, minVolt, max);
+        };
+
+        auto DvbVolt = [&](s32 zero, s32 one, s32 two) {
+            return std::array<s32, 3>{
+                ClampVolt(zero, max0),
+                ClampVolt(one, max1),
+                ClampVolt(two, max2)
             };
         };
 

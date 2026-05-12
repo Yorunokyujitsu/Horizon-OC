@@ -125,7 +125,7 @@ namespace ams::ldr::hoc::pcv {
         u32 unkStepMaybe;
         u32 vmin;
         u32 unkZero4[3];
-        u32 pllMinMilliVoltsMaybe;
+        u32 pllMinMilliVolts;
         u32 vmax;
         u32 unkScale2;
         u32 speedoScale;

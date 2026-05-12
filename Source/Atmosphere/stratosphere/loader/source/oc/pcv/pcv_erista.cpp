@@ -67,10 +67,11 @@ namespace ams::ldr::hoc::pcv::erista {
 
     Result CpuVoltDfll(u32* ptr) {
         CvbCpuDfllData *entry = reinterpret_cast<CvbCpuDfllData *>(ptr);
-        R_UNLESS(entry->tune0_low == 0xFFEAD0FF, ldr::ResultInvalidCpuVoltDfllEntry());
-        R_UNLESS(entry->tune0_high == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
-        R_UNLESS(entry->tune1_low == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
-        R_UNLESS(entry->tune1_high == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
+
+        R_UNLESS(entry->tune0_low  == 0xFFEAD0FF, ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune0_high == 0x0,        ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune1_low  == 0x0,        ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune1_high == 0x0,        ldr::ResultInvalidCpuVoltDfllEntry());
 
         if (!C.eristaCpuUV) {
             R_SKIP();
@@ -100,6 +101,7 @@ namespace ams::ldr::hoc::pcv::erista {
             default:
                 break;
         }
+
         R_SUCCEED();
     }
 
@@ -121,10 +123,10 @@ namespace ams::ldr::hoc::pcv::erista {
         }
 
         if (C.eristaGpuVmin) {
-            PATCH_OFFSET(ptr    , C.eristaGpuVmin);
-            PATCH_OFFSET(ptr + 3, C.eristaGpuVmin);
-            PATCH_OFFSET(ptr + 6, C.eristaGpuVmin);
-            PATCH_OFFSET(ptr + 9, C.eristaGpuVmin);
+            PATCH_OFFSET(ptr,      C.eristaGpuVmin);
+            PATCH_OFFSET(ptr + 3,  C.eristaGpuVmin);
+            PATCH_OFFSET(ptr + 6,  C.eristaGpuVmin);
+            PATCH_OFFSET(ptr + 9,  C.eristaGpuVmin);
             PATCH_OFFSET(ptr + 12, C.eristaGpuVmin);
         }
 
@@ -165,8 +167,10 @@ namespace ams::ldr::hoc::pcv::erista {
         }
         u32 asm_patch[2] = {
             asm_set_rd(asm_set_imm16(GpuAsmPattern[0], max_clock), rd),
-            asm_set_rd(asm_set_imm16(GpuAsmPattern[1], max_clock >> 16), rd)};
-        PATCH_OFFSET(ptr32, asm_patch[0]);
+            asm_set_rd(asm_set_imm16(GpuAsmPattern[1], max_clock >> 16), rd)
+        };
+
+        PATCH_OFFSET(ptr32,     asm_patch[0]);
         PATCH_OFFSET(ptr32 + 1, asm_patch[1]);
 
         R_SUCCEED();
@@ -210,7 +214,9 @@ namespace ams::ldr::hoc::pcv::erista {
         }
 
         u32 trefbw = refresh_raw + 0x40;
-        trefbw = MIN(trefbw, static_cast<u32>(0x3FFF));
+        trefbw     = MIN(trefbw, static_cast<u32>(0x3FFF));
+
+        const u32 dyn_self_ref_control = (static_cast<u32>(7605.0 / tCK_avg) + 260) | (table->burst_regs.emc_dyn_self_ref_control & 0xffff0000);
 
         CalculateTimings(tCK_avg);
 
@@ -239,7 +245,6 @@ namespace ams::ldr::hoc::pcv::erista {
         WRITE_PARAM_ALL_REG(table, emc_refresh, refresh_raw);
         WRITE_PARAM_ALL_REG(table, emc_pre_refresh_req_cnt, refresh_raw / 4);
         WRITE_PARAM_ALL_REG(table, emc_trefbw, trefbw);
-        const u32 dyn_self_ref_control = (static_cast<u32>(7605.0 / tCK_avg) + 260) | (table->burst_regs.emc_dyn_self_ref_control & 0xffff0000);
         WRITE_PARAM_ALL_REG(table, emc_dyn_self_ref_control, dyn_self_ref_control);
         WRITE_PARAM_ALL_REG(table, emc_pdex2wr, pdex2rw);
         WRITE_PARAM_ALL_REG(table, emc_pdex2rd, pdex2rw);
@@ -280,7 +285,7 @@ namespace ams::ldr::hoc::pcv::erista {
 
         /* This needs some clean up. */
         constexpr double MC_ARB_DIV = 4.0;
-        constexpr u32 MC_ARB_SFA = 2;
+        constexpr u32 MC_ARB_SFA    = 2;
 
         table->burst_mc_regs.mc_emem_arb_cfg          = table->rate_khz             / (33.3 * 1000) / MC_ARB_DIV;
         table->burst_mc_regs.mc_emem_arb_timing_rcd   = CEIL(GET_CYCLE_CEIL(tRCD)   / MC_ARB_DIV) - 2;
@@ -325,8 +330,8 @@ namespace ams::ldr::hoc::pcv::erista {
         table->la_scale_regs.mc_ptsa_grant_decrement = grant_decrement;
 
         constexpr u32 MaskHigh = 0xFF00FFFF;
-        constexpr u32 Mask2 = 0xFFFFFF00;
-        constexpr u32 Mask3 = 0xFF00FF00;
+        constexpr u32 Mask2    = 0xFFFFFF00;
+        constexpr u32 Mask3    = 0xFF00FF00;
 
         const u32 allowance1 = static_cast<u32>(0x32000 / (table->rate_khz / 0x3E8)) & 0xFF;
         const u32 allowance2 = static_cast<u32>(0x9C40  / (table->rate_khz / 0x3E8)) & 0xFF;
@@ -354,10 +359,10 @@ namespace ams::ldr::hoc::pcv::erista {
         table->la_scale_regs.mc_latency_allowance_hc_1      =              (table->la_scale_regs.mc_latency_allowance_hc_1      & Mask2)    |  allowance1;
         table->la_scale_regs.mc_latency_allowance_vi2_0     =              (table->la_scale_regs.mc_latency_allowance_vi2_0     & Mask2)    |  allowance1;
 
-        table->dram_timings.t_rp = tRFCpb;
+        table->dram_timings.t_rp  = tRFCpb;
         table->dram_timings.t_rfc = tRFCab;
-        table->emc_cfg_2 = 0x11083D;
-        table->min_volt = (u32)std::min(static_cast<s32>(1050), 900 + C.emcDvbShift * 25);
+        table->emc_cfg_2          = 0x11083D;
+        table->min_volt           = std::clamp(900 + (C.emcDvbShift * 25), 900, 1050);
     }
 
     /* Probably more intuitive to point to 40800 rather than 1600000, but oh well. */

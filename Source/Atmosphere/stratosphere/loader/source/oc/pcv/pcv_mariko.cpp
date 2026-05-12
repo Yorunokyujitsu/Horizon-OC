@@ -94,23 +94,29 @@ namespace ams::ldr::hoc::pcv::mariko {
     }
 
     Result CpuVoltDVFS(u32 *ptr) {
-        if (MatchesPattern(ptr, cpuVoltagePatchOffsets, cpuVoltagePatchValues)) {
-            if (C.marikoCpuLowVmin) {
-                PATCH_OFFSET(ptr, C.marikoCpuLowVmin);
-            }
+        CvbMeta *cpuCvbMeta = reinterpret_cast<CvbMeta *>(reinterpret_cast<u8 *>(ptr) - offsetof(CvbMeta, vmin));
 
-            if (C.marikoCpuHighVmin) {
-                PATCH_OFFSET(ptr - 2, C.marikoCpuHighVmin);
-            }
+        R_UNLESS(cpuCvbMeta->highVmin     == CpuHighVminOfficial, ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->unkStepMaybe == 38,                  ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->vmax         == CpuVoltOfficial,     ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->unkScale2    == 1000,                ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->speedoScale  == 100,                 ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->voltageScale == 1000,                ldr::ResultInvalidCpuMinVolt());
+        R_UNLESS(cpuCvbMeta->unkZero5     == 0,                   ldr::ResultInvalidCpuMinVolt());
 
-            if (C.marikoCpuMaxVolt) {
-                PATCH_OFFSET(ptr + 5, C.marikoCpuMaxVolt);
-            }
-
-            R_SUCCEED();
+        if (C.marikoCpuLowVmin) {
+            PATCH_OFFSET(&(cpuCvbMeta->vmin), C.marikoCpuLowVmin);
         }
 
-        R_THROW(ldr::ResultInvalidCpuMinVolt());
+        if (C.marikoCpuHighVmin) {
+            PATCH_OFFSET(&(cpuCvbMeta->highVmin), C.marikoCpuHighVmin);
+        }
+
+        if (C.marikoCpuMaxVolt) {
+            PATCH_OFFSET(&(cpuCvbMeta->vmax), C.marikoCpuMaxVolt);
+        }
+
+        R_SUCCEED();
     }
 
     Result CpuVoltThermals(u32 *ptr) {
@@ -136,78 +142,78 @@ namespace ams::ldr::hoc::pcv::mariko {
     Result CpuVoltDfll(u32 *ptr) {
         CvbCpuDfllData *entry = reinterpret_cast<CvbCpuDfllData *>(ptr);
 
-        R_UNLESS(entry->tune0_low == 0xFFCF, ldr::ResultInvalidCpuVoltDfllEntry());
-        R_UNLESS(entry->tune0_high == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());
-        R_UNLESS(entry->tune1_low == 0x12207FF, ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune0_low  == 0xFFCF,    ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune0_high == 0x0,       ldr::ResultInvalidCpuVoltDfllEntry());
+        R_UNLESS(entry->tune1_low  == 0x12207FF, ldr::ResultInvalidCpuVoltDfllEntry());
         R_UNLESS(entry->tune1_high == 0x3FFF7FF, ldr::ResultInvalidCpuVoltDfllEntry());
 
         switch (C.marikoCpuUVLow) {
             case 1:
-                PATCH_OFFSET(&(entry->tune0_low), 0xffa0);
+                PATCH_OFFSET(&(entry->tune0_low),  0xffa0);
                 PATCH_OFFSET(&(entry->tune0_high), 0xffff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21107ff);
-                PATCH_OFFSET(&(entry->tune1_high), 0);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21107ff);
+                PATCH_OFFSET(&(entry->tune1_high), 0x0);
                 break;
             case 2:
                 PATCH_OFFSET(&(entry->tune0_high), 0xffdf);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21107ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21107ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27207ff);
                 break;
             case 3:
-                PATCH_OFFSET(&(entry->tune0_low), 0xffdf);
+                PATCH_OFFSET(&(entry->tune0_low),  0xffdf);
                 PATCH_OFFSET(&(entry->tune0_high), 0xffdf);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21107ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21107ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27307ff);
                 break;
             case 4:
-                PATCH_OFFSET(&(entry->tune0_low), 0xffff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xffff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xffdf);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21107ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21107ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27407ff);
                 break;
             case 5:
                 PATCH_OFFSET(&(entry->tune0_high), 0xffdf);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21607ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21607ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27707ff);
                 break;
             case 6:
                 PATCH_OFFSET(&(entry->tune0_high), 0xffdf);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21607ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21607ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27807ff);
                 break;
             case 7:
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21607ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21607ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27b07ff);
                 break;
             case 8:
-                PATCH_OFFSET(&(entry->tune0_low), 0xdfff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xdfff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21707ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21707ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27b07ff);
                 break;
             case 9:
-                PATCH_OFFSET(&(entry->tune0_low), 0xdfff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xdfff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21707ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21707ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27c07ff);
                 break;
             case 10:
-                PATCH_OFFSET(&(entry->tune0_low), 0xdfff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xdfff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21707ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21707ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27d07ff);
                 break;
             case 11:
-                PATCH_OFFSET(&(entry->tune0_low), 0xdfff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xdfff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21707ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21707ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27e07ff);
                 break;
             case 12:
-                PATCH_OFFSET(&(entry->tune0_low), 0xdfff);
+                PATCH_OFFSET(&(entry->tune0_low),  0xdfff);
                 PATCH_OFFSET(&(entry->tune0_high), 0xdfff);
-                PATCH_OFFSET(&(entry->tune1_low), 0x21707ff);
+                PATCH_OFFSET(&(entry->tune1_low),  0x21707ff);
                 PATCH_OFFSET(&(entry->tune1_high), 0x27f07ff);
                 break;
             default:
@@ -216,7 +222,7 @@ namespace ams::ldr::hoc::pcv::mariko {
 
         switch (C.marikoCpuUVHigh) {
             case 1:
-                PATCH_OFFSET(&(entry->tune1_high), 0);
+                PATCH_OFFSET(&(entry->tune1_high), 0x0);
                 PATCH_OFFSET(&(entry->tune0_high), 0xffff);
                 break;
             case 2:
@@ -301,7 +307,7 @@ namespace ams::ldr::hoc::pcv::mariko {
             asm_set_rd(asm_set_imm16(GpuAsmPattern[1], max_clock >> 16), rd)
         };
 
-        PATCH_OFFSET(ptr32, asm_patch[0]);
+        PATCH_OFFSET(ptr32,     asm_patch[0]);
         PATCH_OFFSET(ptr32 + 1, asm_patch[1]);
 
         R_SUCCEED();
@@ -366,7 +372,7 @@ namespace ams::ldr::hoc::pcv::mariko {
         }
 
         u32 trefbw = refresh_raw + 0x40;
-        trefbw = MIN(trefbw, static_cast<u32>(0x3FFF));
+        trefbw     = MIN(trefbw, static_cast<u32>(0x3FFF));
 
         const u32 dyn_self_ref_control = (static_cast<u32>(7605.0 / tCK_avg) + 260) | (table->burst_regs.emc_dyn_self_ref_control & 0xffff0000);
 

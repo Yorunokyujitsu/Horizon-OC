@@ -223,102 +223,102 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "CSV write interval (ms)" : "csv_write_interval_ms";
 
         case HocClkConfigValue_UncappedClocks:
-            return pretty ? "Uncapped Clocks" : "uncapped_clocks";
+            return pretty ? "클럭 제한 해제" : "uncapped_clocks";
         case HocClkConfigValue_OverwriteBoostMode:
-            return pretty ? "Overwrite Boost Mode" : "ow_boost";
+            return pretty ? "부스트 모드 덮어쓰기" : "ow_boost";
 
         case HocClkConfigValue_EristaMaxCpuClock:
-            return pretty ? "CPU Max Clock" : "cpu_max_e";
+            return pretty ? "CPU 최대 클럭" : "cpu_max_e";
 
         case HocClkConfigValue_MarikoMaxCpuClock:
-            return pretty ? "CPU Max Display Clock" : "cpu_max_m";
+            return pretty ? "CPU 표시 최대 클럭" : "cpu_max_m";
 
         case HocClkConfigValue_ThermalThrottle:
-            return pretty ? "Thermal Throttle" : "thermal_throttle";
+            return pretty ? "온도 제한" : "thermal_throttle";
 
         case HocClkConfigValue_ThermalThrottleThreshold:
-            return pretty ? "Thermal Throttle Threshold" : "thermal_throttle_threshold";
+            return pretty ? "온도 제한 임계값" : "thermal_throttle_threshold";
 
         case HocClkConfigValue_HandheldTDP:
-            return pretty ? "Handheld TDP" : "handheld_tdp";
+            return pretty ? "휴대 모드 TDP" : "handheld_tdp";
 
         case HocClkConfigValue_HandheldTDPLimit:
-            return pretty ? "Handheld TDP Limit" : "tdp_limit";
+            return pretty ? "휴대 모드 TDP 제한" : "tdp_limit";
 
         case HocClkConfigValue_LiteTDPLimit:
-            return pretty ? "Handheld TDP Limit" : "tdp_limit_l";
+            return pretty ? "휴대 모드 TDP 제한" : "tdp_limit_l";
 
         case HocClkConfigValue_BatteryChargeCurrent:
-            return pretty ? "Battery Charge Current" : "bat_charge_current";
+            return pretty ? "배터리 충전 전류" : "bat_charge_current";
 
         case HocClkConfigValue_OverwriteRefreshRate:
-            return pretty ? "Display Refresh Rate Changing" : "drr_changing";
+            return pretty ? "주사율 변경" : "drr_changing";
 
         case HocClkConfigValue_MaxDisplayClockH:
-            return pretty ? "Max Display Clock (Handheld)" : "drr_max_clock";
+            return pretty ? "최대 표시 클럭 (휴대 모드)" : "drr_max_clock";
 
         case HocClkConfigValue_DVFSMode:
-            return pretty ? "DVFS Mode" : "dvfs_mode";
+            return pretty ? "DVFS 모드" : "dvfs_mode";
 
         case HocClkConfigValue_DVFSOffset:
-            return pretty ? "DVFS Offset" : "dvfs_offset";
+            return pretty ? "DVFS 오프셋" : "dvfs_offset";
 
         case HocClkConfigValue_GPUScheduling:
-            return pretty ? "GPU Scheduling" : "gpu_scheduling";
+            return pretty ? "GPU 스케줄링" : "gpu_scheduling";
 
         case HocClkConfigValue_GPUSchedulingMethod:
-            return pretty ? "GPU Scheduling Method" : "gpu_sched_method";
+            return pretty ? "GPU 스케줄링 방식" : "gpu_sched_method";
 
         case HocClkConfigValue_LiveCpuUv:
-            return pretty ? "Live CPU Undervolt" : "live_cpu_uv";
+            return pretty ? "CPU 실시간 언더볼팅" : "live_cpu_uv";
 
         case HocClkConfigValue_EnableExperimentalSettings:
-            return pretty ? "Enable Experimental Settings" : "enable_experimental_settings";
+            return pretty ? "실험실 기능 활성화" : "enable_experimental_settings";
 
         case HocClkConfigValue_RAMVoltDisplayMode:
-            return pretty ? "RAM Voltage / Usage Display Mode" : "ram_volt_usage_display_mode";
+            return pretty ? "RAM 전압 / 사용량 표시 모드" : "ram_volt_usage_display_mode";
         case HocClkConfigValue_CpuGovernorMinimumFreq:
-            return pretty ? "CPU Governor Minimum Frequency" : "cpu_gov_min_freq";
+            return pretty ? "CPU 최소 클럭" : "cpu_gov_min_freq";
 
         case HocClkConfigValue_DisplayVoltage:
-            return pretty ? "Display Voltage" : "display_voltage";
+            return pretty ? "전압 표시" : "display_voltage";
 
         case HocClkConfigValue_MemoryFrequencyMeasurementMode:
-            return pretty ? "RAM Frequency Measurement Mode" : "mem_freq_measurement_mode";
+            return pretty ? "RAM 주파수 측정" : "mem_freq_measurement_mode";
 
         case HocClkConfigValue_RamDisplayUnit:
-            return pretty ? "RAM Frequency Display Unit" : "RAM_display_unit";
+            return pretty ? "RAM 표시 단위" : "RAM_display_unit";
         case HocClkConfigValue_AulaDisplayColorPreset:
-            return pretty ? "Aula Display Color Preset" : "aula_color_preset";
+            return pretty ? "Aula 표시 색상 프리셋" : "aula_color_preset";
         case HocClkConfigValue_MarikoMiddleFreqs:
-            return pretty ? "Mariko Middle Clocks" : "mariko_middle_freqs";
+            return pretty ? "Mariko 중간 클럭" : "mariko_middle_freqs";
         // KIP config values
         case KipConfigValue_custRev:
             return pretty ? "Custom Revision" : "kip_cust_rev";
         // case KipConfigValue_mtcConf:
         //     return pretty ? "MTC Config" : "kip_mtc_conf";
         case KipConfigValue_hpMode:
-            return pretty ? "HP Mode" : "kip_hp_mode";
+            return pretty ? "HP 모드" : "kip_hp_mode";
 
         // EMC
         case KipConfigValue_commonEmcMemVolt:
-            return pretty ? "Common EMC/MEM Voltage" : "common_emc_mem_volt";
+            return pretty ? "일반 EMC/MEM 전압" : "common_emc_mem_volt";
         case KipConfigValue_eristaEmcMaxClock:
-            return pretty ? "Erista EMC Max Clock 1" : "erista_emc_max_clock";
+            return pretty ? "Erista EMC 최대 클럭 1" : "erista_emc_max_clock";
         case KipConfigValue_eristaEmcMaxClock1:
-            return pretty ? "Erista EMC Max Clock 2" : "erista_emc_max_clock1";
+            return pretty ? "Erista EMC 최대 클럭 2" : "erista_emc_max_clock1";
         case KipConfigValue_eristaEmcMaxClock2:
-            return pretty ? "Erista EMC Max Clock 3" : "erista_emc_max_clock2";
+            return pretty ? "Erista EMC 최대 클럭 3" : "erista_emc_max_clock2";
         case KipConfigValue_stepMode:
-            return pretty ? "Step Mode:" : "step_mode";
+            return pretty ? "단계별 조정 모드:" : "step_mode";
         case KipConfigValue_marikoEmcMaxClock:
-            return pretty ? "Mariko EMC Max Clock" : "mariko_emc_max_clock";
+            return pretty ? "Mariko EMC 최대 클럭" : "mariko_emc_max_clock";
         case KipConfigValue_marikoEmcVddqVolt:
-            return pretty ? "Mariko EMC VDDQ Voltage" : "mariko_emc_vddq_volt";
+            return pretty ? "Mariko EMC VDDQ 전압" : "mariko_emc_vddq_volt";
         case KipConfigValue_emcDvbShift:
-            return pretty ? "EMC DVB Shift" : "emc_dvb_shift";
+            return pretty ? "EMC DVB 조정값" : "emc_dvb_shift";
         case KipConfigValue_marikoSocVmax:
-            return pretty ? "SOC Vmax" : "soc_vmax";
+            return pretty ? "SOC 최대 전압" : "soc_vmax";
         // Memory timings
         case KipConfigValue_t1_tRCD:
             return pretty ? "t1 - tRCD" : "t1_trcd";
@@ -348,76 +348,76 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "t2 - trp 1333WL Cap" : "t2_tRP_cap";
 
         case KipConfigValue_read_latency_1333:
-            return pretty ? "1333 Read Latency" : "read_latency_1333";
+            return pretty ? "1333 읽기 지연" : "read_latency_1333";
         case KipConfigValue_read_latency_1600:
-            return pretty ? "1600 Read Latency" : "read_latency_1600";
+            return pretty ? "1600 읽기 지연" : "read_latency_1600";
         case KipConfigValue_read_latency_1866:
-            return pretty ? "1866 Read Latency" : "read_latency_1866";
+            return pretty ? "1866 읽기 지연" : "read_latency_1866";
         case KipConfigValue_read_latency_2133:
-            return pretty ? "2133 Read Latency" : "read_latency_2133";
+            return pretty ? "2133 읽기 지연" : "read_latency_2133";
 
         case KipConfigValue_write_latency_1333:
-            return pretty ? "1333 Write Latency" : "write_latency_1333";
+            return pretty ? "1333 쓰기 지연" : "write_latency_1333";
         case KipConfigValue_write_latency_1600:
-            return pretty ? "1600 Write Latency" : "write_latency_1600";
+            return pretty ? "1600 쓰기 지연" : "write_latency_1600";
         case KipConfigValue_write_latency_1866:
-            return pretty ? "1866 Write Latency" : "write_latency_1866";
+            return pretty ? "1866 쓰기 지연" : "write_latency_1866";
         case KipConfigValue_write_latency_2133:
-            return pretty ? "2133 Write Latency" : "write_latency_2133";
+            return pretty ? "2133 쓰기 지연" : "write_latency_2133";
 
         case KipConfigValue_mem_burst_read_latency:
-            return pretty ? "Memory Burst Read Latency" : "mem_burst_read_latency";
+            return pretty ? "RAM 버스트 읽기 지연" : "mem_burst_read_latency";
         case KipConfigValue_mem_burst_write_latency:
-            return pretty ? "Memory Burst Write Latency" : "mem_burst_write_latency";
+            return pretty ? "RAM 버스트 쓰기 지연" : "mem_burst_write_latency";
 
         // CPU – Erista
         case KipConfigValue_eristaCpuUV:
-            return pretty ? "Erista CPU Undervolt" : "erista_cpu_uv";
+            return pretty ? "Erista CPU 언더볼트" : "erista_cpu_uv";
         case KipConfigValue_eristaCpuVmin:
-            return pretty ? "Erista CPU vMin" : "erista_cpu_vmin";
+            return pretty ? "Erista CPU 최소 전압" : "erista_cpu_vmin";
         case KipConfigValue_eristaCpuMaxVolt:
-            return pretty ? "Erista CPU Max Voltage" : "erista_cpu_max_volt";
+            return pretty ? "Erista CPU 최대 전압" : "erista_cpu_max_volt";
         case KipConfigValue_eristaCpuUnlock:
-            return pretty ? "Erista CPU Unlock" : "erista_cpu_unlock";
+            return pretty ? "Erista CPU 잠금 해제" : "erista_cpu_unlock";
 
         // CPU – Mariko
         case KipConfigValue_marikoCpuUVLow:
-            return pretty ? "Mariko CPU Undervolt (Low)" : "mariko_cpu_uv_low";
+            return pretty ? "Mariko CPU 언더볼트 (Low)" : "mariko_cpu_uv_low";
         case KipConfigValue_marikoCpuUVHigh:
-            return pretty ? "Mariko CPU Undervolt (High)" : "mariko_cpu_uv_high";
+            return pretty ? "Mariko CPU 언더볼트 (High)" : "mariko_cpu_uv_high";
         case KipConfigValue_tableConf:
-            return pretty ? "Table Config" : "kip_table_conf";
+            return pretty ? "테이블 설정" : "kip_table_conf";
         case KipConfigValue_marikoCpuLowVmin:
-            return pretty ? "Mariko CPU Low Vmin" : "mariko_cpu_low_vmin";
+            return pretty ? "Mariko CPU Low 최소 전압" : "mariko_cpu_low_vmin";
         case KipConfigValue_marikoCpuHighVmin:
-            return pretty ? "Mariko CPU High Vmin" : "mariko_cpu_high_vmin";
+            return pretty ? "Mariko CPU High 최소 전압" : "mariko_cpu_high_vmin";
         case KipConfigValue_marikoCpuMaxVolt:
-            return pretty ? "Mariko CPU Max Voltage" : "mariko_cpu_max_volt";
+            return pretty ? "Mariko CPU 최대 전압" : "mariko_cpu_max_volt";
 
         case KipConfigValue_eristaCpuBoostClock:
-            return pretty ? "Erista CPU Boost Clock" : "erista_cpu_boost_clock";
+            return pretty ? "Erista CPU 부스트 클럭" : "erista_cpu_boost_clock";
         case KipConfigValue_marikoCpuBoostClock:
-            return pretty ? "Mariko CPU Boost Clock" : "mariko_cpu_boost_clock";
+            return pretty ? "Mariko CPU 부스트 클럭" : "mariko_cpu_boost_clock";
 
         case KipConfigValue_marikoCpuMaxClock:
-            return pretty ? "Mariko CPU Max Clock" : "mariko_cpu_max_clock";
+            return pretty ? "Mariko CPU 최대 클럭" : "mariko_cpu_max_clock";
 
         // GPU – Erista
         case KipConfigValue_eristaGpuUV:
-            return pretty ? "Erista GPU Undervolt" : "erista_gpu_uv";
+            return pretty ? "Erista GPU 언더볼트" : "erista_gpu_uv";
         case KipConfigValue_eristaGpuVmin:
-            return pretty ? "Erista GPU Vmin" : "erista_gpu_vmin";
+            return pretty ? "Erista GPU 최소 전압" : "erista_gpu_vmin";
 
         // GPU – Mariko
         case KipConfigValue_marikoGpuUV:
-            return pretty ? "Mariko GPU Undervolt" : "mariko_gpu_uv";
+            return pretty ? "Mariko GPU 언더볼트" : "mariko_gpu_uv";
         case KipConfigValue_marikoGpuVmin:
-            return pretty ? "Mariko GPU Vmin" : "mariko_gpu_vmin";
+            return pretty ? "Mariko GPU 최소 전압" : "mariko_gpu_vmin";
         case KipConfigValue_marikoGpuVmax:
-            return pretty ? "Mariko GPU Vmax" : "mariko_gpu_vmax";
+            return pretty ? "Mariko GPU 최대 전압" : "mariko_gpu_vmax";
 
         case KipConfigValue_commonGpuVoltOffset:
-            return pretty ? "Common GPU Voltage Offset" : "common_gpu_volt_offset";
+            return pretty ? "일반 GPU 전압 오프셋" : "common_gpu_volt_offset";
         case KipConfigValue_gpuSpeedo:
             return pretty ? "GPU Speedo" : "gpu_speedo";
 

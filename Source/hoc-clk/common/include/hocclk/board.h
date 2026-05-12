@@ -251,11 +251,11 @@ static inline const char* hocclkFormatModule(HocClkModule module, bool pretty)
         case HocClkModule_GPU:
             return pretty ? "GPU" : "gpu";
         case HocClkModule_MEM:
-            return pretty ? "Memory" : "mem";
+            return pretty ? "RAM" : "mem";
         case HocClkModule_Display:
-            return pretty ? "Display" : "display";
+            return pretty ? "주사율" : "display";
         case HocClkModule_Governor:
-            return pretty ? "Governor" : "governor";
+            return pretty ? "클럭 제어" : "governor";
         default:
             return "null";
     }
@@ -265,11 +265,11 @@ static inline const char* hocclkFormatThermalSensor(HocClkThermalSensor thermSen
 {
     switch(thermSensor) {
         case HocClkThermalSensor_SOC:
-            return pretty ? "SOC" : "soc";
+            return pretty ? "SoC" : "soc";
         case HocClkThermalSensor_PCB:
             return pretty ? "PCB" : "pcb";
         case HocClkThermalSensor_Skin:
-            return pretty ? "Skin" : "skin";
+            return pretty ? "기기" : "skin";
         case HocClkThermalSensor_Battery:
             return pretty ? "BAT" : "battery";
         case HocClkThermalSensor_PMIC:
@@ -279,7 +279,7 @@ static inline const char* hocclkFormatThermalSensor(HocClkThermalSensor thermSen
         case HocClkThermalSensor_GPU:
             return pretty ? "GPU" : "gpu";
         case HocClkThermalSensor_MEM:
-            return pretty ? "MEM" : "mem";
+            return pretty ? "RAM" : "mem";
         case HocClkThermalSensor_PLLX:
             return pretty ? "PLLX" : "pllx";
         case HocClkThermalSensor_AO:
@@ -296,9 +296,9 @@ static inline const char* hocclkFormatPowerSensor(HocClkPowerSensor powSensor, b
     switch(powSensor)
     {
         case HocClkPowerSensor_Now:
-            return pretty ? "Now" : "now";
+            return pretty ? "현재" : "now";
         case HocClkPowerSensor_Avg:
-            return pretty ? "Avg" : "avg";
+            return pretty ? "평균" : "avg";
         default:
             return "unknown";
     }
@@ -309,15 +309,15 @@ static inline const char* hocclkFormatProfile(HocClkProfile profile, bool pretty
     switch(profile)
     {
         case HocClkProfile_Docked:
-            return pretty ? "Docked" : "docked";
+            return pretty ? "독 모드" : "docked";
         case HocClkProfile_Handheld:
-            return pretty ? "Handheld" : "handheld";
+            return pretty ? "휴대 모드" : "handheld";
         case HocClkProfile_HandheldCharging:
-            return pretty ? "Charging" : "handheld_charging";
+            return pretty ? "충전 중" : "handheld_charging";
         case HocClkProfile_HandheldChargingUSB:
-            return pretty ? "USB Charger" : "handheld_charging_usb";
+            return pretty ? "USB 충전기" : "handheld_charging_usb";
         case HocClkProfile_HandheldChargingOfficial:
-            return pretty ? "PD Charger" : "handheld_charging_official";
+            return pretty ? "정격 충전기" : "handheld_charging_official";
         default:
             return "unknown";
     }
@@ -337,9 +337,9 @@ static inline const char* hocClkFormatVoltage(HocClkVoltage voltage, bool pretty
         case HocClkVoltage_EMCVDDQ:
             return pretty ? "VDDQ" : "vddq";
         case HocClkVoltage_SOC:
-            return pretty ? "SOC" : "soc";
+            return pretty ? "SoC" : "soc";
         case HocClkVoltage_Display:
-            return pretty ? "Display" : "display";
+            return pretty ? "주사율" : "display";
         default:
             return "unknown";
     }

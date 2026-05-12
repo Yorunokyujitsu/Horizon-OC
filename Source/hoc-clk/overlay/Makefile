@@ -17,7 +17,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 # INCLUDES is a list of directories containing header files
 # EXEFS_SRC is the optional input directory containing data copied into exefs, if anything this normally should only contain "main.npdm".
 #---------------------------------------------------------------------------------
-TARGET		:=	horizon-oc-overlay
+TARGET		:=	sys-clk-overlay
 BUILD		:=	build
 OUTDIR		:=	out
 RESOURCES	:=	res
@@ -27,7 +27,7 @@ INCLUDES	:=	../common/include
 EXEFS_SRC	:=	exefs_src
 IS_MINIMAL	:=	0
 
-APP_TITLE	:=	Horizon OC Gaea
+APP_TITLE	:=	sys-clk
 NO_ICON		:=	1
 
 
@@ -56,7 +56,7 @@ CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
 # Enable appearance overriding
 export MSYS2_ARG_CONV_EXCL := -DUI_OVERRIDE_PATH
-UI_OVERRIDE_PATH := /config/horizon-oc/
+UI_OVERRIDE_PATH := /config/sys-clk/
 CFLAGS += -DUI_OVERRIDE_PATH="\"$(UI_OVERRIDE_PATH)\""
 
 # Disable fstream

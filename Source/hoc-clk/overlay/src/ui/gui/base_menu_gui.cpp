@@ -59,7 +59,7 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
 
     // All constants pre-calculated and cached
     const char* labels[] = {
-        "App ID", "Profile", "CPU", "GPU", "MEM", "SoC", "Board", "Skin", "Now", "Avg", "BAT", "PMIC", "Fan", IsAula() ? "OLED" : "LCD", "FPS", "RES"
+        "App ID", "프로필", "CPU", "GPU", "RAM", "SoC", "보드", "기기", "현재", "평균", "BAT", "PMIC", "Fan", IsAula() ? "OLED" : "LCD", "FPS", "RES"
     };
 
     static constexpr u32 dataPositions[6] = {63-3+3, 200-1, 344-1-3, 200-1, 342-1, 321-1};
@@ -75,7 +75,7 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer* renderer) {
     }
     static u32 positions[10] = {24-1, 310-labelWidths[1], 24-1, 192-labelWidths[3], 332-labelWidths[4], 24-1, 192 - labelWidths[6], 332-labelWidths[7], 192 - labelWidths[8], 332-labelWidths[9]};
 
-    static u32 maxProfileValueWidth = renderer->getTextDimensions("USB Charger", false, SMALL_TEXT_SIZE).first; // longest word
+    static u32 maxProfileValueWidth = renderer->getTextDimensions("USB 충전기", false, SMALL_TEXT_SIZE).first; // longest word
 
     u32 y = 91;
 

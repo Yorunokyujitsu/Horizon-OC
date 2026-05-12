@@ -298,17 +298,17 @@ public:
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new tsl::elm::CategoryHeader("Governor"));
+        this->listElement->addItem(new tsl::elm::CategoryHeader("클럭 제어"));
 
         static constexpr struct { const char* label; int shift; } kAll[] = {
-            {"CPU", 0}, {"GPU", 8}, {"VRR", 16}
+            {"CPU", 0}, {"GPU", 8}, {"가변 주사율", 16}
         };
         int count = configList.values[HocClkConfigValue_OverwriteRefreshRate] || this->context->isUsingRetroSuper ? 3 : 2;
 
         for (int i = 0; i < count; i++) {
             u8 cur = (this->profileList->mhzMap[this->profile][HocClkModule_Governor] >> kAll[i].shift) & 0xFF;
             auto* bar = new tsl::elm::NamedStepTrackBar(
-                "", {"Do Not Override", "Disabled", "Enabled"},
+                "", {"설정 안 함", "비활성화", "활성화"},
                 true, kAll[i].label
             );
             bar->setProgress(cur);
@@ -325,7 +325,7 @@ public:
 };
 
 void AppProfileGui::addGovernorSection(HocClkProfile profile) {
-    auto* item = new tsl::elm::ListItem("Governor");
+    auto* item = new tsl::elm::ListItem("클럭 제어");
     item->setValue("\u2192"); // Right arrow
     item->setClickListener([this, profile](u64 keys) {
         if (keys & HidNpadButton_A) {
@@ -351,7 +351,7 @@ void AppProfileGui::addProfileUI(HocClkProfile profile)
     }
     if((profile == HocClkProfile_Docked && IsHoag()) || profile == HocClkProfile_HandheldCharging)
         return;
-    this->listElement->addItem(new tsl::elm::CategoryHeader(hocclkFormatProfile(profile, true) + std::string(" ") + ult::DIVIDER_SYMBOL + " \ue0e3 Reset"));
+    this->listElement->addItem(new tsl::elm::CategoryHeader(hocclkFormatProfile(profile, true) + std::string(" ") + ult::DIVIDER_SYMBOL + " \ue0e3 초기화"));
     this->addModuleListItem(profile, HocClkModule_CPU);
     this->addModuleListItem(profile, HocClkModule_GPU);
     this->addModuleListItem(profile, HocClkModule_MEM);
@@ -361,7 +361,7 @@ void AppProfileGui::addProfileUI(HocClkProfile profile)
 
         if(configList.values[HocClkConfigValue_OverwriteRefreshRate]) {
             if(profile != HocClkProfile_Docked) {
-                this->addModuleListItemValue(profile, HocClkModule_Display, "Display", IsAula() ? 45 : 40, configList.values[HocClkConfigValue_MaxDisplayClockH], this->context->isUsingRetroSuper ? 5 : 1, " Hz", 1, 0, lcdThresholds);
+                this->addModuleListItemValue(profile, HocClkModule_Display, "주사율", IsAula() ? 45 : 40, configList.values[HocClkConfigValue_MaxDisplayClockH], this->context->isUsingRetroSuper ? 5 : 1, " Hz", 1, 0, lcdThresholds);
             } else {
                 if(IsAula() && this->context->isSysDockInstalled) {
                     std::vector<NamedValue> dockedFreqs = {
@@ -395,7 +395,7 @@ void AppProfileGui::addProfileUI(HocClkProfile profile)
                         NamedValue("240 Hz", 240)
                     };
                     
-                    this->addModuleListItemValue(profile, HocClkModule_Display, "Display", 40, 240, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqs);
+                    this->addModuleListItemValue(profile, HocClkModule_Display, "주사율", 40, 240, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqs);
                 } else if (IsAula() && !this->context->isSysDockInstalled) {
                     std::vector<NamedValue> dockedFreqsLimited = {
                         NamedValue("50 Hz", 50),
@@ -407,7 +407,7 @@ void AppProfileGui::addProfileUI(HocClkProfile profile)
                         NamedValue("75 Hz", 75)
                     };
                     
-                    this->addModuleListItemValue(profile, HocClkModule_Display, "Display", 50, 75, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqsLimited);
+                    this->addModuleListItemValue(profile, HocClkModule_Display, "주사율", 50, 75, 1, " Hz", 1, 0, DThresholdsOLED, dockedFreqsLimited);
                 } else {
                     std::vector<NamedValue> dockedFreqsStandard = {
                         NamedValue("50 Hz", 50),
@@ -427,7 +427,7 @@ void AppProfileGui::addProfileUI(HocClkProfile profile)
                         NamedValue("115 Hz", 115),
                         NamedValue("120 Hz", 120)
                     };
-                    this->addModuleListItemValue(profile, HocClkModule_Display, "Display", 50, 120, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqsStandard);
+                    this->addModuleListItemValue(profile, HocClkModule_Display, "주사율", 50, 120, 1, " Hz", 1, 0, ValueThresholds(), dockedFreqsStandard);
                 }
             }
         }
@@ -465,10 +465,10 @@ void AppProfileGui::update()
     if((this->context && this->applicationId != this->context->applicationId) &&  this->applicationId != HOCCLK_GLOBAL_PROFILE_TID)
     {
         tsl::changeTo<FatalGui>(
-            "Application changed\n\n"
+            "실행 앱 변경 안내\n\n"
             "\n"
-            "The running application changed\n\n"
-            "while editing was going on.",
+            "편집이 진행되는 동안\n\n"
+            "실행 중인 앱이 변경되었습니다.",
             ""
         );
     }

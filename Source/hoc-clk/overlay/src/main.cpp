@@ -54,10 +54,10 @@ class AppOverlay : public tsl::Overlay
             if(!hocclkIpcRunning())
             {
                 return initially<FatalGui>(
-                    "hoc-clk is not running.\n\n"
+                    "hoc-clk 모듈 실행 불가\n\n"
                     "\n"
-                    "Please make sure it is correctly\n\n"
-                    "installed and enabled.",
+                    "모듈, 오버레이가 올바르게\n\n"
+                    "설치, 활성화 되었습니까?",
                     ""
                 );
             }
@@ -65,10 +65,10 @@ class AppOverlay : public tsl::Overlay
             if(R_FAILED(hocclkIpcInitialize()) || R_FAILED(hocclkIpcGetAPIVersion(&apiVersion)))
             {
                 return initially<FatalGui>(
-                    "Could not connect to hoc-clk.\n\n"
+                    "hoc-clk 모듈 연결 불가\n\n"
                     "\n"
-                    "Please make sure it is correctly\n\n"
-                    "installed and enabled.",
+                    "모듈, 오버레이가 올바르게\n\n"
+                    "설치, 활성화 되었습니까?",
                     ""
                 );
             }
@@ -76,11 +76,11 @@ class AppOverlay : public tsl::Overlay
             if(HOCCLK_IPC_API_VERSION != apiVersion)
             {
                 return initially<FatalGui>(
-                    "Overlay not compatible with\n\n"
-                    "the running hoc-clk version.\n\n"
+                    "hoc-clk 모듈과 오버레이\n\n"
+                    "버전이 일치하지 않습니다.\n\n"
                     "\n"
-                    "Please make sure everything is\n\n"
-                    "installed and up to date.",
+                    "모듈과 호환되는 버전의\n\n"
+                    "오버레이로 업데이트하세요.",
                     ""
                 );
             }

@@ -36,10 +36,10 @@ namespace kip {
         // }
         CustomizeTable table;
         FILE* fp;
-        fp = fopen("sdmc:/atmosphere/kips/hoc.kip", "r");
+        fp = fopen("sdmc:/atmosphere/kips/loader.kip", "r");
 
         if (fp == NULL) {
-            notification::writeNotification("Horizon OC\nKip opening failed");
+            notification::writeNotification("Horizon OC\nKIP 실행 실패!");
             kipAvailable = false;
             return;
         } else {
@@ -47,21 +47,21 @@ namespace kip {
             fclose(fp);
         }
 
-        if (!cust_read_and_cache("sdmc:/atmosphere/kips/hoc.kip", &table)) {
+        if (!cust_read_and_cache("sdmc:/atmosphere/kips/loader.kip", &table)) {
             fileUtils::LogLine("[kip] Failed to read KIP file");
-            notification::writeNotification("Horizon OC\nKip read failed");
+            notification::writeNotification("Horizon OC\nKIP 읽기 실패!");
             return;
         }
 
         u32 custRev    = cust_get_cust_rev(&table);
         u32 kipVersion = cust_get_kip_version(&table);
         if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
-            notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
+            notification::writeNotification("Horizon OC\n지원하지 않는 KIP 발견됨\n업데이트 필요!");
             fileUtils::LogLine("Cust revision: %u", custRev);
             fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
         } else if (custRev > CUST_REV || kipVersion > KIP_VERSION) {
-            notification::writeNotification("Horizon OC\nOutdated sysmodule detected!\nPlease update Horizon OC");
+            notification::writeNotification("Horizon OC\n지원하지 않는 시스모듈 발견됨\n업데이트 필요!");
             fileUtils::LogLine("Cust revision: %u", custRev);
             fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
@@ -143,15 +143,15 @@ namespace kip {
         CUST_WRITE_FIELD_BATCH(&table, t6_tRTW_fine_tune, config::GetConfigValue(KipConfigValue_t6_tRTW_fine_tune));
         CUST_WRITE_FIELD_BATCH(&table, t7_tWTR_fine_tune, config::GetConfigValue(KipConfigValue_t7_tWTR_fine_tune));
 
-        if (!cust_write_table("sdmc:/atmosphere/kips/hoc.kip", &table)) {
+        if (!cust_write_table("sdmc:/atmosphere/kips/loader.kip", &table)) {
             fileUtils::LogLine("[kip] Failed to write KIP file");
-            notification::writeNotification("Horizon OC\nKip write failed");
+            notification::writeNotification("Horizon OC\nKIP 쓰기 실패!");
         }
 
         HocClkConfigValueList configValues;
         config::GetConfigValues(&configValues);
 
-        configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip"); // write checksum
+        configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/loader.kip"); // write checksum
 
         if (config::SetConfigValues(&configValues, false)) {
             fileUtils::LogLine("[kip] KIP data set. CRC32: %ld (Cust Rev %ld)", configValues.values[KipCrc32], configValues.values[KipConfigValue_custRev]);
@@ -160,7 +160,7 @@ namespace kip {
             }
         } else {
             fileUtils::LogLine("[kip] Warning: Failed to set config values from KIP");
-            notification::writeNotification("Horizon OC\nKip config set failed");
+            notification::writeNotification("Horizon OC\nKIP 설정 적용 실패!");
         }
     }
 
@@ -169,10 +169,10 @@ namespace kip {
     void GetKipData()
     {
         FILE* fp;
-        fp = fopen("sdmc:/atmosphere/kips/hoc.kip", "r");
+        fp = fopen("sdmc:/atmosphere/kips/loader.kip", "r");
 
         if (fp == NULL) {
-            notification::writeNotification("Horizon OC\nKip opening failed");
+            notification::writeNotification("Horizon OC\nKIP 실행 실패!");
             kipAvailable = false;
             return;
         } else {
@@ -184,9 +184,9 @@ namespace kip {
         config::GetConfigValues(&configValues);
 
         CustomizeTable table;
-        if (!cust_read_and_cache("sdmc:/atmosphere/kips/hoc.kip", &table)) {
+        if (!cust_read_and_cache("sdmc:/atmosphere/kips/loader.kip", &table)) {
             fileUtils::LogLine("[kip] Failed to read KIP file for GetKipData");
-            notification::writeNotification("Horizon OC\nKip read failed");
+            notification::writeNotification("Horizon OC\nKIP 읽기 실패!");
             return;
         }
 
@@ -195,29 +195,29 @@ namespace kip {
         //     return;
         // }
 
-        if ((u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip") != config::GetConfigValue(KipCrc32) && !config::GetConfigValue(HocClkConfigValue_IsFirstLoad)) {
+        if ((u64)crc32::checksum_file("sdmc:/atmosphere/kips/loader.kip") != config::GetConfigValue(KipCrc32) && !config::GetConfigValue(HocClkConfigValue_IsFirstLoad)) {
             SetKipData();
-            notification::writeNotification("Horizon OC\nKIP has been updated\nPlease reboot your console");
+            notification::writeNotification("Horizon OC\nKIP 업데이트됨, 재부팅하세요!");
             return;
         }
         if (config::GetConfigValue(HocClkConfigValue_IsFirstLoad) == true) {
             configValues.values[HocClkConfigValue_IsFirstLoad] = (u64)false;
-            notification::writeNotification("Horizon OC has been installed");
+            notification::writeNotification("Horizon OC 설치됨!");
         }
 
-        configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/hoc.kip"); // write checksum
+        configValues.values[KipCrc32] = (u64)crc32::checksum_file("sdmc:/atmosphere/kips/loader.kip"); // write checksum
         // configValues.values[KipConfigValue_mtcConf] = cust_get_mtc_conf(&table);
         clockManager::gContext.custRev    = cust_get_cust_rev(&table);
 
         u32 custRev    = cust_get_cust_rev(&table);
         u32 kipVersion = cust_get_kip_version(&table);
         if (custRev < CUST_REV || kipVersion < KIP_VERSION) {
-            notification::writeNotification("Horizon OC\nOutdated kip detected!\nPlease update Horizon OC");
+            notification::writeNotification("Horizon OC\n지원하지 않는 KIP 발견됨\n업데이트 필요!");
             fileUtils::LogLine("Cust revision: %u", custRev);
             fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
         } else if (custRev > CUST_REV || kipVersion > KIP_VERSION) {
-            notification::writeNotification("Horizon OC\nOutdated sysmodule detected!\nPlease update Horizon OC");
+            notification::writeNotification("Horizon OC\n지원하지 않는 시스모듈 발견됨\n업데이트 필요!");
             fileUtils::LogLine("Cust revision: %u", custRev);
             fileUtils::LogLine("Kip version: %u", kipVersion);
             return;
@@ -306,11 +306,11 @@ namespace kip {
                 }
             } else {
                 fileUtils::LogLine("[kip] Warning: Failed to set config values from KIP");
-                notification::writeNotification("Horizon OC\nKip config set failed");
+                notification::writeNotification("Horizon OC\nKIP 설정 적용 실패!");
             }
         } else {
             fileUtils::LogLine("[kip] Error: Config value list buffer size mismatch");
-            notification::writeNotification("Horizon OC\nConfig Buffer Mismatch");
+            notification::writeNotification("Horizon OC\n설정 버퍼 불일치!");
         }
     }
 }

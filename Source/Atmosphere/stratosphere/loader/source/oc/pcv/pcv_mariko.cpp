@@ -743,7 +743,6 @@ namespace ams::ldr::hoc::pcv::mariko {
     Result MemFreqMtcTable(u32 *ptr) {
         static const DramId dramId = [] {
             DramId id = GetDramId();
-            id = static_cast<DramId>(17);
             return id;
         }();
 

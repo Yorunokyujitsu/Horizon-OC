@@ -807,10 +807,10 @@ namespace ams::ldr::hoc::pcv::mariko {
             max2 = C.marikoSocVmax;
         }
 
-        constexpr s32 minVolt = 637;
+        constexpr s32 MinVolt = 637;
 
         auto ClampVolt = [&](s32 value, s32 max) {
-            return std::clamp(value + voltAdd, minVolt, max);
+            return std::clamp(value + voltAdd, MinVolt, max);
         };
 
         auto DvbVolt = [&](s32 zero, s32 one, s32 two) {

@@ -116,24 +116,28 @@ namespace ams::ldr::hoc::pcv {
     static_assert(sizeof(regulator) == 0x120);
 
     struct __attribute__((packed)) CvbMeta {
-        u32 unkScale;
-        u32 unkZero[7];
+        u64 socType;
+        u32 tune0_low;
+        u32 tune0_high;
+        u32 tune1_low;
+        u32 tune1_high;
+        u32 unkZero[2];
+        u64 unkScale;
+        u32 unkZero2[6];
         u32 unkMagic;
-        u32 unkZero2;
+        u32 unkZero3;
         u32 highVmin;
         u32 unkStepMaybe;
         u32 vmin;
-        u32 unkZero3[3];
+        u32 unkZero4[3];
         u32 pllMinMilliVoltsMaybe;
         u32 vmax;
         u32 unkScale2;
         u32 speedoScale;
         u32 voltageScale;
-        u32 unkZero4;
-        u32 freqMin;
-        u32 unk[13];
+        u32 unkZero5;
     };
-    static_assert(sizeof(CvbMeta) == 0x90);
+    static_assert(sizeof(CvbMeta) == 0x78);
 
     constexpr u32 CpuClkOSLimit = 1785'000;
     constexpr u32 GpuClkOsLimit = 921'600;

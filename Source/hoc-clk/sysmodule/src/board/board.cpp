@@ -37,7 +37,6 @@
 #include <registers.h>
 #include <battery.h>
 #include "../display/display_refresh_rate.hpp"
-#include <rgltr.h>
 #include <notification.h>
 
 #include "board.hpp"
@@ -135,9 +134,6 @@ namespace board {
         rc = tmp451Initialize();
         ASSERT_RESULT_OK(rc, "tmp451Initialize");
 
-        rc = rgltrInitialize();
-        ASSERT_RESULT_OK(rc, "rgltrInitialize");
-
         rc = pmdmntInitialize();
         ASSERT_RESULT_OK(rc, "pmdmntInitialize");
 
@@ -220,7 +216,6 @@ namespace board {
 
         pwmChannelSessionClose(&iCon);
         pwmExit();
-        rgltrExit();
         batteryInfoExit();
         pmdmntExit();
         nvExit();

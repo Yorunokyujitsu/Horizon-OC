@@ -20,7 +20,7 @@
 
 #pragma once
 
-#define CUST_REV 2
+#define CUST_REV 3
 #define KIP_VERSION 230
 
 #include "oc_common.hpp"

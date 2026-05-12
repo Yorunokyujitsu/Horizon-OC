@@ -743,6 +743,7 @@ namespace ams::ldr::hoc::pcv::mariko {
     Result MemFreqMtcTable(u32 *ptr) {
         static const DramId dramId = [] {
             DramId id = GetDramId();
+            id = static_cast<DramId>(17);
             return id;
         }();
 
@@ -831,7 +832,7 @@ namespace ams::ldr::hoc::pcv::mariko {
             static_cast<u32>((v)[0]), \
             static_cast<u32>((v)[1]), \
             static_cast<u32>((v)[2])
-        DvbEntry emcDvbTableNew[] = {
+        DvbEntry emcDvbOcTableBrackets[] = {
             {     204000, {              637,  637,  637,  }, },
             {    1331200, {              650,  637,  637,  }, },
             {    1600000, {              675,  650,  637,  }, },
@@ -841,22 +842,23 @@ namespace ams::ldr::hoc::pcv::mariko {
             {    2666000, { DVB(DvbVolt( 850,  825,  800)) }, },
             {    2933000, { DVB(DvbVolt( 950,  925,  900)) }, },
             {    3200000, { DVB(DvbVolt(1050, 1025, 1000)) }, },
-            { 0xFFFFFFFF, {                                }, },
+            {        ~0u, {                                }, },
         };
         #undef DVB
+        DvbEntry emcDvbTableOc[newEmcList.size()];
 
-        u32 j = MtcTableCountDefault;
-        for (u32 i = MtcTableCountDefault; i < newEmcList.size(); ++i) {
-            if (newEmcList[i] >= emcDvbTableNew[j].freq && newEmcList[i] < emcDvbTableNew[j + 1].freq) {
-                emcDvbTableNew[j].freq = newEmcList[i];
-                ++j;
-            } else {
-                break;
+        u32 bracketIndex = 0;
+        for (u32 i = 0; i < newEmcList.size(); ++i) {
+            while (newEmcList[i] >= emcDvbOcTableBrackets[bracketIndex + 1].freq) {
+                ++bracketIndex;
             }
+
+            emcDvbTableOc[i].freq = newEmcList[i];
+            std::memcpy(emcDvbTableOc[i].volt, emcDvbOcTableBrackets[bracketIndex].volt, sizeof(emcDvbTableOc[i].volt));
         }
 
         std::memset(mem_dvb_table_head, 0, sizeof(EmcDvbTableDefault));
-        std::memcpy(mem_dvb_table_head, &emcDvbTableNew, sizeof(emcDvbTableNew));
+        std::memcpy(mem_dvb_table_head, &emcDvbTableOc, sizeof(emcDvbTableOc));
 
         /* Max dvfs entry is 32, but HOS doesn't seem to boot if exact freq doesn't exist in dvb table,
            reason why it's like this

@@ -38,14 +38,14 @@ namespace ams::ldr::hoc::pcv {
     };
     static_assert(sizeof(cvb_entry_t) == 0x38);
 
-    struct cvb_cpu_dfll_data {
+    struct CvbCpuDfllData {
         u32 tune0_low;
         u32 tune0_high;
         u32 tune1_low;
         u32 tune1_high;
-        unsigned int tune_high_min_millivolts;
-        unsigned int tune_high_margin_millivolts;
-        unsigned long dvco_calibration_max;
+        u32 tune_high_min_millivolts;
+        u32 tune_high_margin_millivolts;
+        u64 dvco_calibration_max;
     };
 
     struct __attribute__((packed)) div_nmp {
@@ -117,12 +117,7 @@ namespace ams::ldr::hoc::pcv {
 
     struct __attribute__((packed)) CvbMeta {
         u64 socType;
-        u32 tune0_low;
-        u32 tune0_high;
-        u32 tune1_low;
-        u32 tune1_high;
-        u32 unkZero[2];
-        u64 unkScale;
+        CvbCpuDfllData dfllData; /* Maybe? */
         u32 unkZero2[6];
         u32 unkMagic;
         u32 unkZero3;

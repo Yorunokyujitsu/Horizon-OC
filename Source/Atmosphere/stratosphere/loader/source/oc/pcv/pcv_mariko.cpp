@@ -134,7 +134,7 @@ namespace ams::ldr::hoc::pcv::mariko {
     }
 
     Result CpuVoltDfll(u32 *ptr) {
-        cvb_cpu_dfll_data *entry = reinterpret_cast<cvb_cpu_dfll_data *>(ptr);
+        CvbCpuDfllData *entry = reinterpret_cast<CvbCpuDfllData *>(ptr);
 
         R_UNLESS(entry->tune0_low == 0xFFCF, ldr::ResultInvalidCpuVoltDfllEntry());
         R_UNLESS(entry->tune0_high == 0x0, ldr::ResultInvalidCpuVoltDfllEntry());

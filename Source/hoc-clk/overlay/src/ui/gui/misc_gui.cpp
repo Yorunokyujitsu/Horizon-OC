@@ -18,6 +18,7 @@
 
 #include "misc_gui.h"
 #include "fatal_gui.h"
+#include "config_info_strings.h"
 #include "../format.h"
 #include <cstdio>
 #include <cstring>
@@ -88,7 +89,24 @@ MiscGui::~MiscGui()
 
 void MiscGui::addConfigToggle(HocClkConfigValue configVal, const char* altName, bool kip) {
     const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
-    tsl::elm::ToggleListItem* toggle = new tsl::elm::ToggleListItem(configName, this->configList->values[configVal]);
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
+
+    struct YAwareToggle : tsl::elm::ToggleListItem {
+        std::vector<std::string> m_info;
+        std::string m_title;
+        YAwareToggle(const char* text, bool state, std::string title, std::vector<std::string> info)
+            : tsl::elm::ToggleListItem(text, state), m_info(std::move(info)), m_title(std::move(title)) {}
+        bool onClick(u64 keys) override {
+            if (!m_info.empty() && (keys & HidNpadButton_Y) && !(keys & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(m_title, m_info);
+                return true;
+            }
+            return tsl::elm::ToggleListItem::onClick(keys);
+        }
+    };
+
+    auto* toggle = new YAwareToggle(configName, this->configList->values[configVal],
+                                    configName, std::move(infoStrings));
     if (!kip)
         toggle->setTextColor(tsl::Color(120, 235, 255, 255));
     toggle->setStateChangedListener([this, configVal, kip](bool state) {
@@ -106,9 +124,13 @@ void MiscGui::addConfigToggle(HocClkConfigValue configVal, const char* altName, 
 }
 
 void MiscGui::addConfigTrackbar(HocClkConfigValue configVal, const char* altName, const ValueRange& range, bool kip) {
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
     struct IndexedBar : tsl::elm::NamedStepTrackBar {
-        IndexedBar(const char* label, const ValueRange& r)
-            : tsl::elm::NamedStepTrackBar("", {""}, true, label) {
+        std::vector<std::string> m_info;
+        std::string m_title;
+        IndexedBar(const char* label, const ValueRange& r, std::string title, std::vector<std::string> info)
+            : tsl::elm::NamedStepTrackBar("", {""}, true, label),
+              m_info(std::move(info)), m_title(std::move(title)) {
             m_stepDescriptions.clear();
             u32 numSteps = (r.max - r.min) / r.step + 1;
             for (u32 i = 0; i < numSteps; i++) {
@@ -120,9 +142,17 @@ void MiscGui::addConfigTrackbar(HocClkConfigValue configVal, const char* altName
             m_numSteps = (u8)m_stepDescriptions.size();
             m_selection = m_stepDescriptions[0];
         }
+        bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos,
+                         HidAnalogStickState leftJoyStick, HidAnalogStickState rightJoyStick) override {
+            if (!m_info.empty() && (keysDown & HidNpadButton_Y) && !(keysDown & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(m_title, m_info);
+                return true;
+            }
+            return tsl::elm::NamedStepTrackBar::handleInput(keysDown, keysHeld, touchPos, leftJoyStick, rightJoyStick);
+        }
     };
     const char* name = altName ? altName : hocclkFormatConfigValue(configVal, true);
-    auto* bar = new IndexedBar(name, range);
+    auto* bar = new IndexedBar(name, range, name, std::move(infoStrings));
     u32 cur = (u32)this->configList->values[configVal];
     u16 curStep = 0;
     if (cur >= range.min && cur <= range.max && range.step > 0 && (cur - range.min) % range.step == 0)
@@ -141,7 +171,25 @@ void MiscGui::addMappedConfigTrackbar(HocClkConfigValue configVal, const char* a
                                        std::vector<u32> vals,
                                        std::initializer_list<std::string> names, bool kip) {
     const char* name = altName ? altName : hocclkFormatConfigValue(configVal, true);
-    auto* bar = new tsl::elm::NamedStepTrackBar("", names, true, name);
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
+
+    struct YAwareTrackBar : tsl::elm::NamedStepTrackBar {
+        std::vector<std::string> m_info;
+        std::string m_title;
+        YAwareTrackBar(const char* label, std::initializer_list<std::string> steps, std::string title, std::vector<std::string> info)
+            : tsl::elm::NamedStepTrackBar("", steps, true, label),
+              m_info(std::move(info)), m_title(std::move(title)) {}
+        bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos,
+                         HidAnalogStickState leftJoyStick, HidAnalogStickState rightJoyStick) override {
+            if (!m_info.empty() && (keysDown & HidNpadButton_Y) && !(keysDown & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(m_title, m_info);
+                return true;
+            }
+            return tsl::elm::NamedStepTrackBar::handleInput(keysDown, keysHeld, touchPos, leftJoyStick, rightJoyStick);
+        }
+    };
+
+    auto* bar = new YAwareTrackBar(name, names, name, std::move(infoStrings));
     u32 cur = (u32)this->configList->values[configVal];
     u16 curIdx = 0;
     for (u16 i = 0; i < (u16)vals.size(); i++) {
@@ -170,6 +218,7 @@ void MiscGui::addConfigButton(HocClkConfigValue configVal,
     bool kip)
 {
     const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
 
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem(configName);
     if (!kip)
@@ -203,8 +252,14 @@ void MiscGui::addConfigButton(HocClkConfigValue configVal,
     ValueThresholds thresholdsCopy = (thresholds ? *thresholds : ValueThresholds{});
 
     listItem->setClickListener(
-        [this, configVal, range, categoryName, thresholdsCopy, labels, showDefaultValue, kip](u64 keys)
+        [this, configVal, range, categoryName, thresholdsCopy, labels, showDefaultValue, kip,
+         infoStrings = std::move(infoStrings), configName = std::string(configName)](u64 keys)
         {
+            if (!infoStrings.empty() && (keys & HidNpadButton_Y) && !(keys & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(configName, infoStrings);
+                return true;
+            }
+
             if ((keys & HidNpadButton_A) == 0)
                 return false;
 
@@ -287,6 +342,8 @@ void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
     const char* subText,
     bool kip)
 {
+    const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem("");
     if (!kip)
         listItem->setTextColor(tsl::Color(120, 235, 255, 255));
@@ -321,8 +378,14 @@ void MiscGui::addConfigButtonS(HocClkConfigValue configVal,
     ValueThresholds thresholdsCopy = (thresholds ? *thresholds : ValueThresholds{});
 
     listItem->setClickListener(
-        [this, configVal, range, categoryName, thresholdsCopy, labels, showDefaultValue, kip](u64 keys)
+        [this, configVal, range, categoryName, thresholdsCopy, labels, showDefaultValue, kip,
+         infoStrings = std::move(infoStrings), configName = std::string(configName)](u64 keys)
         {
+            if (!infoStrings.empty() && (keys & HidNpadButton_Y) && !(keys & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(configName, infoStrings);
+                return true;
+            }
+
             if ((keys & HidNpadButton_A) == 0)
                 return false;
 
@@ -410,6 +473,7 @@ void MiscGui::addFreqButton(HocClkConfigValue configVal,
                             const std::map<uint32_t, std::string>& labels)
 {
     const char* configName = altName ? altName : hocclkFormatConfigValue(configVal, true);
+    auto infoStrings = ConfigInfoStrings(configVal, IsMariko(), IsHoag());
 
     tsl::elm::ListItem* listItem = new tsl::elm::ListItem(configName);
 
@@ -419,8 +483,14 @@ void MiscGui::addFreqButton(HocClkConfigValue configVal,
     listItem->setValue(valueText);
 
     listItem->setClickListener(
-        [this, configVal, module, labels](u64 keys)
+        [this, configVal, module, labels,
+         infoStrings = std::move(infoStrings), configName = std::string(configName)](u64 keys)
         {
+            if (!infoStrings.empty() && (keys & HidNpadButton_Y) && !(keys & ~HidNpadButton_Y)) {
+                tsl::changeTo<InfoGui>(configName, infoStrings);
+                return true;
+            }
+
             if ((keys & HidNpadButton_A) == 0)
                 return false;
 
@@ -1350,7 +1420,12 @@ protected:
             tsl::elm::ListItem* item = new tsl::elm::ListItem(label);
             item->setValue(makeValueText(currentVal));
 
-            item->setClickListener([this, tierIdx, thisKey, keysArr](u64 keys) -> bool {
+            item->setClickListener([this, tierIdx, thisKey, keysArr, label](u64 keys) -> bool {
+                auto infoStrings = ConfigInfoStrings(thisKey, IsMariko(), IsHoag());
+                if (!infoStrings.empty() && (keys & HidNpadButton_Y) && !(keys & ~HidNpadButton_Y)) {
+                    tsl::changeTo<InfoGui>(std::string(label), infoStrings);
+                    return true;
+                }
                 if ((keys & HidNpadButton_A) == 0)
                     return false;
 

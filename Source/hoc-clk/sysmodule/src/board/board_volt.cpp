@@ -50,7 +50,8 @@ namespace board {
             u32 tune1_high;
         };
 
-        EristaCpuUvEntry eristaCpuUvTable[5] = {
+        EristaCpuUvEntry eristaCpuUvTable[6] = {
+            {0xFFEAD0FF, 0x0},
             {0xffff, 0x27007ff},
             {0xefff, 0x27407ff},
             {0xdfff, 0x27807ff},
@@ -141,8 +142,8 @@ namespace board {
             //     return;
             // } else {
             //     if (levelLow) {
-                     *tune0_ptr = eristaCpuUvTable[levelLow-1].tune0;
-                     *tune1_ptr = eristaCpuUvTable[levelLow-1].tune1;
+                     *tune0_ptr = eristaCpuUvTable[levelLow].tune0;
+                     *tune1_ptr = eristaCpuUvTable[levelLow].tune1;
             //     } else {
             // }
         }

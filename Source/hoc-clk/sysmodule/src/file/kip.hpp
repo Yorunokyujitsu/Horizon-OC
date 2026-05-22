@@ -38,7 +38,6 @@ namespace kip {
         u32 hpMode;
         u32 commonEmcMemVolt;
         u32 eristaEmcMaxClock;
-        u32 reserved1[2];
         u32 stepMode;
         u32 marikoEmcMaxClock;
         u32 marikoEmcVddqVolt;
@@ -64,8 +63,6 @@ namespace kip {
         /* These latencies are arrays in loader, but it's easier to handle it this way in the configurator. */
         u32 readLatency1333, readLatency1600, readLatency1866, readLatency2133;
         u32 writeLatency1333, writeLatency1600, writeLatency1866, writeLatency2133;
-
-        u32 reserved2[2];
 
         u32 eristaCpuUV;
         u32 eristaCpuVmin;

@@ -301,7 +301,7 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
         case KipConfigValue_commonEmcMemVolt:
             return pretty ? "Common EMC/MEM Voltage" : "common_emc_mem_volt";
         case KipConfigValue_eristaEmcMaxClock:
-            return pretty ? "Erista EMC Max Clock" : "erista_emc_max_clock";
+            return pretty ? "Erista EMC Max Clock" : "erista_emc_max_clock2";
         case KipConfigValue_stepMode:
             return pretty ? "Step Mode:" : "step_mode";
         case KipConfigValue_marikoEmcMaxClock:

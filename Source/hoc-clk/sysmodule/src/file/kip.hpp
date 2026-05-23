@@ -85,6 +85,7 @@ namespace kip {
 
         u32 marikoGpuUV;
         u32 marikoGpuVmin;
+        u32 marikoGpuBootVolt;
         u32 marikoGpuVmax;
 
         u32 commonGpuVoltOffset;
@@ -254,6 +255,7 @@ namespace kip {
     static inline bool cust_set_erista_gpu_vmin(const char* p, u32 v) { CUST_WRITE_FIELD(p, eristaGpuVmin, v); }
     static inline bool cust_set_mariko_gpu_uv(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoGpuUV, v); }
     static inline bool cust_set_mariko_gpu_vmin(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoGpuVmin, v); }
+    static inline bool cust_set_mariko_gpu_boot_volt(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoGpuBootVolt, v); }
     static inline bool cust_set_mariko_gpu_vmax(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoGpuVmax, v); }
     static inline bool cust_set_common_gpu_offset(const char* p, u32 v) { CUST_WRITE_FIELD(p, commonGpuVoltOffset, v); }
     static inline bool cust_set_marikoCpuMaxClock(const char* p, u32 v) { CUST_WRITE_FIELD(p, marikoCpuMaxClock, v); }
@@ -338,6 +340,7 @@ namespace kip {
     static inline u32 cust_get_erista_gpu_vmin(const CustomizeTable* t) { return CUST_GET_FIELD(t, eristaGpuVmin); }
     static inline u32 cust_get_mariko_gpu_uv(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoGpuUV); }
     static inline u32 cust_get_mariko_gpu_vmin(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoGpuVmin); }
+    static inline u32 cust_get_mariko_gpu_boot_volt(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoGpuBootVolt); }
     static inline u32 cust_get_mariko_gpu_vmax(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoGpuVmax); }
     static inline u32 cust_get_common_gpu_offset(const CustomizeTable* t) { return CUST_GET_FIELD(t, commonGpuVoltOffset); }
     static inline u32 cust_get_marikoCpuMaxClock(const CustomizeTable* t) { return CUST_GET_FIELD(t, marikoCpuMaxClock); }

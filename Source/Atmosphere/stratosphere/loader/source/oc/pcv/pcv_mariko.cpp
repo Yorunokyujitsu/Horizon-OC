@@ -50,15 +50,18 @@ namespace ams::ldr::hoc::pcv::mariko {
             R_THROW(ldr::ResultInvalidGpuDvfs());
         }
 
-        if (!C.marikoGpuVmin) {
-            R_SKIP();
-        }
 
-        PATCH_OFFSET(ptr,      C.marikoGpuVmin);
-        PATCH_OFFSET(ptr +  3, C.marikoGpuVmin);
-        PATCH_OFFSET(ptr +  6, C.marikoGpuVmin);
-        PATCH_OFFSET(ptr +  9, C.marikoGpuVmin);
-        PATCH_OFFSET(ptr + 12, C.marikoGpuVmin);
+        if(C.marikoGpuBootVolt) {
+            PATCH_OFFSET(ptr - 3,  C.marikoGpuBootVolt);
+        }
+        
+        if (C.marikoGpuVmin) {
+            PATCH_OFFSET(ptr,      C.marikoGpuVmin);
+            PATCH_OFFSET(ptr +  3, C.marikoGpuVmin);
+            PATCH_OFFSET(ptr +  6, C.marikoGpuVmin);
+            PATCH_OFFSET(ptr +  9, C.marikoGpuVmin);
+            PATCH_OFFSET(ptr + 12, C.marikoGpuVmin);
+        }
 
         R_SUCCEED();
     }

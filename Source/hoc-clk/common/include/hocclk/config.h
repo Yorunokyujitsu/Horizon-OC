@@ -134,6 +134,7 @@ typedef enum {
 
     KipConfigValue_marikoGpuUV,
     KipConfigValue_marikoGpuVmin,
+    KipConfigValue_marikoGpuBootVolt,
     KipConfigValue_marikoGpuVmax,
 
     KipConfigValue_commonGpuVoltOffset,
@@ -401,6 +402,8 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "Mariko GPU Undervolt" : "mariko_gpu_uv";
         case KipConfigValue_marikoGpuVmin:
             return pretty ? "Mariko GPU Vmin" : "mariko_gpu_vmin";
+        case KipConfigValue_marikoGpuBootVolt:
+            return pretty ? "Mariko GPU Boot Voltage" : "mariko_gpu_boot_volt";
         case KipConfigValue_marikoGpuVmax:
             return pretty ? "Mariko GPU Vmax" : "mariko_gpu_vmax";
 

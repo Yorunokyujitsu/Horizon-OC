@@ -525,7 +525,12 @@ std::vector<std::string> ConfigInfoStrings(HocClkConfigValue val, bool isMariko,
                 "- Enabled: Enables GPU scheduling, 96.5% GPU max load",
                 "Default: Do not override"
             };
-
+        case KipConfigValue_marikoGpuBootVolt:
+            return {
+                "The voltage supplied to the GPU during boot and when the temperature is below 20°C (in mV).",
+                "Warning: Changing this value may cause instability.",
+                "Default: 800mV"
+            };
         default:
             return {};
     }

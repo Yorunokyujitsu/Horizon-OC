@@ -122,6 +122,7 @@ namespace kip {
 
         CUST_WRITE_FIELD_BATCH(&table, marikoGpuUV, config::GetConfigValue(KipConfigValue_marikoGpuUV));
         CUST_WRITE_FIELD_BATCH(&table, marikoGpuVmin, config::GetConfigValue(KipConfigValue_marikoGpuVmin));
+        CUST_WRITE_FIELD_BATCH(&table, marikoGpuBootVolt, config::GetConfigValue(KipConfigValue_marikoGpuBootVolt));
         CUST_WRITE_FIELD_BATCH(&table, marikoGpuVmax, config::GetConfigValue(KipConfigValue_marikoGpuVmax));
 
         CUST_WRITE_FIELD_BATCH(&table, commonGpuVoltOffset, config::GetConfigValue(KipConfigValue_commonGpuVoltOffset));
@@ -274,6 +275,7 @@ namespace kip {
         configValues.values[KipConfigValue_eristaGpuVmin] = cust_get_erista_gpu_vmin(&table);
         configValues.values[KipConfigValue_marikoGpuUV] = cust_get_mariko_gpu_uv(&table);
         configValues.values[KipConfigValue_marikoGpuVmin] = cust_get_mariko_gpu_vmin(&table);
+        configValues.values[KipConfigValue_marikoGpuBootVolt] = cust_get_mariko_gpu_boot_volt(&table);
         configValues.values[KipConfigValue_marikoGpuVmax] = cust_get_mariko_gpu_vmax(&table);
         configValues.values[KipConfigValue_commonGpuVoltOffset] = cust_get_common_gpu_offset(&table);
 

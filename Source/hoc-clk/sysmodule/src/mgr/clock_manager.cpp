@@ -185,7 +185,23 @@ namespace clockManager {
         if (module == HocClkModule_GPU && board::GetSocType() == HocClkSocType_Mariko) {
             constexpr u32 kStep = 38400000;
             constexpr u32 kPcvStep = 76800000;
-            constexpr u32 kMax = 1228800000;
+
+            u32 kMax = 0;
+            for (u32 i = 0; i < count; i++) {
+                for (u32 j = 0; j < count; j++) {
+                    if (freqs[j] == freqs[i] + kStep) {
+                        kMax = freqs[j];
+                        break;
+                    }
+                }
+            }
+            
+            if (kMax == 0) {
+                for (u32 i = 0; i < count; i++) {
+                    if (freqs[i] > kMax)
+                        kMax = freqs[i];
+                }
+            }
 
             for (u32 f = kPcvStep; f <= kMax && gFreqTable[module].count < HOCCLK_FREQ_LIST_MAX; f += kStep) {
                 if (f % kPcvStep != 0) {
@@ -277,26 +293,27 @@ namespace clockManager {
         fileUtils::LogLine("[mgr] count = %u", gFreqTable[module].count);
     }
 
-    void HandleSafetyFeatures()
+    bool HandleSafetyFeatures()
     {
         if (config::GetConfigValue(HocClkConfigValue_HandheldTDP) && (gContext.profile != HocClkProfile_Docked)) {
             if (board::GetConsoleType() == HocClkConsoleType_Hoag) {
                 if (board::GetPowerMw(HocClkPowerSensor_Avg) < -(int)config::GetConfigValue(HocClkConfigValue_LiteTDPLimit)) {
                     ResetToStockClocks();
-                    return;
+                    return true;
                 }
             } else {
                 if (board::GetPowerMw(HocClkPowerSensor_Avg) < -(int)config::GetConfigValue(HocClkConfigValue_HandheldTDPLimit)) {
                     ResetToStockClocks();
-                    return;
+                    return true;
                 }
             }
         }
 
         if (((tmp451TempSoc() / 1000) > (int)config::GetConfigValue(HocClkConfigValue_ThermalThrottleThreshold)) && config::GetConfigValue(HocClkConfigValue_ThermalThrottle)) {
             ResetToStockClocks();
-            return;
+            return true;
         }
+        return false;
     }
     void HandleMiscFeatures()
     {
@@ -749,11 +766,11 @@ namespace clockManager {
 
         bool isBoost = apmExtIsBoostMode(mode);
 
-        HandleSafetyFeatures();
+        bool shouldSkipClockSet = HandleSafetyFeatures();
         HandleMiscFeatures();
         
         // GPU clock should always be the same unless PCV has overwriten our change, so reset it
-        if (RefreshContext() || config::Refresh() || board::GetRealHz(HocClkModule_GPU) != gContext.freqs[HocClkModule_GPU]) {
+        if ((RefreshContext() || config::Refresh() || (board::GetRealHz(HocClkModule_GPU) != gContext.freqs[HocClkModule_GPU])) && !shouldSkipClockSet) {
             SetClocks(isBoost);
         }
     }

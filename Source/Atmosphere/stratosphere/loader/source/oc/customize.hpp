@@ -70,6 +70,8 @@ struct CustomizeTable {
 
     u32 commonEmcMemVolt;
     u32 eristaEmcMaxClock;
+    u32 eristaEmcMaxClock1;
+    u32 eristaEmcMaxClock2;
 
     StepMode stepMode;
     u32 marikoEmcMaxClock;
@@ -95,6 +97,9 @@ struct CustomizeTable {
     u32 readLatency[4];
     u32 writeLatency[4];
 
+    u32 mem_burst_read_latency;
+    u32 mem_burst_write_latency;
+
     u32 eristaCpuUV;
     u32 eristaCpuVmin;
     u32 eristaCpuMaxVolt;
@@ -116,9 +121,12 @@ struct CustomizeTable {
 
     u32 marikoGpuUV;
     u32 marikoGpuVmin;
+    u32 marikoGpuBootVolt;
     u32 marikoGpuVmax;
 
     u32 commonGpuVoltOffset;
+
+    u32 gpuSpeedo;
 
     u32 eristaGpuVoltArray[27];
     u32 marikoGpuVoltArray[24];

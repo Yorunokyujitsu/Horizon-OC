@@ -359,7 +359,7 @@ namespace board {
                 }
 
                 /* Assuming mariko. */
-                const u32 vmax = 800;
+                u32 vmax = GetSocType() == HocClkSocType_Mariko ? 800 : 950;
                 constexpr u32 GpuVoltageTableOffset = 312;
                 if (!std::memcmp(&buffer[index + GpuVoltageTableOffset], &vmax, sizeof(vmax))) {
                     std::memcpy(voltData.voltTable, &buffer[index + GpuVoltageTableOffset], sizeof(voltData.voltTable));

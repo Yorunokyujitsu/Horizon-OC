@@ -24,319 +24,321 @@ std::vector<std::string> ConfigInfoStrings(HocClkConfigValue val, bool isMariko,
     {
         case HocClkConfigValue_PollingIntervalMs:
             return {
-                "The interval (in milliseconds) where clocks are applied, temperatures and voltages are polled and logs are written (if enabled).",
-                "Higher values may cause more delay between changing a setting and it taking effect, and lower values may increase sysmodule memory usage",
-                "Default: 300ms"
+                "클럭 적용, 온도·전압 폴링, 로그 기록(활성화된 경우)을 수행하는 주기입니다 (밀리초 단위).",
+                "값이 높을수록 설정 변경 후 반영까지 지연이 커질 수 있으며, 값이 낮을수록 시스템 모듈의 메모리 사용량이 증가할 수 있습니다.",
+                "기본값: 300 ms"
             };
 
         case HocClkConfigValue_RamDisplayUnit:
             return {
-                "The unit used when displaying RAM frequency values.",
-                "Options:",
-                "- MHz: Megahertz (e.g. 1600 MHz)",
-                "- MT/s: MegaTransfers per second (e.g. 3200 MT/s)",
-                "- MHz and MT/s: Display in both MHz and MT/s",
-                "Default: MHz"
+                "RAM 주파수 값을 표시할 때 사용할 단위입니다.",
+                "옵션:",
+                "- MHz: 메가헤르츠 (예: 1600 MHz)",
+                "- MT/s: 초당 메가트랜스퍼 (예: 3200 MT/s)",
+                "- MHz, MT/s: MHz와 MT/s 모두 표시",
+                "기본값: MHz"
             };
 
         case HocClkConfigValue_RAMVoltDisplayMode:
             return {
-                "The method used to display RAM voltage values.",
-                "Options:",
-                "- VDD2 - Display VDD2 voltage",
-                "- VDDQ - Display VDDQ voltage",
-                "Default: VDD2"
+                "RAM 전압 값을 표시하는 방식입니다.",
+                "옵션:",
+                "- VDD2: VDD2 전압을 표시",
+                "- VDDQ: VDDQ 전압을 표시",
+                "기본값: VDD2"
             };
 
         case HocClkConfigValue_EnableExperimentalSettings:
             return {
-                "When enabled, shows settings that are still being tested and may be unstable or not work at all.",
-                "Use with caution and report any issues to the developers."
+                "아직 테스트 중이며 불안정하거나 정상적으로 동작하지 않을 수 있는 설정들을 표시합니다.",
+                "주의해서 사용하시길 바랍니다."
             };
 
         case HocClkConfigValue_MarikoMiddleFreqs:
             return {
-                "Allows usage of frequencies stepped by 38.4MHz instead of 76.8MHz below 1228MHz GPU clock",
-                "Default: OFF"
+                "1228MHz 이하의 GPU 클럭에서 76.8 MHz 대신 38.4 MHz 단위의 세밀한 주파수 조정을 사용할 수 있도록 합니다.",
+                "기본값: 꺼짐"
             };
 
         case HocClkConfigValue_LiveCpuUv:
             return {
-                "Allows changing CPU undervolt settings without a reboot",
-                "Default: OFF"
+                "재부팅 없이 CPU 언더볼트 설정을 변경할 수 있도록 합니다.",
+                "기본값: 꺼짐"
             };
 
         case HocClkConfigValue_GPUSchedulingMethod:
             return {
-                "Method used for GPU scheduling override",
-                "Options:",
-                "- INI: override via system_settings.ini",
-                "- NV Service: override via nvservices sysmodule (experimental)",
-                "Default: INI"
+                "GPU 스케줄링 오버라이드에 사용할 방식입니다.",
+                "옵션:",
+                "- INI: system_settings.ini를 통해 오버라이드합니다.",
+                "- NV 서비스: nvservices 시스템 모듈을 통한 오버라이드 (실험적 기능).",
+                "기본값: INI"
             };
 
         case HocClkConfigValue_MemoryFrequencyMeasurementMode:
             return {
-                "How the RAM real frequency is measured",
-                "Options:",
-                "- PLL: Measure from PLLMB and PLLM (more accurate)",
-                "- Actmon: Measure from Actmon (less accurate)",
-                "Default: PLL"
+                "RAM의 실제 주파수를 측정하는 방식입니다.",
+                "옵션:",
+                "- PLL: PLLMB 및 PLLM 기준으로 측정합니다 (더 정확함).",
+                "- Actmon: Actmon 기준으로 측정합니다 (덜 정확함).",
+                "기본값: PLL"
             };
 
         case HocClkConfigValue_BatteryChargeCurrent:
             return {
-                "Overrides the charge current to the battery. Use with caution!",
-                isHoag ? "Default: 1664 mA" : "2048 mA"
+                "배터리로 들어가는 충전 전류를 강제로 변경합니다. 주의해서 사용하세요!",
+                isHoag ? "기본값: 1664 mA" : "기본값: 2048 mA"
             };
 
 
         case HocClkConfigValue_InputCurrentLimit:
             return {
-                "Overrides the maximum input current from the charger.",
-                isHoag ? "Default: 900 mA" : "1200 mA" 
+                "충전기 입력 전류의 최대값을 덮어씁니다.",
+                isHoag ? "기본값: 900 mA" : "기본값: 1200 mA" 
             };
 
         case HocClkConfigValue_AulaDisplayColorPreset:
             return {
-                "Current display color preset. Default is Basic",
-                "Options:",
-                "- Saturated: Based on Vivid but over-saturated.",
-                "- Washed: Washed out colors.",
-                "- Basic: Real natural profile.",
-                "- Natural: Not actually natural.. Extra saturation.",
-                "- Vivid: Saturated.",
-                "Default: Do not override"
+                "현재 디스플레이 색상 프리셋입니다.",
+                "옵션:",
+                "- Saturated: Vivid 기반의 매우 강한 채도.",
+                "- Washed: 색이 빠진 듯한 흐린 색감",
+                "- Basic: 실제에 가까운 색상 프로필",
+                "- Natural: 이름과 달리 채도가 추가된 색감",
+                "- Vivid: 채도가 강조된 색감",
+                "기본값: 설정 안 함 (Basic)"
             };
 
         case HocClkConfigValue_CpuGovernorMinimumFreq:
             return {
-                "The minimum frequency that the CPU governor will allow.",
-                "Default: 612MHz"
+                "CPU 거버너가 허용할 최소 주파수입니다.",
+                "기본값: 612 MHz"
             };
 
         case HocClkConfigValue_OverwriteRefreshRate:
             return {
-                "Controls the availability of display refresh rate features.",
-                "When enabled, allows changing the display refresh rate and using display refresh rate related features.",
-                "This feature conflicts with FPSLocker's feature that does the same thing.",
-                "Default: OFF"
+                "디스플레이 주사율 관련 기능의 활성화 여부를 설정합니다.",
+                "활성화하면 디스플레이 주사율을 변경하고 관련 기능을 사용할 수 있습니다.",
+                "이 기능은 동일한 역할을 하는 FPSLocker의 기능과 충돌합니다.",
+                "기본값: 꺼짐"
             };
 
         case HocClkConfigValue_MaxDisplayClockH:
             return {
-                "The maximum display clock frequency in handheld mode (in Hz).",
-                "Warning: Changing this value may cause instability or display damage.",
-                "Default: 60 Hz"
+                "휴대 모드에서의 최대 디스플레이 클럭 주파수입니다 (Hz 단위).",
+                "경고: 이 값을 변경하면 시스템 불안정이나 디스플레이 손상이 발생할 수 있습니다.",
+                "기본값: 60 Hz"
             };
 
         case HocClkConfigValue_DisplayVoltage:
             return {
-                "The voltage supplied to the display panel (in mV).",
-                "Warning: Changing this value may cause instability.",
-                "Default: 1200mV"
+                "디스플레이 패널에 공급되는 전압입니다 (mV 단위).",
+                "경고: 이 값을 변경하면 시스템이 불안정해질 수 있습니다.",
+                "기본값: 1200 mV"
             };
 
         case HocClkConfigValue_UncappedClocks:
             if(isMariko) {
                 return {
-                    "When enabled, disables clock cappings",
-                    "Warning: Enabling this may cause damage to your device without a proper undervolt. Use with caution!",
-                    "Clock cappings:",
-                    "- Handheld:",
+                    "활성화 시, 설정된 클럭 제한을 해제합니다.",
+                    "경고: 적절한 언더볼트 없이 이를 활성화하면 기기에 손상을 줄 수 있습니다. 주의해서 사용하세요!",
+                    "클럭 제한:",
+                    "- 휴대 모드:",
                     "  - GPU (No UV): 614 MHz",
                     "  - GPU (SLT): 691 MHz",
                     "  - GPU (HiOPT): 768 MHz",
                     "  - GPU (HiOPT - 15mV): 844 MHz",
                     "  - GPU (High UV): 921 MHz",
-                    "- USB Charger",
+                    "- USB 충전기",
                     "  - GPU (No UV): 844 MHz",
                     "  - GPU (SLT): 921 MHz",
                     "  - GPU (HiOPT): 998 MHz",
                     "  - GPU (HiOPT - 15mV): 1075 MHz",
                     "  - GPU (High UV): 1152 MHz",
-                    "- PD Charger / Docked:",
-                    "  - No capping applied",
-                    "Default: OFF"
+                    "- 정격 충전기 / 독 모드:",
+                    "  - 클럭 제한 없음",
+                    "기본값: 꺼짐"
                 };
             } else {
                 return {
-                    "When enabled, disables clock cappings",
-                    "Warning: Enabling this may cause damage to your device without a proper undervolt. Use with caution!",
-                    "Clock cappings:",
-                    "- Handheld:",
+                    "활성화 시, 설정된 클럭 제한을 해제합니다.",
+                    "경고: 적절한 언더볼트 없이 이를 활성화하면 기기에 손상을 줄 수 있습니다. 주의해서 사용하세요!",
+                    "클럭 제한:",
+                    "- 휴대 모드:",
                     "  - GPU: 460 MHz",
                     "  - CPU: 1581 MHz",
-                    "- USB Charger",
+                    "- USB 충전기",
                     "  - GPU: 768 MHz",
-                    "- PD Charger / Docked:",
-                    "  - No capping applied",
-                    "Default: OFF"
+                    "- 정격 충전기 / 독 모드:",
+                    "  - 클럭 제한 없음",
+                    "기본값: 꺼짐"
                 };
             }
 
         case HocClkConfigValue_ThermalThrottle:
             return {
-                "If enabled, Resets to stock clocks after the threshold is applied",
-                "Default: ON",
+                "활성화 시 임계값 도달 후 기본 클럭으로 복원됩니다.",
+                "기본값: 켜짐",
             };
 
         case HocClkConfigValue_ThermalThrottleThreshold:
             return {
-                "The temperature threshold (in °C) for resetting to stock clocks when Thermal Throttle is enabled.",
-                "Default: 70°C"
+                "Thermal Throttle가 활성화된 상태에서, 기본 클럭으로 복원되기 위한 온도 임계값입니다 (°C 단위).",
+                "기본값: 70°C"
             };
 
         case KipConfigValue_emcDvbShift:
             return {
-                "Each level adds/removes 25mV from the SOC Voltage table",
-                "Consoles are bracketed by SoC Speedo. The brackets are as follows:",
-                " - Speedo 1487-1598: Bracket 0",
-                " - Speedo 1598-1709: Bracket 1",
-                " - Speedo 1709-1820: Bracket 2",
-                "Default: 0"
+                "각 단계는 SoC 전압 테이블에 25mV를 추가하거나 감소시킵니다.",
+                "콘솔은 SoC Speedo 값에 따라 등급이 구분됩니다. 구간은 다음과 같습니다:",
+                " - Speedo 1487-1598: 브래킷 0",
+                " - Speedo 1598-1709: 브래킷 1",
+                " - Speedo 1709-1820: 브래킷 2",
+                "기본값: 0"
             };
 
         case KipConfigValue_marikoSocVmax:
             return {
-                "The maximum available SOC Voltage that the DVB-adjusted table can use",
-                "Default: Do not override"
+                "DVB로 조정된 테이블이 사용할 수 있는 최대 SoC 전압입니다.",
+                "기본값: 설정 안 함"
             };
 
         case KipConfigValue_hpMode:
             return {
-                "When enabled, disables RAM powerdown. Helps with latency significantly",
-                "Default: OFF"
+                "활성화 시, RAM의 절전 모드를 비활성화합니다. 대기 시간이 대폭 개선됩니다.",
+                "기본값: 꺼짐"
             };
 
         case KipConfigValue_commonEmcMemVolt:
             return {
-                "RAM VDD2 voltage",
-                "Increasing this WILL NOT increase your maximum frequency, but may help with timing reduction.",
-                "Undervolting RAM is pointless and may hurt performance and stability",
-                "Default: 1175 mV"
+                "RAM VDD2 전압입니다.",
+                "이 값을 높인다고 해서 최대 주파수가 상승하지는 않지만, 타이밍 감소에 도움을 줄 수 있습니다.",
+                "RAM 언더볼팅은 무의미하며 오히려 성능과 안정성을 떨어뜨릴 수 있습니다.",
+                "기본값: 1175 mV"
             };
 
         case KipConfigValue_marikoEmcVddqVolt:
             return {
-                "RAM VDDQ voltage",
-                "Increasing this may help, but the default value is usually good enough.",
-                "Undervolting RAM is pointless and may hurt performance and stability",
-                "Default: 600 mV"
+                "RAM VDDQ 전압입니다.",
+                "이 값을 높이는 것이 도움이 될 수도 있으나, 일반적으로는 기본값으로도 충분합니다.",
+                "RAM 언더볼팅은 무의미하며 성능과 안정성을 저해할 수 있습니다.",
+                "기본값: 600 mV"
             };
 
         case KipConfigValue_stepMode:
             return {
-                "The step that RAM clocks take.",
-                "Options (with examples):",
-                " - 66MHz - 66 MHz step (ex. 1600, 1666, 1733, etc.)",
-                " - 100MHz - 100 MHz step (ex. 1600, 1700, 1800, etc.)",
-                " - 133MHz - 66 MHz step (ex. 1600, 1733, 1866, etc.)",
+                "RAM 클럭이 조절되는 단계값입니다.",
+                "옵션 (예시 포함):",
+                " - 66 MHz: 66 MHz 단위로 변경 (예: 1600, 1666, 1733 등)",
+                " - 100 MHz: 100 MHz 단위로 변경 (예: 1600, 1700, 1800 등)",
+                " - 133 MHz: 66 MHz 단위로 변경 (예: 1600, 1733, 1866 등)",
                 " - JEDEC:",
-                "   - 1600, 1866, 1996, 2133, 2400, 2666, 2933 and 3200 MHz are used",
-                "The RAM max clock will always be available regardless of the step mode, but the intermediate frequencies will be limited by the selected step mode.",
-                "This setting does not affect performance and the option you choose mostly is based on your personal taste",
-                "33 MHz step mode is not possible due to certain limitations of Horizon OS",
-                "Default: 66 MHz",
+                "   - 1600, 1866, 1996, 2133, 2400, 2666, 2933, 3200 MHz 주파수가 사용됩니다.",
+                "선택한 스텝 모드와 관계없이 항상 최대 RAM 클럭을 사용할 수 있으나, 중간 단계의 주파수들은 선택한 스텝 모드에 의해 제한됩니다.",
+                "이 설정은 성능에 직접적인 영향을 주지 않으며, 어떤 옵션을 선택할지는 주로 개인 취향에 따릅니다.",
+                "Horizon OS의 특정 제한으로 인해 33 MHz 스텝 모드는 불가능합니다.",
+                "기본값: 66 MHz",
             };
 
         case KipConfigValue_marikoEmcMaxClock:
             return {
-                "The maximum RAM frequency available.",
-                "Higher frequencies may cause instability, so increase this gradually and test for stability.",
-                "Default: 2133 MHz"
+                "사용 가능한 최대 RAM 주파수입니다.",
+                "높은 주파수는 시스템 불안정을 유발할 수 있으므로, 값을 점진적으로 올리며 안정성 테스트를 진행하세요.",
+                "기본값: 2133 MHz"
             };
 
         case KipConfigValue_eristaEmcMaxClock:
             return {
-                "The RAM frequency used in the particular slot. Higher frequencies may cause instability, so increase this gradually and test for stability.",
-                "Default: Disabled (1600 MHz)"
+                "해당 슬롯에서 사용되는 RAM 주파수입니다. 높은 주파수는 시스템 불안정을 유발할 수 있으므로, 값을 점진적으로 올리며 안정성 테스트를 진행하세요.",
+                "기본값: 비활성화 (1600 MHz)"
             };
 
         case KipConfigValue_t1_tRCD:
             return {
-                "RAS-to-CAS delay",
-                "Default: 0"
+                "RAS-to-CAS 지연 (t1/tRCD)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t2_tRP:
             return {
-                "Row precharge time",
-                "Default: 0"
+                "Row 프리차지 시간 (t2/tRP)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t3_tRAS:
             return {
-                "Row active time",
-                "Default: 0"
+                "Row 액티브 시간 (t3/tRAS)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t4_tRRD:
             return {
-                "Row refresh time",
-                "Default: 0"
+                "Row 리프레시 시간 (t4/tRRD)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t5_tRFC:
             return {
-                "Refresh Cycle Time",
-                "Default: 0"
+                "리프레시 사이클 시간 (t5/tRFC)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t6_tRTW:
             return {
-                "Read To Write (High bracket)",
-                "Default: 0"
+                "읽기→쓰기 지연 (t6High/tRTW - 높은 브래킷)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t7_tWTR:
             return {
-                "Write To Read (High bracket)",
-                "Default: 0"
+                "쓰기→읽기 지연 (t7High/tWTR - 높은 브래킷)",
+                "기본값: 0"
             };
 
         case KipConfigValue_t8_tREFI:
             return {
-                "Refresh command interval",
-                "Default: 0"
+                "리프레시 명령 간격 (t8/tREFI)",
+                "기본값: 0"
             };
 
         case KipConfigValue_timingEmcTbreak:
             return {
-                "Frequency where t6 and t7 break between the low and high brackets",
-                "Example:",
-                "Tbreak is set to 1866 MHz, and t6Low is set to 4 and t6High is set to 2. At frequencies below 1866 MHz, t6 will be 4, and at frequencies above 1866 MHz, t6 will be 2.",
-                "Default: Disabled"
+                "t6 및 t7 값이 낮은 브래킷과 높은 브래킷으로 나뉘는 기준 주파수입니다.",
+                "예시:",
+                "Tbreak가 1866 MHz로 설정되어 있고, t6Low가 4, t6High가 2로 설정된 경우",
+                "- 1866 MHz 미만에서 t6 값이 4로 적용",
+                "- 1866 MHz 초과에서 t6 값이 2로 적용",
+                "기본값: 비활성화"
             };
 
         case KipConfigValue_low_t6_tRTW:
             return {
-                "Read To Write (Low bracket)",
-                "Default: 0"
+                "읽기→쓰기 지연 (t6Low/tRTW - 낮은 브래킷)",
+                "기본값: 0"
             };
 
         case KipConfigValue_low_t7_tWTR:
             return {
-                "Write To Read (Low bracket)",
-                "Default: 0"
+                "쓰기→읽기 지연 (t7Low/tWTR - 낮은 브래킷)",
+                "기본값: 0"
             };
         case KipConfigValue_t2_tRP_cap:
             return {
-                "Cap for t2 when 1333WL is used.",
-                "The default value is sufficient for most RAMs but some may need a lower value",
-                "Default: 2"
+                "1333WL이 사용될 때 t2에 적용되는 상한값입니다.",
+                "기본값으로도 대부분의 RAM에서 충분하지만, 일부 RAM은 더 낮은 값이 필요할 수 있습니다.",
+                "기본값: 2"
             };
 
         case KipConfigValue_t6_tRTW_fine_tune:
             return {
-                "Fine-tunes the raw calculation of t6",
-                "Default: 0"
+                "t6의 원시 계산 값을 미세 조정합니다.",
+                "기본값: 0"
             };
 
         case KipConfigValue_t7_tWTR_fine_tune:
             return {
-                "Fine-tunes the raw calculation of t7",
-                "Default: 0"
+                "t7의 원시 계산 값을 미세 조정합니다.",
+                "기본값: 0"
             };
 
         case KipConfigValue_write_latency_1333:
@@ -348,205 +350,205 @@ std::vector<std::string> ConfigInfoStrings(HocClkConfigValue val, bool isMariko,
         case KipConfigValue_read_latency_1866:
         case KipConfigValue_read_latency_2133:
             return {
-                "Latency bracket settings",
-                "Example:",
-                "If 1333 is set to 2000 MHz, 1600 set to 2500 MHz, 1866 set to 2766 MHz and 2133 set to 2933 MHz:",
-                "Frequencies below 2000 MHz use 1333, 2033-2500 MHz use 1600, 2533-2766 MHz use 1866 and 2800-2933 MHz use 2133. ",
-                "Either of these can be omitted and it will work (say you set 1333 to -, then <2000 MHz will use 1600 latency)",
-                "If all of these parameters are omitted the latency will automatically be calculated as follows:",
-                "1633-1866 MHz - 1866 WRL",
+                "지연 브래킷 설정입니다.",
+                "예시:",
+                "1333을 2000 MHz, 1600을 2500 MHz, 1866을 2766 MHz, 2133을 2933 MHz로 설정한 경우",
+                "- 2000 MHz 미만에서는 1333이 사용되고, 2033~2500 MHz에서는 1600, 2533~2766 MHz에서는 1866, 2800~2933 MHz에서는 2133이 사용됩니다.",
+                "이 값들 중 일부는 생략해도 정상 동작합니다. (예를 들어 1333을 -로 설정하면, 2000 MHz 미만에서도 1600 지연 시간이 사용됩니다.)",
+                "이 설정들을 모두 생략하면 지연 시간은 다음과 같이 자동 계산됩니다:",
+                "1633-1866 MHz→1866 WRL",
                 "1900+ MHz - 2133 WRL",
-                "These properties apply for both write and read latencies, and you can mix-and-match the brackets if necessary",
-                "Default: -"
+                "이 설정들은 읽기 및 쓰기 지연 시간 모두에 적용되며, 필요에 따라 브래킷 값을 서로 조합해서 사용할 수 있습니다.",
+                "기본값: ⋯"
             };
         case KipConfigValue_marikoCpuUVLow:
             return {
-                "The CPU UV level used before tBreak",
-                "Default: 0"
+                "tBreak 이전에 사용되는 CPU 언더볼트 레벨입니다.",
+                "기본값: 0"
             };
 
         case KipConfigValue_marikoCpuUVHigh:
             return {
-                "The CPU UV level used after tBreak",
-                "Default: 0"
+                "tBreak 이후에 사용되는 CPU 언더볼트 레벨입니다.",
+                "기본값: 0"
             };
 
         case KipConfigValue_tableConf:
             return {
-                "The current UV table used. The tbreaks are as follows:",
-                "1581 MHz tBreak and 1683 MHz tBreak use their respective tBreaks",
-                "The other tables use 1581 MHz as tBreak",
-                "The \"Default\" table does not contain frequencies past 1963 MHz and may not undervolt correctly"
+                "현재 사용 중인 언더볼트 테이블입니다. tBreak 기준점은 다음과 같습니다:",
+                "1581 MHz tBreak 및 1683 MHz tBreak 테이블은 각각의 tBreak 기준을 사용합니다.",
+                "그 외의 다른 테이블들은 1581 MHz를 tBreak 기준으로 사용합니다.",
+                "\"기본\" 테이블은 1963 MHz를 초과하는 주파수를 포함하지 않으므로 언더볼트가 제대로 적용되지 않을 수 있습니다."
             };
 
         case KipConfigValue_marikoCpuLowVmin:
             return {
-                "The CPU vmin used before tBreak",
-                "Default: 620 mV"
+                "tBreak 이전에 사용되는 CPU 최소 전압 값입니다.",
+                "기본값: 620 mV"
             };
 
         case KipConfigValue_marikoCpuHighVmin:
             return {
-                "The CPU vmin used after tBreak",
-                "Default: 750 mV"
+                "tBreak 이전에 사용되는 CPU 최소 전압 값입니다.",
+                "기본값: 750 mV"
             };
 
 
         case KipConfigValue_marikoCpuMaxVolt:
             return {
-                "The maximum voltage that the CPU can use",
-                "Change this setting with caution!",
-                "Default: 1120 mV"
+                "CPU가 사용할 수 있는 최대 전압입니다.",
+                "이 설정은 주의해서 변경하세요!",
+                "기본값: 1120 mV"
             };
 
         case KipConfigValue_marikoCpuMaxClock:
             return {
-                "The maximum available CPU clock",
-                "Default: 1963 MHz"
+                "사용 가능한 최대 CPU 클럭입니다.",
+                "기본값: 1963 MHz"
             };
 
         case KipConfigValue_marikoCpuBoostClock:
             return {
-                "The clock used for the CPU in \"boost mode\"",
-                "Default: 1963 MHz"
+                "\"부스트 모드\"에서 CPU에 사용되는 클럭입니다.",
+                "기본값: 1963 MHz"
             };
 
         case KipConfigValue_eristaCpuUV:
             return {
-                "CPU undervolt level",
-                "Default: 0"
+                "CPU 언더볼트 레벨입니다.",
+                "기본값: 0"
             };
 
         case KipConfigValue_eristaCpuUnlock:
             return {
-                "Unlock unsafe CPU clocks",
-                "Default: OFF"
+                "안전하지 않은 CPU 클럭의 잠금을 해제합니다.",
+                "기본값: 꺼짐"
             };
 
         case KipConfigValue_eristaCpuVmin:
             return {
-                "Minimum CPU voltage",
-                "Default: 825 mV"
+                "최소 CPU 전압입니다.",
+                "기본값: 825 mV"
             };
 
         case KipConfigValue_eristaCpuMaxVolt:
             return {
-                "Maximum CPU voltage",
-                "Default: 1235 mV"
+                "최대 CPU 전압입니다.",
+                "기본값: 1235 mV"
             };
 
         case HocClkConfigValue_EristaMaxCpuClock:
             return {
-                "The maximum available CPU clock",
-                "Default: 1785 MHz"
+                "사용 가능한 최대 CPU 클럭입니다.",
+                "기본값: 1785 MHz"
             };
 
         case KipConfigValue_eristaCpuBoostClock:
             return {
-                "The clock used for the CPU in \"boost mode\"",
-                "Default: 1785 MHz"
+                "\"부스트 모드\"에서 CPU에 사용되는 클럭입니다.",
+                "기본값: 1785 MHz"
             };
         case HocClkConfigValue_AutoRAMCPUOverclock:
             return {
-                "When enabled, automatically raises the CPU clock to the configured OC frequency when RAM clock meets or exceeds the threshold to meet the increased voltage requirement.",
-                "Default: ON"
+                "활성화 시 RAM 클럭이 설정된 임계값 이상일 때, 증가한 전압 요구사항을 충족하기 위해 CPU 클럭을 설정된 오버클럭 주파수로 자동 조정합니다.",
+                "기본값: ON"
             };
 
         case HocClkConfigValue_AutoRamCpuCpuOCFreq:
             return {
-                "The CPU clock (in MHz) applied when Auto High RAM CPU OC is enabled and the RAM threshold is met.",
-                "Default: 1683 MHz"
+                "자동 CPU 오버클럭이 활성화되고 RAM 임계값에 도달했을 때 적용할 CPU 클럭(MHz)입니다.",
+                "기본값: 1683 MHz"
             };
 
         case HocClkConfigValue_AutoRamCpuRamOCThreshold:
             return {
-                "The RAM clock threshold (in MHz) at or above which the Auto High RAM CPU OC will activate.",
-                "Default: 2133MHz"
+                "자동 CPU 오버클럭이 활성화되는 RAM 클럭 임계값(MHz)입니다.",
+                "기본값: 2133MHz"
             };
 
         case HocClkConfigValue_OverwriteBoostMode:
             return {
-                "If enabled, profiles can override the boost mode setting",
-                "Default: OFF"
+                "활성화하면 각 프로필이 부스트 모드 설정을 오버라이드(강제 지정)할 수 있습니다.",
+                "기본값: 꺼짐"
             };
 
         case KipConfigValue_marikoGpuUV:
             return {
-                "GPU undervolt level",
-                "Options:",
-                " - No Undervolt: No Undervolt, HOS default",
-                " - SLT Table: NVIDIA custom SLT Table",
-                " - HiOPT: L4T Custom HiOPT table, HOC Default",
-                " - HiOPT - 15mV: L4T Custom HiOPT table with a 15mV offset",
-                " - High UV: The highest undervolt table",
-                "Default: HiOPT"
+                "GPU 언더볼트 레벨입니다.",
+                "옵션:",
+                " - 설정 안 함: 언더볼트를 적용하지 않고 HOS 기본 전압 사용",
+                " - SLT 테이블: NVIDIA 커스텀 SLT 테이블",
+                " - HiOPT: L4T 커스텀 HiOPT 테이블",
+                " - HiOPT - 15 mV: 15 mV 오프셋이 적용된 L4T 커스텀 HiOPT 테이블",
+                " - High UV: 가장 높은 수준의 언더볼트 테이블",
+                "기본값: HiOPT"
             };
 
         case KipConfigValue_marikoGpuVmin:
             return {
-                "Minimum GPU voltage",
-                "Note: DVFS may change this value when the RAM clock is changed if the DVFS mode is set to PCV Hijack",
-                "Default: 610 mV"
+                "최소 GPU 전압입니다.",
+                "참고: DVFS 모드가 PCV 제어 우회로 설정된 경우, RAM 클럭 변경 시 DVFS에 의해 이 값이 변경될 수 있습니다.",
+                "기본값: 610 mV"
             };
 
         case KipConfigValue_marikoGpuVmax:
             return {
-                "Maximum GPU voltage",
-                "Default: 800 mV"
+                "최대 GPU 전압입니다.",
+                "기본값: 800 mV"
             };
         
         case HocClkConfigValue_DVFSMode:
             return {
-                "The mode used for GPU DVFS",
-                "Adjusts GPU vmin when RAM clock is changed due to a higher requirement",
-                "Options:",
-                "- Disabled: disabled...",
-                "- PCV Hijack: hijack PCV for override",
-                "Default: PCV Hijack"
+                "GPU DVFS에 사용되는 모드입니다.",
+                "RAM 클럭 변경으로 인해 요구 사양이 높아질 때 GPU 최소 전압을 조정합니다.",
+                "옵션:",
+                "- 비활성화: 비활성화됨",
+                "- PCV 제어 우회: 오버라이드를 위해 PCV를 하이재킹함",
+                "기본값: PCV 제어 우회"
             };
 
         case HocClkConfigValue_DVFSOffset:
             return {
-                "The offset added/subtracted to the GPU vmin when the RAM clock is changed due to a higher requirement in PCV Hijack mode",
-                "Default: 0 mV (Disabled)"
+                "PCV 제어 우회 모드에서 RAM 클럭 변경으로 인해 요구 사양이 높아질 때, GPU 최소 전압에 더하거나 뺄 오프셋 값입니다.",
+                "기본값: 0 mV (비활성화)"
             };
 
         case KipConfigValue_eristaGpuUV:
             return {
-                "GPU undervolt level",
-                "Options:",
-                " - No Undervolt: No Undervolt...",
-                " - SLT Table: NVIDIA custom SLT Table",
-                " - HiOPT: L4T Custom HiOPT table",
-                "Default: No Undervolt"
+                "GPU 언더볼트 레벨입니다.",
+                "옵션:",
+                " - 설정 안 함: 언더볼트를 적용하지 않고 HOS 기본 전압 사용",
+                " - SLT 테이블: NVIDIA 커스텀 SLT 테이블",
+                " - HiOPT: L4T 커스텀 HiOPT 테이블",
+                "기본값: 설정 안 함"
             };
 
         case KipConfigValue_eristaGpuVmin:
             return {
-                "Minimum GPU voltage",
-                "Default: 810 mV (812mV as erista is stepped by 6.5mV instead of 5mV)"
+                "최소 GPU 전압입니다.",
+                "기본값: 810 mV (Erista는 5mV 대신 6.5mV 단위로 조정되므로 실제로는 812mV가 적용됨)"
             };
 
         case KipConfigValue_commonGpuVoltOffset:
             return {
-                "The offset added/subtracted to all GPU voltages marked as \"auto\"",
-                "Default: 0 mV (Disabled)"
+                "모든 자동 GPU 전압에 더하거나 뺄 오프셋 값입니다.",
+                "기본값: 0 mV (비활성화)"
             };
 
         case HocClkConfigValue_GPUScheduling:
             return {
-                "The scheduling method used for GPU clocks",
-                "Options:",
-                "- Do Not Override: Do not override existing scheduling mode",
-                "- Disabled: Disables GPU scheduling, 99.7% GPU max load",
-                "- Enabled: Enables GPU scheduling, 96.5% GPU max load",
-                "Default: Do not override"
+                "GPU 클럭에 사용할 스케줄링 방식입니다.",
+                "옵션:",
+                "- 설정 안 함: 기존 스케줄링 모드를 오버라이드하지 않음",
+                "- 비활성화: GPU 스케줄링 비활성화, 최대 GPU 부하 99.7%",
+                "- 활성화: GPU 스케줄링 활성화, 최대 GPU 부하 96.5%",
+                "기본값: 설정 안 함"
             };
         case KipConfigValue_marikoGpuBootVolt:
             return {
-                "The voltage supplied to the GPU during boot and when the temperature is below 20°C (in mV).",
-                "Warning: Changing this value may cause instability.",
-                "Default: 800mV"
+                "부팅 시점 및 온도가 20°C 미만일 때 GPU에 공급되는 전압입니다 (mV 단위).",
+                "경고: 이 값을 변경하면 시스템이 불안정해질 수 있습니다.",
+                "기본값: 800 mV"
             };
         default:
             return {};

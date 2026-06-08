@@ -54,7 +54,7 @@ void MainGui::listUI() {
     // });
     // this->listElement->addItem(this->enabledToggle);
 
-    tsl::elm::ListItem *appProfileItem = new tsl::elm::ListItem("Edit App Profile");
+    tsl::elm::ListItem *appProfileItem = new tsl::elm::ListItem("프로필 편집");
     appProfileItem->setClickListener([this](u64 keys) {
         if ((keys & HidNpadButton_A) == HidNpadButton_A && this->context) {
             AppProfileGui::changeTo(this->context->applicationId);
@@ -65,7 +65,7 @@ void MainGui::listUI() {
     });
     this->listElement->addItem(appProfileItem);
 
-    tsl::elm::ListItem *globalProfileItem = new tsl::elm::ListItem("Edit Global Profile");
+    tsl::elm::ListItem *globalProfileItem = new tsl::elm::ListItem("글로벌 프로필");
     globalProfileItem->setClickListener([this](u64 keys) {
         if ((keys & HidNpadButton_A) == HidNpadButton_A && this->context) {
             AppProfileGui::changeTo(HOCCLK_GLOBAL_PROFILE_TID);
@@ -76,7 +76,7 @@ void MainGui::listUI() {
     });
     this->listElement->addItem(globalProfileItem);
 
-    tsl::elm::ListItem *globalOverrideItem = new tsl::elm::ListItem("Temporary Overrides");
+    tsl::elm::ListItem *globalOverrideItem = new tsl::elm::ListItem("임시 프로필");
     globalOverrideItem->setClickListener([this](u64 keys) {
         if ((keys & HidNpadButton_A) == HidNpadButton_A && this->context) {
             tsl::changeTo<GlobalOverrideGui>();
@@ -89,7 +89,7 @@ void MainGui::listUI() {
 
     // this->listElement->addItem(new tsl::elm::CategoryHeader("Misc"));
 
-    tsl::elm::ListItem *miscItem = new tsl::elm::ListItem("Settings");
+    tsl::elm::ListItem *miscItem = new tsl::elm::ListItem("기타 옵션");
     miscItem->setClickListener([this](u64 keys) {
         if ((keys & HidNpadButton_A) == HidNpadButton_A && this->context) {
             tsl::changeTo<MiscGui>();
@@ -100,7 +100,7 @@ void MainGui::listUI() {
     });
     this->listElement->addItem(miscItem);
 
-    tsl::elm::ListItem *aboutItem = new tsl::elm::ListItem("About");
+    tsl::elm::ListItem *aboutItem = new tsl::elm::ListItem("정보");
     aboutItem->setClickListener([this](u64 keys) {
         if ((keys & HidNpadButton_A) == HidNpadButton_A && this->context) {
             tsl::changeTo<AboutGui>();

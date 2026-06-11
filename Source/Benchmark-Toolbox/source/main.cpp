@@ -682,7 +682,7 @@ class CreditsTab : public brls::Box {
         this->addView(h);
 
         makeRow(this, "Memtester")->setText("Simon Kirby, Charles Cazabon, KazushiMe & CTCaer");
-        makeRow(this, "FurMark")->setText("AnxietyTimmy");
+        makeRow(this, "FurMark")->setText("StanislavPetrovV & AnxietyTimmy");
         makeRow(this, "GPU Test")->setText("NaGaa95");
         makeRow(this, "Membench")->setText("Siarhei Siamashka, KazushiMe & Lineon");
         makeRow(this, "Stress-ng")->setText("ColinIanKing & Lineon");

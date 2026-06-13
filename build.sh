@@ -41,7 +41,19 @@ CORES="$(nproc --all)"
 echo "CORES: $CORES"
 
 SRC="Source/Atmosphere/stratosphere/loader/"
-DEST="build/stratosphere/loader/"
+
+mkdir -p "build"
+
+ATMOSPHERE_DIR="build/atmosphere"
+ATMOSPHERE_URL="https://github.com/Atmosphere-NX/Atmosphere.git"
+
+if [ ! -d "$ATMOSPHERE_DIR" ]; then
+    echo
+    echo "*** Cloning atmosphere ***"
+    git clone "$ATMOSPHERE_URL" "$ATMOSPHERE_DIR"
+fi
+
+DEST="build/atmosphere/stratosphere/loader/"
 mkdir -p "dist/atmosphere/kips/"
 mkdir -p "$DEST"
 
@@ -53,8 +65,8 @@ echo
 if [ "$NO_EXO" -eq 0 ]; then
     echo "*** Patching exosphere ***"
     EXO_SRC="Source/Atmosphere-Patches"
-    EXO_DEST="build/exosphere/program/source/smc"
-    LIBEXO_DEST="build/libraries/libexosphere/include/exosphere/secmon"
+    EXO_DEST="build/atmosphere/exosphere/program/source/smc"
+    LIBEXO_DEST="build/atmosphere/libraries/libexosphere/include/exosphere/secmon"
 
     cp -v "$EXO_SRC/secmon_emc_access_table_data.inc"       "$EXO_DEST/"
     cp -v "$EXO_SRC/secmon_define_emc_access_table.inc"     "$EXO_DEST/"
@@ -68,26 +80,26 @@ fi
 
 echo
 echo "*** Compiling loader ***"
-cd build/stratosphere/loader || exit 1
+cd build/atmosphere/stratosphere/loader || exit 1
 make -j$CORES "$LDR_MAKE"
 hactool -t kip1 "out/nintendo_nx_arm64_armv8a/$LDR_BUILD_PATH/loader.kip" --uncompress=hoc.kip
-cd ../../../ # exit
-cp -v build/stratosphere/loader/hoc.kip dist/atmosphere/kips/hoc.kip
+cd "$ROOT_DIR" # exit
+cp -v build/atmosphere/stratosphere/loader/hoc.kip dist/atmosphere/kips/hoc.kip
 
 if [ "$NO_EXO" -eq 0 ]; then
     echo
     echo "*** Compiling exosphere ***"
-    cd build/exosphere
+    cd build/atmosphere/exosphere
     make -j$CORES
-    cd ../../
-    cp -v build/exosphere/out/nintendo_nx_arm64_armv8a/release/exosphere.bin dist/atmosphere/exosphere.bin
+    cd "$ROOT_DIR"
+    cp -v build/atmosphere/exosphere/out/nintendo_nx_arm64_armv8a/release/exosphere.bin dist/atmosphere/exosphere.bin
 fi
 
 cd Source/hoc-clk/
 ./build.sh
 cp -r dist/ ../../
 
-cd ../../
+cd "$ROOT_DIR"
 
 echo "*** Compiling horizon-oc-monitor ***"
 cd Source/Horizon-OC-Monitor/
@@ -99,13 +111,13 @@ if [ "$EXT" -eq 1 ]; then
     echo
     echo "*** Extensions enabled ***"
 
-    REPO_DIR="hekate"
-    REPO_URL="https://github.com/Horizon-OC/hekate.git"
+    HEKATE_DIR="hekate"
+    HEKATE_URL="https://github.com/Horizon-OC/hekate.git"
 
-    if [ ! -d "$REPO_DIR" ]; then
+    if [ ! -d "$HEKATE_DIR" ]; then
         echo
         echo "*** Cloning custom Hekate ***"
-        git clone "$REPO_URL" "$REPO_DIR"
+        git clone "$HEKATE_URL" "$HEKATE_DIR"
     fi
 
     cd hekate/
@@ -128,5 +140,6 @@ rm -f dist.zip
 zip -r dist.zip . >/dev/null
 
 echo "*** dist.zip created ***"
+echo
 
 cd "$ROOT_DIR" || exit 1

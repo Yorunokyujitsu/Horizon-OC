@@ -160,9 +160,9 @@ Refer to COMPILATION.md
 * 612 → sleep mode
 
 ### GPU clocks (mhz)
-* 1536 → absolute max clock on mariko. very dangerous
-* 1459
-* 1382
+* 1536 → absolute max clock on mariko. Dangerous
+* 1497 → max mariko unsafe clock 
+* 1382 → Max mariko "safe" clock
 * 1305
 * 1267 → NVIDIA T214(mariko) rating
 * 1228 → mariko High UV safe clock

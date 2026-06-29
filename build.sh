@@ -142,10 +142,13 @@ echo "*** Packaging dist.zip ***"
 cd "$DIST_DIR" || exit 1
 
 rm -f dist.zip
+rm .gitignore
 
 zip -r dist.zip . >/dev/null
 
 echo "*** dist.zip created ***"
 echo
+
+touch .gitignore
 
 cd "$ROOT_DIR" || exit 1

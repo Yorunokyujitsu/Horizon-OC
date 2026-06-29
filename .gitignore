@@ -6,3 +6,4 @@ __pycache__/
 build
 *.dksh
 Source/hekate
+dist/

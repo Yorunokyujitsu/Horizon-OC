@@ -26,7 +26,7 @@
 #include "base_menu_gui.h"
 
 using ValueChoiceListener = std::function<bool(std::uint32_t value)>;
-#define VALUE_DEFAULT_TEXT "Default"
+#define VALUE_DEFAULT_TEXT "기본"
 
 struct ValueRange {
     std::uint32_t min;

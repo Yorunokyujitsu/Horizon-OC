@@ -492,18 +492,18 @@ void MiscGui::listUI() {
     ValueThresholds thresholdsDisabled(0, 0);
     std::vector<NamedValue> noNamedValues = {};
 
-    this->listElement->addItem(new CompactCategoryHeader("Settings"));
+    this->listElement->addItem(new CompactCategoryHeader("설정     \uE150 파란 옵션은 재부팅 없이 적용됩니다"));
 
-    tsl::elm::CustomDrawer *rebootSetWarning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+    /*tsl::elm::CustomDrawer *rebootSetWarning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
         renderer->drawString("\uE150 Settings marked in blue", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
         renderer->drawString("don't require a reboot to apply!", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
         renderer->drawString("You can also press \ue0e3 to show", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
         renderer->drawString("information about each setting.", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
     });
     rebootSetWarning->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
-    this->listElement->addItem(rebootSetWarning);
+    this->listElement->addItem(rebootSetWarning);*/
 
-    tsl::elm::ListItem *sysmoduleSettingsSubMenu = new tsl::elm::ListItem("General Settings");
+    tsl::elm::ListItem *sysmoduleSettingsSubMenu = new tsl::elm::ListItem("기본 옵션");
     sysmoduleSettingsSubMenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<GeneralSettingsSubMenuGui>();
@@ -514,7 +514,7 @@ void MiscGui::listUI() {
     sysmoduleSettingsSubMenu->setValue(R_ARROW);
     this->listElement->addItem(sysmoduleSettingsSubMenu);
 
-    tsl::elm::ListItem *governorSettingsSubMenu = new tsl::elm::ListItem("Governor Settings");
+    tsl::elm::ListItem *governorSettingsSubMenu = new tsl::elm::ListItem("클럭 제어 옵션");
     governorSettingsSubMenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<GovernorSettingsSubMenuGui>();
@@ -525,7 +525,7 @@ void MiscGui::listUI() {
     governorSettingsSubMenu->setValue(R_ARROW);
     this->listElement->addItem(governorSettingsSubMenu);
 
-    tsl::elm::ListItem *safetySubmenu = new tsl::elm::ListItem("Safety Settings");
+    tsl::elm::ListItem *safetySubmenu = new tsl::elm::ListItem("안전 옵션");
     safetySubmenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<SafetySubMenuGui>();
@@ -536,7 +536,7 @@ void MiscGui::listUI() {
     safetySubmenu->setValue(R_ARROW);
     this->listElement->addItem(safetySubmenu);
 
-    tsl::elm::ListItem *ramSubmenu = new tsl::elm::ListItem("RAM Settings");
+    tsl::elm::ListItem *ramSubmenu = new tsl::elm::ListItem("RAM 옵션");
     ramSubmenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<RamSubmenuGui>();
@@ -547,7 +547,7 @@ void MiscGui::listUI() {
     ramSubmenu->setValue(R_ARROW);
     this->listElement->addItem(ramSubmenu);
 
-    tsl::elm::ListItem *cpuSubmenu = new tsl::elm::ListItem("CPU Settings");
+    tsl::elm::ListItem *cpuSubmenu = new tsl::elm::ListItem("CPU 옵션");
     cpuSubmenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<CpuSubmenuGui>();
@@ -558,7 +558,7 @@ void MiscGui::listUI() {
     cpuSubmenu->setValue(R_ARROW);
     this->listElement->addItem(cpuSubmenu);
 
-    tsl::elm::ListItem *gpuSubmenu = new tsl::elm::ListItem("GPU Settings");
+    tsl::elm::ListItem *gpuSubmenu = new tsl::elm::ListItem("GPU 옵션");
     gpuSubmenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<GpuSubmenuGui>();
@@ -569,7 +569,7 @@ void MiscGui::listUI() {
     gpuSubmenu->setValue(R_ARROW);
     this->listElement->addItem(gpuSubmenu);
 
-    tsl::elm::ListItem *displaySubMenu = new tsl::elm::ListItem("Display Settings");
+    tsl::elm::ListItem *displaySubMenu = new tsl::elm::ListItem("주사율 옵션");
     displaySubMenu->setClickListener([](u64 keys) {
         if (keys & HidNpadButton_A) {
             tsl::changeTo<DisplaySubMenuGui>();
@@ -581,7 +581,7 @@ void MiscGui::listUI() {
     this->listElement->addItem(displaySubMenu);
 
     if (this->configList->values[HocClkConfigValue_EnableExperimentalSettings]) {
-        tsl::elm::ListItem *experimentalSubMenu = new tsl::elm::ListItem("Experimental Settings");
+        tsl::elm::ListItem *experimentalSubMenu = new tsl::elm::ListItem("실험실 옵션");
         experimentalSubMenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<ExperimentalSettingsSubMenuGui>();
@@ -606,7 +606,7 @@ class GeneralSettingsSubMenuGui : public MiscGui {
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new CompactCategoryHeader("General Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("기본 옵션"));
 
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> ramVoltDispModes = {
@@ -615,30 +615,29 @@ class GeneralSettingsSubMenuGui : public MiscGui {
         };
 
         if (IsMariko()) {
-            addConfigButton(HocClkConfigValue_RAMVoltDisplayMode, "RAM Voltage Display Mode", ValueRange(0, 12, 1, "", 0), "RAM Voltage Display Mode",
+            addConfigButton(HocClkConfigValue_RAMVoltDisplayMode, "RAM 표시 전압", ValueRange(0, 12, 1, "", 0), "RAM 표시 전압",
                             &thresholdsDisabled, {}, ramVoltDispModes, false);
         }
 
         std::vector<NamedValue> RamDisplayUnitValues = {
             NamedValue("MHz", RamDisplayUnit_MHz),
             NamedValue("MT/s", RamDisplayUnit_MTs),
-            NamedValue("MHz and MT/s", RamDisplayUnit_MHzMTs),
+            NamedValue("MHz, MT/s", RamDisplayUnit_MHzMTs),
         };
-        addConfigButton(HocClkConfigValue_RamDisplayUnit, "RAM Display Unit", ValueRange(0, 0, 2, "", 0), "RAM Display Unit", &thresholdsDisabled, {},
+        addConfigButton(HocClkConfigValue_RamDisplayUnit, "RAM 표시 단위", ValueRange(0, 0, 2, "", 0), "RAM 표시 단위", &thresholdsDisabled, {},
                         RamDisplayUnitValues, false
 
         );
 
-        addConfigButton(HocClkConfigValue_PollingIntervalMs, "Polling Interval", ValueRange(50, 1000, 50, "ms", 1), "Polling Interval",
+        addConfigButton(HocClkConfigValue_PollingIntervalMs, "폴링 간격", ValueRange(50, 1000, 50, "ms", 1), "폴링 간격",
                         &thresholdsDisabled, {}, {}, false);
 
         tsl::elm::CustomDrawer *exSetWarning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-            renderer->drawString("\uE150 Experimental Settings are incomplete ", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-            renderer->drawString("and may not work correctly or at all!", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-            renderer->drawString("Here be dragons!", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
+            renderer->drawString("", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
         });
-        exSetWarning->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 90);
+        exSetWarning->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 30);
         this->listElement->addItem(exSetWarning);
+        this->listElement->addItem(new CompactCategoryHeader("실험적 기능        \uE150 사용시 주의가 필요합니다!"));
 
         addConfigToggle(HocClkConfigValue_EnableExperimentalSettings, nullptr);
     }
@@ -656,7 +655,7 @@ class ExperimentalSettingsSubMenuGui : public MiscGui {
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new CompactCategoryHeader("Experimental Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("실험적 기능"));
         ValueThresholds thresholdsDisabled(0, 0);
         if (IsMariko()) {
             addConfigToggle(HocClkConfigValue_MarikoMiddleFreqs, nullptr, true);
@@ -664,67 +663,65 @@ class ExperimentalSettingsSubMenuGui : public MiscGui {
         }
         std::vector<NamedValue> gpuSchedMethodValues = {
             NamedValue("INI", GpuSchedulingOverrideMethod_Ini),
-            NamedValue("NV Service", GpuSchedulingOverrideMethod_NvService),
+            NamedValue("NV 서비스", GpuSchedulingOverrideMethod_NvService),
         };
-        addConfigButton(HocClkConfigValue_GPUSchedulingMethod, "GPU Scheduling Override Method", ValueRange(0, 0, 1, "", 0),
-                        "GPU Scheduling Override Method", &thresholdsDisabled, {}, gpuSchedMethodValues, false);
+        addConfigButton(HocClkConfigValue_GPUSchedulingMethod, "GPU 스케줄링 방식", ValueRange(0, 0, 1, "", 0),
+                        "GPU 스케줄링 방식", &thresholdsDisabled, {}, gpuSchedMethodValues, false);
 
         std::vector<NamedValue> ramRFMeasurementMethods = {
             NamedValue("PLL", MemoryFrequencyMeasurementMode_PLL),
             NamedValue("Actmon", MemoryFrequencyMeasurementMode_Actmon),
         };
-        addConfigButton(HocClkConfigValue_MemoryFrequencyMeasurementMode, "Memory Frequency Measurement Mode", ValueRange(0, 0, 1, "", 0),
-                        "Memory Frequency Measurement Mode", &thresholdsDisabled, {}, ramRFMeasurementMethods, false);
+        addConfigButton(HocClkConfigValue_MemoryFrequencyMeasurementMode, "RAM 주파수 측정", ValueRange(0, 0, 1, "", 0),
+                        "RAM 주파수 측정", &thresholdsDisabled, {}, ramRFMeasurementMethods, false);
 
         tsl::elm::CustomDrawer *chargeWarningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-            renderer->drawString("\uE150 Overriding the charge current", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-            renderer->drawString("can be dangerous and may cause", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-            renderer->drawString("damage to your battery or charger!", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
+            renderer->drawString("\uE150 충전 전류를 강제로 변경할 경우, 배터리", false, x + 15, y + 50, 18, tsl::warningTextColor);
+            renderer->drawString("또는 충전기에 손상을 줄 수 있습니다!", false, x + 38, y + 70, 18, tsl::warningTextColor);
         });
         chargeWarningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 90);
         this->listElement->addItem(chargeWarningText);
 
         if (!IsHoag()) {
             std::vector<NamedValue> chargerCurrents = {
-                NamedValue("Disabled", 0),  NamedValue("1024mA", 1024), NamedValue("1280mA", 1280), NamedValue("1536mA", 1536),
-                NamedValue("1792mA", 1792), NamedValue("2048mA", 2048), NamedValue("2304mA", 2304), NamedValue("2560mA", 2560),
-                NamedValue("2816mA", 2816), NamedValue("3072mA", 3072),
+                NamedValue("비활성화", 0),  NamedValue("1024 mA", 1024), NamedValue("1280 mA", 1280), NamedValue("1536 mA", 1536),
+                NamedValue("1792 mA", 1792), NamedValue("2048 mA", 2048), NamedValue("2304 mA", 2304), NamedValue("2560 mA", 2560),
+                NamedValue("2816 mA", 2816), NamedValue("3072 mA", 3072),
             };
 
             ValueThresholds chargerThresholds(2048, 2049);
 
-            addConfigButton(HocClkConfigValue_BatteryChargeCurrent, "Charge Current Override", ValueRange(0, 0, 1, "", 0), "Charge Current Override",
+            addConfigButton(HocClkConfigValue_BatteryChargeCurrent, "충전 전류 강제 설정", ValueRange(0, 0, 1, "", 0), "충전 전류 강제 설정",
                             &chargerThresholds, {}, chargerCurrents, false);
         } else {
             std::vector<NamedValue> chargerCurrents = {
-                NamedValue("Disabled", 0),  NamedValue("1024mA", 1024), NamedValue("1280mA", 1280), NamedValue("1536mA", 1536),
-                NamedValue("1664mA", 1664),  // Why Nintendo?
-                NamedValue("1792mA", 1792), NamedValue("2048mA", 2048), NamedValue("2304mA", 2304), NamedValue("2560mA", 2560),
+                NamedValue("비활성화", 0),  NamedValue("1024 mA", 1024), NamedValue("1280 mA", 1280), NamedValue("1536 mA", 1536),
+                NamedValue("1664 mA", 1664),  // Why Nintendo?
+                NamedValue("1792 mA", 1792), NamedValue("2048 mA", 2048), NamedValue("2304 mA", 2304), NamedValue("2560 mA", 2560),
             };
 
             ValueThresholds chargerThresholds(1664, 1793);
 
-            addConfigButton(HocClkConfigValue_BatteryChargeCurrent, "Charge Current Override", ValueRange(0, 0, 1, "", 0), "Charge Current Override",
+            addConfigButton(HocClkConfigValue_BatteryChargeCurrent, "충전 전류 강제 설정", ValueRange(0, 0, 1, "", 0), "충전 전류 강제 설정",
                             &chargerThresholds, {}, chargerCurrents, false);
         }
 
         tsl::elm::CustomDrawer *inputLimitWarningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-            renderer->drawString("\uE150 Overriding the input current", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-            renderer->drawString("limit increases power draw from", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-            renderer->drawString("your charger. And board stress ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-            renderer->drawString("use 1500mA max.", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
+            renderer->drawString("\uE150 설정 시 전력 소모 증가로 인하여", false, x + 15, y + 50, 18, tsl::style::color::ColorText);
+            renderer->drawString("기판에 부담을 줄 수 있습니다.", false, x + 38, y + 70, 18, tsl::style::color::ColorText);
+            renderer->drawString("최대 1500 mA 사용을 권장합니다.", false, x + 38, y + 90, 18, tsl::style::color::ColorText);
         });
         inputLimitWarningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
         this->listElement->addItem(inputLimitWarningText);
 
         // having an option for hoag would be cool and disabling 100-500 and 2000+
         std::vector<NamedValue> inputCurrentLimits = {
-            NamedValue("Disabled", 0),
+            NamedValue("비활성화", 0),
             NamedValue("100mA", 100),
             NamedValue("150mA", 150),
             NamedValue("500mA", 500),
-            NamedValue("900mA", 900, "Hoag Default"),
-            NamedValue("1200mA", 1200, "Default"),
+            NamedValue("900mA", 900, "라이트 (기본)"),
+            NamedValue("1200mA", 1200, "기본"),
             NamedValue("1500mA", 1500),
             NamedValue("2000mA", 2000),
             NamedValue("3000mA", 3000),
@@ -732,12 +729,12 @@ class ExperimentalSettingsSubMenuGui : public MiscGui {
 
         ValueThresholds inputLimitThresholds(1500, 1501);
 
-        addConfigButton(HocClkConfigValue_InputCurrentLimit, "Input Current Limit Override", ValueRange(0, 0, 1, "", 0),
-                        "Input Current Limit Override", &inputLimitThresholds, {}, inputCurrentLimits, false);
+        addConfigButton(HocClkConfigValue_InputCurrentLimit, "입력 전류 강제 제한", ValueRange(0, 0, 1, "", 0),
+                        "입력 전류 강제 제한", &inputLimitThresholds, {}, inputCurrentLimits, false);
 
         if (IsAula()) {
             std::vector<NamedValue> displayClrPreset = {
-                NamedValue("Do Not Override", AulaDisplayColorMode_DoNotOverride),
+                NamedValue("설정 안 함", AulaDisplayColorMode_DoNotOverride),
                 NamedValue("Basic", AulaDisplayColorMode_Basic),
                 NamedValue("Saturated", AulaDisplayColorMode_Saturated),
                 NamedValue("Washed", AulaDisplayColorMode_Washed),
@@ -749,7 +746,7 @@ class ExperimentalSettingsSubMenuGui : public MiscGui {
                 NamedValue("Vivid", AulaDisplayColorMode_Night3, "Night"),
             };
 
-            addConfigButton(HocClkConfigValue_AulaDisplayColorPreset, "Display Color Preset", ValueRange(0, 1, 1, "", 0), "Display Color Preset",
+            addConfigButton(HocClkConfigValue_AulaDisplayColorPreset, "색상 프리셋", ValueRange(0, 1, 1, "", 0), "색상 프리셋",
                             &thresholdsDisabled, {}, displayClrPreset, false, false);
         }
     }
@@ -767,7 +764,7 @@ class GovernorSettingsSubMenuGui : public MiscGui {
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new CompactCategoryHeader("Governor Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("클럭 제어 옵션"));
         ValueThresholds thresholdsDisabled(0, 0);
 
         std::vector<NamedValue> GovernorMinHz = {
@@ -775,8 +772,8 @@ class GovernorSettingsSubMenuGui : public MiscGui {
             NamedValue("816 MHz", 816000000), NamedValue("918 MHz", 918000000), NamedValue("1020 MHz", 1020000000),
         };
 
-        addConfigButton(HocClkConfigValue_CpuGovernorMinimumFreq, "CPU Governor Minimum Frequency", ValueRange(0, 0, 1, "", 0),
-                        "CPU Governor Minimum Frequency", &thresholdsDisabled, {}, GovernorMinHz, false);
+        addConfigButton(HocClkConfigValue_CpuGovernorMinimumFreq, "CPU 최소 클럭", ValueRange(0, 0, 1, "", 0),
+                        "CPU 최소 클럭", &thresholdsDisabled, {}, GovernorMinHz, false);
     }
 };
 
@@ -798,32 +795,28 @@ class DisplaySubMenuGui : public MiscGui {
         if (!this->context)
             return;
 
-        this->listElement->addItem(new CompactCategoryHeader("Display Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("주사율 옵션"));
         addConfigToggle(HocClkConfigValue_OverwriteRefreshRate, nullptr);
         if (!this->context->isUsingRetroSuper) {
             tsl::elm::CustomDrawer *warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-                renderer->drawString("\uE150 Usage of unsafe display", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-                renderer->drawString("refresh rates may cause stress", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-                renderer->drawString("or damage to your display! ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-                renderer->drawString("Proceed at your own risk!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
+                renderer->drawString("\uE150 안전하지 않은 주사율 사용 시 디스플레이에", false, x, y + 50, 18, tsl::warningTextColor);
+                renderer->drawString("부담이나 손상을 줄 수 있습니다!", false, x + 23, y + 70, 18, tsl::warningTextColor);
             });
 
             warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
             this->listElement->addItem(warningText);
             ValueThresholds displayThresholds(60, 65);
-            addConfigButton(HocClkConfigValue_MaxDisplayClockH, "Max Handheld Display Hz", ValueRange(60, IsAula() ? 65 : 75, 1, " Hz", 1),
-                            "Display Clock", &displayThresholds, {}, {}, false);
+            addConfigButton(HocClkConfigValue_MaxDisplayClockH, "휴대 모드 최대 주사율", ValueRange(60, IsAula() ? 65 : 75, 1, " Hz", 1),
+                            "주사율", &displayThresholds, {}, {}, false);
         }
         if (!IsAula()) {
             tsl::elm::CustomDrawer *warningTextDV = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-                renderer->drawString("\uE150 Adjust the display voltage", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-                renderer->drawString("with caution to avoid damage", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-                renderer->drawString("to your display panel! ", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-                renderer->drawString("Proceed at your own risk!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
+                renderer->drawString("\uE150 디스플레이 패널 손상을 방지하려면", false, x, y + 50, 18, tsl::warningTextColor);
+                renderer->drawString("전압 조정에 주의하십시오!", false, x + 23, y + 70, 18, tsl::warningTextColor);
             });
             warningTextDV->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 110);
             this->listElement->addItem(warningTextDV);
-            addConfigButton(HocClkConfigValue_DisplayVoltage, "Display Voltage", ValueRange(800, 1200, 25, " mV", 1), "Display Voltage",
+            addConfigButton(HocClkConfigValue_DisplayVoltage, "표시 전압", ValueRange(800, 1200, 25, " mV", 1), "표시 전압",
                             &thresholdsDisabled, {}, {}, false);
         }
     }
@@ -841,13 +834,13 @@ class SafetySubMenuGui : public MiscGui {
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new CompactCategoryHeader("Safety Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("안전 옵션"));
         addConfigToggle(HocClkConfigValue_UncappedClocks, nullptr);
         addConfigToggle(HocClkConfigValue_ThermalThrottle, nullptr);
 
 #if IS_MINIMAL == 0
         ValueThresholds throttleThresholds(70, 80);
-        addConfigButton(HocClkConfigValue_ThermalThrottleThreshold, "Thermal Throttle Limit", ValueRange(50, 85, 1, "°C", 1), "Temp",
+        addConfigButton(HocClkConfigValue_ThermalThrottleThreshold, "제한 온도", ValueRange(50, 85, 1, "°C", 1), "온도",
                         &throttleThresholds);
 #endif
     }
@@ -872,9 +865,9 @@ class RamSubmenuGui : public MiscGui {
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> noNamedValues = {};
 
-        this->listElement->addItem(new CompactCategoryHeader("RAM Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("RAM 옵션"));
 
-        addMappedConfigTrackbar(KipConfigValue_emcDvbShift, "DVB Shift",
+        addMappedConfigTrackbar(KipConfigValue_emcDvbShift, "DVB 조정값",
                                 { 0xFFFFFFFCu, 0xFFFFFFFDu, 0xFFFFFFFEu, 0xFFFFFFFFu, 0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u },
                                 { "-4", "-3", "-2", "-1", " 0", "1", "2", "3", "4", "5", "6", "7", "8" });
 
@@ -890,7 +883,7 @@ class RamSubmenuGui : public MiscGui {
             }
 
             std::vector<NamedValue> marikovmaxconf = {
-                NamedValue("Do not override", 0, autoText),
+                NamedValue("설정 안 함", 0, autoText),
                 NamedValue("1000 mV", 1000),
                 NamedValue("1025 mV", 1025),
                 NamedValue("1050 mV", 1050),
@@ -903,36 +896,36 @@ class RamSubmenuGui : public MiscGui {
             };
             ValueThresholds marikovmaxT(1075, 1150);
 
-            addConfigButton(KipConfigValue_marikoSocVmax, "SoC Max Volt", ValueRange(0, 12, 1, "", 0), "SoC Max Volt", &marikovmaxT, {},
+            addConfigButton(KipConfigValue_marikoSocVmax, "SoC 최대 전압", ValueRange(0, 12, 1, "", 0), "SoC 최대 전압", &marikovmaxT, {},
                             marikovmaxconf, false, true);
         }
 
-        addConfigToggle(KipConfigValue_hpMode, "HP Mode", true);
+        addConfigToggle(KipConfigValue_hpMode, "HP 모드", true);
 
         std::map<uint32_t, std::string> emc_voltage_label = {
-            { 1100000, "Default (Mariko)" },  { 1125000, "Default (Erista)" },  { 1175000, "Rating" },
-            { 1212500, "Safe Max (Mariko)" }, { 1237500, "Safe Max (Erista)" }, { 1250000, "Unsafe Max" },
+            { 1100000, "기본 (Mariko)" }, { 1125000, "기본 (Erista)" }, { 1175000, "표준" },
+            { 1212500, "안전 최대치 (Mariko)" }, { 1237500, "안전 최대치 (Erista)" }, { 1250000, "불안정 최대치" },
         };
 
         ValueThresholds vdd2Thresholds(IsMariko() ? 1212500 : 1237500, IsMariko() ? 1250000 : 1275000);
-        addConfigButton(KipConfigValue_commonEmcMemVolt, "RAM VDD2 Voltage", ValueRange(912500, 1350000, 12500, "mV", 1000, 1), "Voltage",
+        addConfigButton(KipConfigValue_commonEmcMemVolt, "VDD2 전압", ValueRange(912500, 1350000, 12500, "mV", 1000, 1), "VDD2 전압",
                         &vdd2Thresholds, emc_voltage_label, noNamedValues, false, true);
 
         if (IsMariko()) {
             ValueThresholds vddqThresholds(675000, 725000);
-            addConfigButton(KipConfigValue_marikoEmcVddqVolt, "RAM VDDQ Voltage", ValueRange(400000, 750000, 5000, "mV", 1000), "RAM VDDQ Voltage",
+            addConfigButton(KipConfigValue_marikoEmcVddqVolt, "VDDQ 전압", ValueRange(400000, 750000, 5000, "mV", 1000), "VDDQ 전압",
                             &vddqThresholds, {}, {}, false, true);
         }
 
         if (IsMariko()) {
             std::vector<NamedValue> stepMode = {
-                NamedValue("66MHz", 0),
-                NamedValue("100MHz", 1),
-                NamedValue("133MHz", 3),  // Mantain compatability
-                NamedValue("JEDEC.", 2),
+                NamedValue("66 MHz", 0),
+                NamedValue("100 MHz", 1),
+                NamedValue("133 MHz", 3),  // Mantain compatability
+                NamedValue("JEDEC", 2),
             };
 
-            addConfigButton(KipConfigValue_stepMode, "Step Mode", ValueRange(0, 0, 2, "", 0), "Step Mode", &thresholdsDisabled, {}, stepMode, false,
+            addConfigButton(KipConfigValue_stepMode, "단계별 조정 모드", ValueRange(0, 0, 2, "", 0), "단계별 조정 모드", &thresholdsDisabled, {}, stepMode, false,
                             true);
         }
 
@@ -949,21 +942,21 @@ class RamSubmenuGui : public MiscGui {
                 // NamedValue("1766 MHz", 1766000),
                 NamedValue("1800 MHz", 1800000),
                 NamedValue("1833 MHz", 1833000),
-                NamedValue("1862 MHz", 1862400, "JEDEC."),
+                NamedValue("1862 MHz", 1862400, "JEDEC"),
                 NamedValue("1881 MHz", 1881600),
                 NamedValue("1900 MHz", 1900800),
                 NamedValue("1920 MHz", 1920000),
                 NamedValue("1939 MHz", 1939200),
                 NamedValue("1958 MHz", 1958400),
                 NamedValue("1977 MHz", 1977600),
-                NamedValue("1996 MHz", 1996800, "JEDEC."),
+                NamedValue("1996 MHz", 1996800, "JEDEC"),
                 NamedValue("2016 MHz", 2016000),
                 NamedValue("2035 MHz", 2035200),
                 NamedValue("2054 MHz", 2054400),
                 NamedValue("2073 MHz", 2073600),
                 NamedValue("2092 MHz", 2092800),
                 NamedValue("2112 MHz", 2112000),
-                NamedValue("2131 MHz", 2131200, "JEDEC."),
+                NamedValue("2131 MHz", 2131200, "JEDEC"),
                 NamedValue("2150 MHz", 2150400),
                 NamedValue("2169 MHz", 2169600),
                 NamedValue("2188 MHz", 2188800),
@@ -977,7 +970,7 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("2342 MHz", 2342400),
                 NamedValue("2361 MHz", 2361600),
                 NamedValue("2380 MHz", 2380800),
-                NamedValue("2400 MHz", 2400000, "JEDEC."),
+                NamedValue("2400 MHz", 2400000, "JEDEC"),
             };
         } else {
             emcMaxClock = {
@@ -989,16 +982,16 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("1766 MHz", 1766000),
                 NamedValue("1800 MHz", 1800000),
                 NamedValue("1833 MHz", 1833000),
-                NamedValue("1866 MHz", 1866000, "JEDEC."),
+                NamedValue("1866 MHz", 1866000, "JEDEC"),
                 NamedValue("1900 MHz", 1900000),
                 NamedValue("1933 MHz", 1933000),
                 NamedValue("1966 MHz", 1966000),
-                NamedValue("1996 MHz", 1996800, "JEDEC."),
+                NamedValue("1996 MHz", 1996800, "JEDEC"),
                 NamedValue("2000 MHz", 2000000),
                 NamedValue("2033 MHz", 2033000),
                 NamedValue("2066 MHz", 2066000),
                 NamedValue("2100 MHz", 2100000),
-                NamedValue("2133 MHz", 2133000, "JEDEC."),
+                NamedValue("2133 MHz", 2133000, "JEDEC"),
                 NamedValue("2166 MHz", 2166000),
                 NamedValue("2200 MHz", 2200000),
                 NamedValue("2233 MHz", 2233000),
@@ -1006,7 +999,7 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("2300 MHz", 2300000),
                 NamedValue("2333 MHz", 2333000),
                 NamedValue("2366 MHz", 2366000),
-                NamedValue("2400 MHz", 2400000, "JEDEC."),
+                NamedValue("2400 MHz", 2400000, "JEDEC"),
                 NamedValue("2433 MHz", 2433000),
                 NamedValue("2466 MHz", 2466000),
                 NamedValue("2500 MHz", 2500000),
@@ -1014,7 +1007,7 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("2566 MHz", 2566000),
                 NamedValue("2600 MHz", 2600000),
                 NamedValue("2633 MHz", 2633000),
-                NamedValue("2666 MHz", 2666000, "JEDEC."),
+                NamedValue("2666 MHz", 2666000, "JEDEC"),
                 NamedValue("2700 MHz", 2700000),
                 NamedValue("2733 MHz", 2733000),
                 NamedValue("2766 MHz", 2766000),
@@ -1022,7 +1015,7 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("2833 MHz", 2833000),
                 NamedValue("2866 MHz", 2866000),
                 NamedValue("2900 MHz", 2900000),
-                NamedValue("2933 MHz", 2933000, "JEDEC."),
+                NamedValue("2933 MHz", 2933000, "JEDEC"),
                 NamedValue("2966 MHz", 2966000),
                 NamedValue("3000 MHz", 3000000),
                 NamedValue("3033 MHz", 3033000),
@@ -1030,10 +1023,10 @@ class RamSubmenuGui : public MiscGui {
                 NamedValue("3100 MHz", 3100000),
                 NamedValue("3133 MHz", 3133000),
                 NamedValue("3166 MHz", 3166000),
-                NamedValue("3200 MHz", 3200000, "JEDEC."),
-                NamedValue("3233 MHz", 3233000, "High speedo needed!"),
-                NamedValue("3266 MHz", 3266000, "High speedo needed!"),
-                NamedValue("3300 MHz", 3300000, "High speedo needed!"),
+                NamedValue("3200 MHz", 3200000, "JEDEC"),
+                NamedValue("3233 MHz", 3233000, "높은 speedo 값 필요!"),
+                NamedValue("3266 MHz", 3266000, "높은 speedo 값 필요!"),
+                NamedValue("3300 MHz", 3300000, "높은 speedo 값 필요!"),
             };
         }
 
@@ -1044,14 +1037,14 @@ class RamSubmenuGui : public MiscGui {
         }
 
         if (IsMariko()) {
-            addConfigButton(KipConfigValue_marikoEmcMaxClock, "Ram Max Clock", ValueRange(0, 1, 1, "", 1), "Ram Max Clock", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_marikoEmcMaxClock, "최대 클럭", ValueRange(0, 1, 1, "", 1), "최대 클럭", &thresholdsDisabled, {},
                             emcMaxClock, false, true);
         } else {
-            addConfigButton(KipConfigValue_eristaEmcMaxClock, "Ram Max Clock", ValueRange(0, 1, 1, "", 1), "Ram Max Clock", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_eristaEmcMaxClock, "최대 클럭", ValueRange(0, 1, 1, "", 1), "최대 클럭", &thresholdsDisabled, {},
                             emcMaxClock, false, true);
         }
 
-        tsl::elm::ListItem *latenciesSubmenu = new tsl::elm::ListItem("RAM Latency Editor");
+        tsl::elm::ListItem *latenciesSubmenu = new tsl::elm::ListItem("지연");
         latenciesSubmenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<RamLatenciesSubmenuGui>();
@@ -1062,7 +1055,7 @@ class RamSubmenuGui : public MiscGui {
         latenciesSubmenu->setValue(R_ARROW);
         this->listElement->addItem(latenciesSubmenu);
 
-        tsl::elm::ListItem *timingsSubmenu = new tsl::elm::ListItem("RAM Timing Reductions");
+        tsl::elm::ListItem *timingsSubmenu = new tsl::elm::ListItem("타이밍");
         timingsSubmenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<RamTimingsSubmenuGui>();
@@ -1074,7 +1067,7 @@ class RamSubmenuGui : public MiscGui {
         this->listElement->addItem(timingsSubmenu);
 
         if (IsMariko()) {
-            tsl::elm::ListItem *socVoltageTable = new tsl::elm::ListItem("SOC Voltage Table");
+            tsl::elm::ListItem *socVoltageTable = new tsl::elm::ListItem("SoC 전압 테이블");
             socVoltageTable->setClickListener([](u64 keys) {
                 if (keys & HidNpadButton_A) {
                     tsl::changeTo<SocCustomTableSubmenuGui>();
@@ -1100,7 +1093,7 @@ class RamTimingsSubmenuGui : public MiscGui {
             FatalGui::openWithResultCode("hocclkIpcGetConfigValues", rc);
             return;
         }
-        this->listElement->addItem(new CompactCategoryHeader("Memory Timings"));
+        this->listElement->addItem(new CompactCategoryHeader("RAM 타이밍"));
 
         addConfigTrackbar(KipConfigValue_t1_tRCD, "t1 tRCD", ValueRange(0, 7, 1));
         addConfigTrackbar(KipConfigValue_t2_tRP, "t2 tRP", ValueRange(0, 7, 1));
@@ -1113,7 +1106,7 @@ class RamTimingsSubmenuGui : public MiscGui {
 
         /* Yes this is duplicated code, yes I don't care. */
         std::vector<NamedValue> timingTbreakFreqs = {
-            NamedValue("Disabled", 0),
+            NamedValue("비활성화",       0),
             NamedValue("1633 MHz", 1633000),
             NamedValue("1666 MHz", 1666000),
             NamedValue("1700 MHz", 1700000),
@@ -1121,16 +1114,16 @@ class RamTimingsSubmenuGui : public MiscGui {
             NamedValue("1766 MHz", 1766000),
             NamedValue("1800 MHz", 1800000),
             NamedValue("1833 MHz", 1833000),
-            NamedValue("1866 MHz", 1866000, "JEDEC."),
+            NamedValue("1866 MHz", 1866000, "JEDEC"),
             NamedValue("1900 MHz", 1900000),
             NamedValue("1933 MHz", 1933000),
             NamedValue("1966 MHz", 1966000),
-            NamedValue("1996 MHz", 1996800, "JEDEC."),
+            NamedValue("1996 MHz", 1996800, "JEDEC"),
             NamedValue("2000 MHz", 2000000),
             NamedValue("2033 MHz", 2033000),
             NamedValue("2066 MHz", 2066000),
             NamedValue("2100 MHz", 2100000),
-            NamedValue("2133 MHz", 2133000, "JEDEC."),
+            NamedValue("2133 MHz", 2133000, "JEDEC"),
             NamedValue("2166 MHz", 2166000),
             NamedValue("2200 MHz", 2200000),
             NamedValue("2233 MHz", 2233000),
@@ -1138,7 +1131,7 @@ class RamTimingsSubmenuGui : public MiscGui {
             NamedValue("2300 MHz", 2300000),
             NamedValue("2333 MHz", 2333000),
             NamedValue("2366 MHz", 2366000),
-            NamedValue("2400 MHz", 2400000, "JEDEC."),
+            NamedValue("2400 MHz", 2400000, "JEDEC"),
             NamedValue("2433 MHz", 2433000),
             NamedValue("2466 MHz", 2466000),
             NamedValue("2500 MHz", 2500000),
@@ -1146,7 +1139,7 @@ class RamTimingsSubmenuGui : public MiscGui {
             NamedValue("2566 MHz", 2566000),
             NamedValue("2600 MHz", 2600000),
             NamedValue("2633 MHz", 2633000),
-            NamedValue("2666 MHz", 2666000, "JEDEC."),
+            NamedValue("2666 MHz", 2666000, "JEDEC"),
             NamedValue("2700 MHz", 2700000),
             NamedValue("2733 MHz", 2733000),
             NamedValue("2766 MHz", 2766000),
@@ -1154,7 +1147,7 @@ class RamTimingsSubmenuGui : public MiscGui {
             NamedValue("2833 MHz", 2833000),
             NamedValue("2866 MHz", 2866000),
             NamedValue("2900 MHz", 2900000),
-            NamedValue("2933 MHz", 2933000, "JEDEC."),
+            NamedValue("2933 MHz", 2933000, "JEDEC"),
             NamedValue("2966 MHz", 2966000),
             NamedValue("3000 MHz", 3000000),
             NamedValue("3033 MHz", 3033000),
@@ -1162,10 +1155,10 @@ class RamTimingsSubmenuGui : public MiscGui {
             NamedValue("3100 MHz", 3100000),
             NamedValue("3133 MHz", 3133000),
             NamedValue("3166 MHz", 3166000),
-            NamedValue("3200 MHz", 3200000, "JEDEC."),
-            NamedValue("3233 MHz", 3233000, "High speedo needed"),
-            NamedValue("3266 MHz", 3266000, "High speedo needed!"),
-            NamedValue("3300 MHz", 3300000, "High speedo needed!"),
+            NamedValue("3200 MHz", 3200000, "JEDEC"),
+            NamedValue("3233 MHz", 3233000, "높은 speedo 값 필요!"),
+            NamedValue("3266 MHz", 3266000, "높은 speedo 값 필요!"),
+            NamedValue("3300 MHz", 3300000, "높은 speedo 값 필요!"),
             // NamedValue("3333MHz (Needs extreme Speedo/PLL)", 3333000),
             // NamedValue("3366MHz (Needs extreme Speedo/PLL)", 3366000),
             // NamedValue("3400MHz (Needs extreme Speedo/PLL)", 3400000),
@@ -1180,8 +1173,14 @@ class RamTimingsSubmenuGui : public MiscGui {
             nv.name = formatMemClockKhzLabel(nv.value, unit);
         }
 
+        tsl::elm::CustomDrawer *blankRamtiming = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+            renderer->drawString("", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
+        });
+        blankRamtiming->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 30);
+        this->listElement->addItem(blankRamtiming);
+
         ValueThresholds thresholdsDisabled(0, 0);
-        this->listElement->addItem(new CompactCategoryHeader("Advanced"));
+        this->listElement->addItem(new CompactCategoryHeader("고급 옵션"));
         if (IsMariko()) {
             // tBreak / low-high timing graph (live, reads config each frame)
             {
@@ -1311,7 +1310,7 @@ class RamTimingsSubmenuGui : public MiscGui {
                 this->listElement->addItem(tbreakGraph);
             }
 
-            addConfigButton(KipConfigValue_timingEmcTbreak, "RAM-Timing tBreak", ValueRange(0, 1, 1, "", 1), "tBreak", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_timingEmcTbreak, "RAM 타이밍 tBreak", ValueRange(0, 1, 1, "", 1), "tBreak", &thresholdsDisabled, {},
                             timingTbreakFreqs, false, true);
             addConfigTrackbar(KipConfigValue_low_t1_tRCD, "Low t1 tRCD", ValueRange(0, 7, 1));
             addConfigTrackbar(KipConfigValue_low_t2_tRP, "Low t2 tRP", ValueRange(0, 7, 1));
@@ -1326,11 +1325,11 @@ class RamTimingsSubmenuGui : public MiscGui {
                 spacer->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 8);
                 this->listElement->addItem(spacer);
             }
-            addConfigTrackbar(KipConfigValue_t2_tRP_cap, "1333WL t2 RP Cap", ValueRange(0, 8, 1));
+            addConfigTrackbar(KipConfigValue_t2_tRP_cap, "1333WL t2 RP 제한값", ValueRange(0, 8, 1));
         }
-        addMappedConfigTrackbar(KipConfigValue_t6_tRTW_fine_tune, "t6 tRTW Fine Tune", { 0xFFFFFFFEu, 0xFFFFFFFFu, 0u, 1u, 2u },
+        addMappedConfigTrackbar(KipConfigValue_t6_tRTW_fine_tune, "t6 tRTW 미세 조정", { 0xFFFFFFFEu, 0xFFFFFFFFu, 0u, 1u, 2u },
                                 { "-2", "-1", " 0", "+1", "+2" });
-        addMappedConfigTrackbar(KipConfigValue_t7_tWTR_fine_tune, "t7 tWTR Fine Tune", { 0xFFFFFFFDu, 0xFFFFFFFEu, 0xFFFFFFFFu, 0u, 1u, 2u, 3u },
+        addMappedConfigTrackbar(KipConfigValue_t7_tWTR_fine_tune, "t7 tWTR 미세 조정", { 0xFFFFFFFDu, 0xFFFFFFFEu, 0xFFFFFFFFu, 0u, 1u, 2u, 3u },
                                 { "-3", "-2", "-1", " 0", "+1", "+2", "+3" });
     }
 };
@@ -1428,11 +1427,11 @@ class RamLatenciesSubmenuGui : public MiscGui {
             KipConfigValue_write_latency_2133,
         };
 
-        static const char *kTierLabels[4] = { "1333 Latency Max", "1600 Latency Max", "1866 Latency Max", "2133 Latency Max" };
+        static const char *kTierLabels[4] = { "1333 최대 지연", "1600 최대 지연", "1866 최대 지연", "2133 최대 지연" };
 
         auto buildNamedValues = [&](int tierIdx) -> std::vector<NamedValue> {
             std::vector<NamedValue> nv;
-            nv.push_back(NamedValue("-", 0u));
+            nv.push_back(NamedValue("⋯", 0u));
             if (tierIdx == 3) {
                 nv.push_back(NamedValue(formatMemClockKhzLabel(maxClock, unit), maxClock));
                 nv.push_back(NamedValue(formatMemClockKhzLabel(maxClock, unit), 0xFFFFFFFFu));
@@ -1504,7 +1503,7 @@ class RamLatenciesSubmenuGui : public MiscGui {
                     }
 
                     tsl::changeTo<ValueChoiceGui>(
-                        displayCurrent, ValueRange(0, 0, 1, "", 1), std::string("2133 Latency Max"),
+                        displayCurrent, ValueRange(0, 0, 1, "", 1), std::string("2133 최대 지연"),
                         [this, thisKey, keysArr](uint32_t chosen) -> bool {
                             this->configList->values[thisKey] = chosen;
                             Result rc = hocclkIpcSetConfigValues(this->configList);
@@ -1563,7 +1562,7 @@ class RamLatenciesSubmenuGui : public MiscGui {
                     displayCurrent = 0;
 
                 tsl::changeTo<ValueChoiceGui>(
-                    displayCurrent, ValueRange(0, 0, 1, "", 1), std::string("Latency Max"),
+                    displayCurrent, ValueRange(0, 0, 1, "", 1), std::string("최대 지연"),
                     [this, thisKey, keysArr](uint32_t chosen) -> bool {
                         this->configList->values[thisKey] = chosen;
                         normalizeLatencies(keysArr);
@@ -1586,7 +1585,7 @@ class RamLatenciesSubmenuGui : public MiscGui {
             this->configNamedValues[thisKey] = buildNamedValues(tierIdx);
         };
 
-        this->listElement->addItem(new CompactCategoryHeader("Latency Graph"));
+        this->listElement->addItem(new CompactCategoryHeader("지연 그래프"));
 
         {
             HocClkConfigValueList *cfgPtr = this->configList;
@@ -1826,11 +1825,17 @@ class RamLatenciesSubmenuGui : public MiscGui {
             this->listElement->addItem(graph);
         }
 
-        this->listElement->addItem(new CompactCategoryHeader("Read Latency"));
+        this->listElement->addItem(new CompactCategoryHeader("읽기"));
         for (int i = 0; i < 4; i++)
             addLatencyRow(kTierLabels[i], i, kLatencyRKeys);
 
-        this->listElement->addItem(new CompactCategoryHeader("Write Latency"));
+        tsl::elm::CustomDrawer *blankLatency = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+            renderer->drawString("", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
+        });
+        blankLatency->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 30);
+        this->listElement->addItem(blankLatency);
+
+        this->listElement->addItem(new CompactCategoryHeader("쓰기"));
         for (int i = 0; i < 4; i++)
             addLatencyRow(kTierLabels[i], i, kLatencyWKeys);
     }
@@ -1855,27 +1860,27 @@ class CpuSubmenuGui : public MiscGui {
         ValueThresholds eCpuClockThresholds(1785000, 2091000);
         ValueThresholds eCpuClockThresholdsUV(2091000, 2193000);
 
-        this->listElement->addItem(new CompactCategoryHeader("CPU Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("CPU 옵션"));
         if (IsMariko()) {
-            addConfigTrackbar(KipConfigValue_marikoCpuUVLow, "CPU Low UV", ValueRange(0, 8, 1));
-            addConfigTrackbar(KipConfigValue_marikoCpuUVHigh, "CPU High UV", ValueRange(0, 12, 1));
+            addConfigTrackbar(KipConfigValue_marikoCpuUVLow, "저전압 언더볼트", ValueRange(0, 8, 1));
+            addConfigTrackbar(KipConfigValue_marikoCpuUVHigh, "고전압 언더볼트", ValueRange(0, 12, 1));
 
             std::vector<NamedValue> marikoTableConf = { // NamedValue("Auto", 0),
-                                                        NamedValue("Default", 1), NamedValue("1581MHz Tbreak", 2), NamedValue("1683MHz Tbreak", 3),
-                                                        NamedValue("Extreme UV Table", 4)
+                                                        NamedValue("기본", 1), NamedValue("1581MHz Tbreak", 2), NamedValue("1683MHz Tbreak", 3),
+                                                        NamedValue("Extreme 테이블", 4)
             };
 
-            addConfigButton(KipConfigValue_tableConf, "CPU UV Table", ValueRange(0, 12, 1, "", 0), "CPU UV Table", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_tableConf, "UV 테이블", ValueRange(0, 12, 1, "", 0), "UV 테이블", &thresholdsDisabled, {},
                             marikoTableConf, false, true);
 
-            addConfigButton(KipConfigValue_marikoCpuLowVmin, "CPU Low VMIN", ValueRange(550, 750, 5, "mV", 1), "CPU VMIN", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_marikoCpuLowVmin, "저전압 최소값", ValueRange(550, 750, 5, "mV", 1), "최소 전압", &thresholdsDisabled, {},
                             {}, false, true);
 
-            addConfigButton(KipConfigValue_marikoCpuHighVmin, "CPU High VMIN", ValueRange(650, 900, 5, "mV", 1), "CPU VMIN", &thresholdsDisabled, {},
+            addConfigButton(KipConfigValue_marikoCpuHighVmin, "고전압 최소값", ValueRange(650, 900, 5, "mV", 1), "최소 전압", &thresholdsDisabled, {},
                             {}, false, true);
 
             ValueThresholds mCpuVoltThresholds(1160, 1180);
-            addConfigButton(KipConfigValue_marikoCpuMaxVolt, "CPU Max Voltage", ValueRange(1000, 1200, 5, "mV", 1), "CPU Max Voltage",
+            addConfigButton(KipConfigValue_marikoCpuMaxVolt, "최대 전압", ValueRange(1000, 1200, 5, "mV", 1), "최대 전압",
                             &mCpuVoltThresholds, {}, {}, false, true);
 
             std::vector<NamedValue> maxClkOptions = {
@@ -1883,7 +1888,7 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2397 MHz", 2397000), NamedValue("2499 MHz", 2499000), NamedValue("2601 MHz", 2601000), NamedValue("2703 MHz", 2703000),
             };
 
-            addConfigButton(KipConfigValue_marikoCpuMaxClock, "CPU Max Clock", ValueRange(0, 0, 1, "", 1), "CPU Max Clock",
+            addConfigButton(KipConfigValue_marikoCpuMaxClock, "최대 클럭", ValueRange(0, 0, 1, "", 1), "최대 클럭",
                             this->configList->values[KipConfigValue_marikoCpuUVHigh] ? &mCpuClockThresholdsUV : &mCpuClockThresholds, {},
                             maxClkOptions, false, true);
 
@@ -1898,7 +1903,7 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2397 MHz", 2397000), NamedValue("2499 MHz", 2499000), NamedValue("2601 MHz", 2601000), NamedValue("2703 MHz", 2703000),
             };
 
-            addConfigButton(KipConfigValue_marikoCpuBoostClock, "CPU Boost Clock", ValueRange(0, 0, 1, "", 1), "CPU Boost Clock",
+            addConfigButton(KipConfigValue_marikoCpuBoostClock, "부스트 클럭", ValueRange(0, 0, 1, "", 1), "부스트 클럭",
                             this->configList->values[KipConfigValue_marikoCpuUVHigh] ? &mCpuClockThresholdsUV : &mCpuClockThresholds, {}, ClkOptions,
                             false, true);
 
@@ -1911,16 +1916,16 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("1766 MHz", 1766000),
                 NamedValue("1800 MHz", 1800000),
                 NamedValue("1833 MHz", 1833000),
-                NamedValue("1866 MHz", 1866000, "JEDEC."),
+                NamedValue("1866 MHz", 1866000, "JEDEC"),
                 NamedValue("1900 MHz", 1900000),
                 NamedValue("1933 MHz", 1933000),
                 NamedValue("1966 MHz", 1966000),
-                NamedValue("1996 MHz", 1996800, "JEDEC."),
+                NamedValue("1996 MHz", 1996800, "JEDEC"),
                 NamedValue("2000 MHz", 2000000),
                 NamedValue("2033 MHz", 2033000),
                 NamedValue("2066 MHz", 2066000),
                 NamedValue("2100 MHz", 2100000),
-                NamedValue("2133 MHz", 2133000, "JEDEC."),
+                NamedValue("2133 MHz", 2133000, "JEDEC"),
                 NamedValue("2166 MHz", 2166000),
                 NamedValue("2200 MHz", 2200000),
                 NamedValue("2233 MHz", 2233000),
@@ -1928,7 +1933,7 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2300 MHz", 2300000),
                 NamedValue("2333 MHz", 2333000),
                 NamedValue("2366 MHz", 2366000),
-                NamedValue("2400 MHz", 2400000, "JEDEC."),
+                NamedValue("2400 MHz", 2400000, "JEDEC"),
                 NamedValue("2433 MHz", 2433000),
                 NamedValue("2466 MHz", 2466000),
                 NamedValue("2500 MHz", 2500000),
@@ -1936,7 +1941,7 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2566 MHz", 2566000),
                 NamedValue("2600 MHz", 2600000),
                 NamedValue("2633 MHz", 2633000),
-                NamedValue("2666 MHz", 2666000, "JEDEC."),
+                NamedValue("2666 MHz", 2666000, "JEDEC"),
                 NamedValue("2700 MHz", 2700000),
                 NamedValue("2733 MHz", 2733000),
                 NamedValue("2766 MHz", 2766000),
@@ -1944,7 +1949,7 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2833 MHz", 2833000),
                 NamedValue("2866 MHz", 2866000),
                 NamedValue("2900 MHz", 2900000),
-                NamedValue("2933 MHz", 2933000, "JEDEC."),
+                NamedValue("2933 MHz", 2933000, "JEDEC"),
                 NamedValue("2966 MHz", 2966000),
                 NamedValue("3000 MHz", 3000000),
                 NamedValue("3033 MHz", 3033000),
@@ -1952,26 +1957,26 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("3100 MHz", 3100000),
                 NamedValue("3133 MHz", 3133000),
                 NamedValue("3166 MHz", 3166000),
-                NamedValue("3200 MHz", 3200000, "JEDEC."),
-                NamedValue("3233 MHz", 3233000, "High speedo needed!"),
-                NamedValue("3266 MHz", 3266000, "High speedo needed!"),
-                NamedValue("3300 MHz", 3300000, "High speedo needed!"),
+                NamedValue("3200 MHz", 3200000, "JEDEC"),
+                NamedValue("3233 MHz", 3233000, "높은 speedo 값 필요!"),
+                NamedValue("3266 MHz", 3266000, "높은 speedo 값 필요!"),
+                NamedValue("3300 MHz", 3300000, "높은 speedo 값 필요!"),
             };
-            addConfigToggle(HocClkConfigValue_AutoRAMCPUOverclock, "Auto CPU RAM OC");
-            addConfigButton(HocClkConfigValue_AutoRamCpuCpuOCFreq, "Auto CPU RAM OC CPU clock", ValueRange(0, 0, 1, "", 1), "CPU Clock",
+            addConfigToggle(HocClkConfigValue_AutoRAMCPUOverclock, "RAM 연동 CPU 자동 OC");
+            addConfigButton(HocClkConfigValue_AutoRamCpuCpuOCFreq, "자동 OC CPU 클럭", ValueRange(0, 0, 1, "", 1), "CPU 클럭",
                             &thresholdsDisabled, {}, ClkOptionsRamOc, false, false);
-            addConfigButton(HocClkConfigValue_AutoRamCpuRamOCThreshold, "Auto CPU RAM OC Threshold", ValueRange(0, 0, 1, "", 1), "RAM Clock",
+            addConfigButton(HocClkConfigValue_AutoRamCpuRamOCThreshold, "자동 OC 램 임계값", ValueRange(0, 0, 1, "", 1), "RAM 클럭",
                             &thresholdsDisabled, {}, emcMaxClock, false, false);
         } else {
-            addConfigTrackbar(KipConfigValue_eristaCpuUV, "CPU UV", ValueRange(0, 5, 1));
+            addConfigTrackbar(KipConfigValue_eristaCpuUV, "언더볼트", ValueRange(0, 5, 1));
 
-            addConfigToggle(KipConfigValue_eristaCpuUnlock, "CPU Unlock", true);
+            addConfigToggle(KipConfigValue_eristaCpuUnlock, "제한 해제", true);
 
-            addConfigButton(KipConfigValue_eristaCpuVmin, "CPU VMIN", ValueRange(750, 900, 25, "mV", 1), "CPU VMIN", &thresholdsDisabled, {}, {},
+            addConfigButton(KipConfigValue_eristaCpuVmin, "최소 전압", ValueRange(750, 900, 25, "mV", 1), "최소 전압", &thresholdsDisabled, {}, {},
                             false, true);
 
             ValueThresholds eCpuVoltThresholds(1235, 1260);
-            addConfigButton(KipConfigValue_eristaCpuMaxVolt, "CPU Max Voltage", ValueRange(1120, 1260, 5, "mV", 1), "CPU Max Voltage",
+            addConfigButton(KipConfigValue_eristaCpuMaxVolt, "최대 전압", ValueRange(1120, 1260, 5, "mV", 1), "최대 전압",
                             &eCpuVoltThresholds, {}, {}, false, true);
 
             std::vector<NamedValue> maxClkOptions = {
@@ -1979,13 +1984,13 @@ class CpuSubmenuGui : public MiscGui {
                 NamedValue("2193 MHz", 2193), NamedValue("2295 MHz", 2295), NamedValue("2397 MHz", 2397),
             };
             ValueThresholds eCpuMaxClockThresholds(1785, 2091);
-            addConfigButton(HocClkConfigValue_EristaMaxCpuClock, "CPU Max Clock", ValueRange(0, 0, 1, "", 1), "CPU Max Clock",
+            addConfigButton(HocClkConfigValue_EristaMaxCpuClock, "CPU 최대 클럭", ValueRange(0, 0, 1, "", 1), "CPU 최대 클럭",
                             &eCpuMaxClockThresholds, {}, maxClkOptions, false);
             std::vector<NamedValue> ClkOptionsE = {
                 NamedValue("1785 MHz", 1785000), NamedValue("1887 MHz", 1887000), NamedValue("1989 MHz", 1989000), NamedValue("2091 MHz", 2091000),
                 NamedValue("2193 MHz", 2193000), NamedValue("2295 MHz", 2295000), NamedValue("2397 MHz", 2397000),
             };
-            addConfigButton(KipConfigValue_eristaCpuBoostClock, "CPU Boost Clock", ValueRange(0, 0, 1, "", 1), "CPU Boost Clock",
+            addConfigButton(KipConfigValue_eristaCpuBoostClock, "부스트 클럭", ValueRange(0, 0, 1, "", 1), "부스트 클럭",
                             this->configList->values[KipConfigValue_eristaCpuUV] ? &eCpuClockThresholdsUV : &eCpuClockThresholds, {}, ClkOptionsE,
                             false, true);
             addConfigToggle(HocClkConfigValue_LiveCpuUv, nullptr);
@@ -2009,44 +2014,44 @@ class GpuSubmenuGui : public MiscGui {
         ValueThresholds thresholdsDisabled(0, 0);
         std::vector<NamedValue> noNamedValues = {};
 
-        this->listElement->addItem(new CompactCategoryHeader("GPU Settings"));
+        this->listElement->addItem(new CompactCategoryHeader("GPU 옵션"));
 
         std::vector<NamedValue> gpuUvConfM = {
-            NamedValue("No Undervolt", 0, "HOS Default"),
-            NamedValue("SLT Table", 1),
-            NamedValue("HiOPT Table", 2, "HOC Default"),
-            NamedValue("HiOPT - 15mV", 3),
-            NamedValue("High UV Table", 4),
+            NamedValue("언더볼트 설정 안 함", 0, "HOS 기본값"),
+            NamedValue("SLT 테이블", 1),
+            NamedValue("HiOPT 테이블", 2, "HOC 기본값"),
+            NamedValue("HiOPT - 15 mV", 3),
+            NamedValue("고전압 UV 테이블", 4),
         };
 
         std::vector<NamedValue> gpuUvConfE = {
-            NamedValue("No Undervolt", 0),
-            NamedValue("SLT Table", 1),
-            NamedValue("HiOPT Table", 2),
+            NamedValue("언더볼트 설정 안 함", 0),
+            NamedValue("SLT 테이블", 1),
+            NamedValue("HiOPT 테이블", 2),
         };
         std::vector<NamedValue> mGpuVoltsVmin = {
-            NamedValue("480mV", 480), NamedValue("485mV", 485), NamedValue("490mV", 490), NamedValue("495mV", 495), NamedValue("500mV", 500),
-            NamedValue("505mV", 505), NamedValue("510mV", 510), NamedValue("515mV", 515), NamedValue("520mV", 520), NamedValue("525mV", 525),
-            NamedValue("530mV", 530), NamedValue("535mV", 535), NamedValue("540mV", 540), NamedValue("545mV", 545), NamedValue("550mV", 550),
-            NamedValue("555mV", 555), NamedValue("560mV", 560), NamedValue("565mV", 565), NamedValue("570mV", 570), NamedValue("575mV", 575),
-            NamedValue("580mV", 580), NamedValue("585mV", 585), NamedValue("590mV", 590), NamedValue("595mV", 595), NamedValue("600mV", 600),
-            NamedValue("605mV", 605), NamedValue("610mV", 610), NamedValue("615mV", 615), NamedValue("620mV", 620), NamedValue("625mV", 625),
-            NamedValue("630mV", 630), NamedValue("635mV", 635), NamedValue("640mV", 640), NamedValue("645mV", 645), NamedValue("650mV", 650),
-            NamedValue("655mV", 655), NamedValue("660mV", 660), NamedValue("665mV", 665), NamedValue("670mV", 670), NamedValue("675mV", 675),
-            NamedValue("680mV", 680), NamedValue("685mV", 685), NamedValue("690mV", 690), NamedValue("695mV", 695), NamedValue("700mV", 700),
-            NamedValue("705mV", 705), NamedValue("710mV", 710), NamedValue("715mV", 715), NamedValue("720mV", 720), NamedValue("725mV", 725),
-            NamedValue("730mV", 730), NamedValue("735mV", 735), NamedValue("740mV", 740), NamedValue("745mV", 745), NamedValue("750mV", 750),
-            NamedValue("755mV", 755), NamedValue("760mV", 760), NamedValue("765mV", 765), NamedValue("770mV", 770), NamedValue("775mV", 775),
-            NamedValue("780mV", 780), NamedValue("785mV", 785), NamedValue("790mV", 790), NamedValue("795mV", 795)
+            NamedValue("480 mV", 480), NamedValue("485 mV", 485), NamedValue("490 mV", 490), NamedValue("495 mV", 495), NamedValue("500 mV", 500),
+            NamedValue("505 mV", 505), NamedValue("510 mV", 510), NamedValue("515 mV", 515), NamedValue("520 mV", 520), NamedValue("525 mV", 525),
+            NamedValue("530 mV", 530), NamedValue("535 mV", 535), NamedValue("540 mV", 540), NamedValue("545 mV", 545), NamedValue("550 mV", 550),
+            NamedValue("555 mV", 555), NamedValue("560 mV", 560), NamedValue("565 mV", 565), NamedValue("570 mV", 570), NamedValue("575 mV", 575),
+            NamedValue("580 mV", 580), NamedValue("585 mV", 585), NamedValue("590 mV", 590), NamedValue("595 mV", 595), NamedValue("600 mV", 600),
+            NamedValue("605 mV", 605), NamedValue("610 mV", 610), NamedValue("615 mV", 615), NamedValue("620 mV", 620), NamedValue("625 mV", 625),
+            NamedValue("630 mV", 630), NamedValue("635 mV", 635), NamedValue("640 mV", 640), NamedValue("645 mV", 645), NamedValue("650 mV", 650),
+            NamedValue("655 mV", 655), NamedValue("660 mV", 660), NamedValue("665 mV", 665), NamedValue("670 mV", 670), NamedValue("675 mV", 675),
+            NamedValue("680 mV", 680), NamedValue("685 mV", 685), NamedValue("690 mV", 690), NamedValue("695 mV", 695), NamedValue("700 mV", 700),
+            NamedValue("705 mV", 705), NamedValue("710 mV", 710), NamedValue("715 mV", 715), NamedValue("720 mV", 720), NamedValue("725 mV", 725),
+            NamedValue("730 mV", 730), NamedValue("735 mV", 735), NamedValue("740 mV", 740), NamedValue("745 mV", 745), NamedValue("750 mV", 750),
+            NamedValue("755 mV", 755), NamedValue("760 mV", 760), NamedValue("765 mV", 765), NamedValue("770 mV", 770), NamedValue("775 mV", 775),
+            NamedValue("780 mV", 780), NamedValue("785 mV", 785), NamedValue("790 mV", 790), NamedValue("795 mV", 795)
         };
 
         if (IsErista()) {
-            addConfigButton(KipConfigValue_eristaGpuUV, "GPU Undervolt Table", ValueRange(0, 1, 1, "", 1), "GPU Undervolt Table", &thresholdsDisabled,
+            addConfigButton(KipConfigValue_eristaGpuUV, "UV 테이블", ValueRange(0, 1, 1, "", 1), "UV 테이블", &thresholdsDisabled,
                             {}, gpuUvConfE, false, true);
-            addConfigButton(KipConfigValue_eristaGpuVmin, "GPU Minimum Voltage", ValueRange(675, 875, 5, "mV", 1), "GPU Minimum Voltage",
+            addConfigButton(KipConfigValue_eristaGpuVmin, "최소 전압", ValueRange(675, 875, 5, "mV", 1), "최소 전압",
                             &thresholdsDisabled, {}, {}, false, true);
         } else {
-            addConfigButton(KipConfigValue_marikoGpuUV, "GPU Undervolt Table", ValueRange(0, 1, 1, "", 1), "GPU Undervolt Table", &thresholdsDisabled,
+            addConfigButton(KipConfigValue_marikoGpuUV, "UV 테이블", ValueRange(0, 1, 1, "", 1), "UV 테이블", &thresholdsDisabled,
                             {}, gpuUvConfM, false, true);
 
             // tsl::elm::ListItem* vminCalcBtn = new tsl::elm::ListItem("Calculate GPU Vmin");
@@ -2062,10 +2067,10 @@ class GpuSubmenuGui : public MiscGui {
             //     return false;
             // });
 
-            addConfigButton(KipConfigValue_marikoGpuVmin, "GPU VMIN", ValueRange(0, 0, 0, "0", 1), "GPU VMIN", &thresholdsDisabled, {}, mGpuVoltsVmin,
+            addConfigButton(KipConfigValue_marikoGpuVmin, "최소 전압", ValueRange(0, 0, 0, "0", 1), "최소 전압", &thresholdsDisabled, {}, mGpuVoltsVmin,
                             false, true);
             ValueThresholds MgpuVmaxThresholds(805, 850);
-            addConfigButton(KipConfigValue_marikoGpuVmax, "GPU Maximum Voltage", ValueRange(800, 960, 5, "mV", 1), "GPU Maximum Voltage",
+            addConfigButton(KipConfigValue_marikoGpuVmax, "최대 전압", ValueRange(800, 960, 5, "mV", 1), "최대 전압",
                             &MgpuVmaxThresholds, {}, {}, false, true);
         }
 
@@ -2093,16 +2098,16 @@ class GpuSubmenuGui : public MiscGui {
             NamedValue("50 mV", 50),
         };
 
-        addConfigButton(KipConfigValue_commonGpuVoltOffset, "GPU Voltage Offset", ValueRange(0, 50, 5, "mV", 1), "GPU Voltage Offset",
+        addConfigButton(KipConfigValue_commonGpuVoltOffset, "전압 오프셋", ValueRange(0, 50, 5, "mV", 1), "전압 오프셋",
                         &thresholdsDisabled, {}, gpuOffset, false, true);
 
         std::vector<NamedValue> gpuSchedValues = {
-            NamedValue("Do not override", GpuSchedulingMode_DoNotOverride),
-            NamedValue("Enabled (Default)", GpuSchedulingMode_Enabled, "96.6% limit"),
-            NamedValue("Disabled", GpuSchedulingMode_Disabled, "99.7% limit"),
+            NamedValue("설정 안 함", GpuSchedulingMode_DoNotOverride),
+            NamedValue("활성화 (기본)", GpuSchedulingMode_Enabled, "96.6% 제한"),
+            NamedValue("비활성화", GpuSchedulingMode_Disabled, "99.7% 제한"),
         };
 
-        addConfigButton(HocClkConfigValue_GPUScheduling, "GPU Scheduling Override", ValueRange(0, 0, 1, "", 0), "GPU Scheduling Override",
+        addConfigButton(HocClkConfigValue_GPUScheduling, "스케줄링", ValueRange(0, 0, 1, "", 0), "스케줄링",
                         &thresholdsDisabled, {}, gpuSchedValues, false);
 
         std::vector<NamedValue> dvfsOffset = {
@@ -2110,23 +2115,23 @@ class GpuSubmenuGui : public MiscGui {
             NamedValue("-60 mV", 0xFFFFFFC4), NamedValue("-55 mV", 0xFFFFFFC9), NamedValue("-50 mV", 0xFFFFFFCE), NamedValue("-45 mV", 0xFFFFFFD3),
             NamedValue("-40 mV", 0xFFFFFFD8), NamedValue("-35 mV", 0xFFFFFFDD), NamedValue("-30 mV", 0xFFFFFFE2), NamedValue("-25 mV", 0xFFFFFFE7),
             NamedValue("-20 mV", 0xFFFFFFEC), NamedValue("-15 mV", 0xFFFFFFF1), NamedValue("-10 mV", 0xFFFFFFF6), NamedValue(" -5 mV", 0xFFFFFFFB),
-            NamedValue("Disabled", 0),        NamedValue(" +5 mV", 5),          NamedValue("+10 mV", 10),         NamedValue("+15 mV", 15),
+            NamedValue("비활성화", 0),        NamedValue(" +5 mV", 5),          NamedValue("+10 mV", 10),         NamedValue("+15 mV", 15),
             NamedValue("+20 mV", 20),
         };
 
         std::vector<NamedValue> dvfsValues = {
-            NamedValue("Disabled", DVFSMode_Disabled),
-            NamedValue("PCV Hijack", DVFSMode_Hijack),
+            NamedValue("비활성화", DVFSMode_Disabled),
+            NamedValue("PCV 제어 우회", DVFSMode_Hijack),
             // NamedValue("Official Service", DVFSMode_OfficialService),
         };
 
-        addConfigButton(HocClkConfigValue_DVFSMode, "GPU DVFS Mode", ValueRange(0, 0, 1, "", 0), "GPU DVFS Mode", &thresholdsDisabled, {}, dvfsValues,
+        addConfigButton(HocClkConfigValue_DVFSMode, "DVFS 모드", ValueRange(0, 0, 1, "", 0), "DVFS 모드", &thresholdsDisabled, {}, dvfsValues,
                         false);
 
-        addConfigButton(HocClkConfigValue_DVFSOffset, "GPU DVFS Offset", ValueRange(0, 12, 1, "", 0), "GPU DVFS Offset", &thresholdsDisabled, {},
+        addConfigButton(HocClkConfigValue_DVFSOffset, "DVFS 오프셋", ValueRange(0, 12, 1, "", 0), "DVFS 오프셋", &thresholdsDisabled, {},
                         dvfsOffset, false);
 
-        tsl::elm::ListItem *customTableSubmenu = new tsl::elm::ListItem("GPU Voltage Table");
+        tsl::elm::ListItem *customTableSubmenu = new tsl::elm::ListItem("전압 테이블");
         customTableSubmenu->setClickListener([](u64 keys) {
             if (keys & HidNpadButton_A) {
                 tsl::changeTo<GpuCustomTableSubmenuGui>();
@@ -2153,222 +2158,218 @@ class GpuCustomTableSubmenuGui : public MiscGui {
             return;
         }
 
-        this->listElement->addItem(new CompactCategoryHeader("GPU Custom Table (mV)"));
+        this->listElement->addItem(new CompactCategoryHeader("커스텀 테이블 (mV)"));
 
         ValueThresholds MgpuVmaxThresholds(800, 850);
         ValueThresholds EgpuVmaxThresholds(950, 975);
 
         std::vector<NamedValue> mGpuVolts = {
-            NamedValue("Disabled", 2000), NamedValue("Auto", 0),    NamedValue("480mV", 480), NamedValue("485mV", 485), NamedValue("490mV", 490),
-            NamedValue("495mV", 495),     NamedValue("500mV", 500), NamedValue("505mV", 505), NamedValue("510mV", 510), NamedValue("515mV", 515),
-            NamedValue("520mV", 520),     NamedValue("525mV", 525), NamedValue("530mV", 530), NamedValue("535mV", 535), NamedValue("540mV", 540),
-            NamedValue("545mV", 545),     NamedValue("550mV", 550), NamedValue("555mV", 555), NamedValue("560mV", 560), NamedValue("565mV", 565),
-            NamedValue("570mV", 570),     NamedValue("575mV", 575), NamedValue("580mV", 580), NamedValue("585mV", 585), NamedValue("590mV", 590),
-            NamedValue("595mV", 595),     NamedValue("600mV", 600), NamedValue("605mV", 605), NamedValue("610mV", 610), NamedValue("615mV", 615),
-            NamedValue("620mV", 620),     NamedValue("625mV", 625), NamedValue("630mV", 630), NamedValue("635mV", 635), NamedValue("640mV", 640),
-            NamedValue("645mV", 645),     NamedValue("650mV", 650), NamedValue("655mV", 655), NamedValue("660mV", 660), NamedValue("665mV", 665),
-            NamedValue("670mV", 670),     NamedValue("675mV", 675), NamedValue("680mV", 680), NamedValue("685mV", 685), NamedValue("690mV", 690),
-            NamedValue("695mV", 695),     NamedValue("700mV", 700), NamedValue("705mV", 705), NamedValue("710mV", 710), NamedValue("715mV", 715),
-            NamedValue("720mV", 720),     NamedValue("725mV", 725), NamedValue("730mV", 730), NamedValue("735mV", 735), NamedValue("740mV", 740),
-            NamedValue("745mV", 745),     NamedValue("750mV", 750), NamedValue("755mV", 755), NamedValue("760mV", 760), NamedValue("765mV", 765),
-            NamedValue("770mV", 770),     NamedValue("775mV", 775), NamedValue("780mV", 780), NamedValue("785mV", 785), NamedValue("790mV", 790),
-            NamedValue("795mV", 795),     NamedValue("800mV", 800), NamedValue("805mV", 805), NamedValue("810mV", 810), NamedValue("815mV", 815),
-            NamedValue("820mV", 820),     NamedValue("825mV", 825), NamedValue("830mV", 830), NamedValue("835mV", 835), NamedValue("840mV", 840),
-            NamedValue("845mV", 845),     NamedValue("850mV", 850), NamedValue("855mV", 855), NamedValue("860mV", 860), NamedValue("865mV", 865),
-            NamedValue("870mV", 870),     NamedValue("875mV", 875), NamedValue("880mV", 880), NamedValue("885mV", 885), NamedValue("890mV", 890),
-            NamedValue("895mV", 895),     NamedValue("900mV", 900), NamedValue("905mV", 905), NamedValue("910mV", 910), NamedValue("915mV", 915),
-            NamedValue("920mV", 920),     NamedValue("925mV", 925), NamedValue("930mV", 930), NamedValue("935mV", 935), NamedValue("940mV", 940),
-            NamedValue("945mV", 945),     NamedValue("950mV", 950), NamedValue("955mV", 955), NamedValue("960mV", 960),
+            NamedValue("비활성화", 2000), NamedValue("자동", 0),    NamedValue("480 mV", 480), NamedValue("485 mV", 485), NamedValue("490 mV", 490),
+            NamedValue("495 mV", 495),     NamedValue("500 mV", 500), NamedValue("505 mV", 505), NamedValue("510 mV", 510), NamedValue("515 mV", 515),
+            NamedValue("520 mV", 520),     NamedValue("525 mV", 525), NamedValue("530 mV", 530), NamedValue("535 mV", 535), NamedValue("540 mV", 540),
+            NamedValue("545 mV", 545),     NamedValue("550 mV", 550), NamedValue("555 mV", 555), NamedValue("560 mV", 560), NamedValue("565 mV", 565),
+            NamedValue("570 mV", 570),     NamedValue("575 mV", 575), NamedValue("580 mV", 580), NamedValue("585 mV", 585), NamedValue("590 mV", 590),
+            NamedValue("595 mV", 595),     NamedValue("600 mV", 600), NamedValue("605 mV", 605), NamedValue("610 mV", 610), NamedValue("615 mV", 615),
+            NamedValue("620 mV", 620),     NamedValue("625 mV", 625), NamedValue("630 mV", 630), NamedValue("635 mV", 635), NamedValue("640 mV", 640),
+            NamedValue("645 mV", 645),     NamedValue("650 mV", 650), NamedValue("655 mV", 655), NamedValue("660 mV", 660), NamedValue("665 mV", 665),
+            NamedValue("670 mV", 670),     NamedValue("675 mV", 675), NamedValue("680 mV", 680), NamedValue("685 mV", 685), NamedValue("690 mV", 690),
+            NamedValue("695 mV", 695),     NamedValue("700 mV", 700), NamedValue("705 mV", 705), NamedValue("710 mV", 710), NamedValue("715 mV", 715),
+            NamedValue("720 mV", 720),     NamedValue("725 mV", 725), NamedValue("730 mV", 730), NamedValue("735 mV", 735), NamedValue("740 mV", 740),
+            NamedValue("745 mV", 745),     NamedValue("750 mV", 750), NamedValue("755 mV", 755), NamedValue("760 mV", 760), NamedValue("765 mV", 765),
+            NamedValue("770 mV", 770),     NamedValue("775 mV", 775), NamedValue("780 mV", 780), NamedValue("785 mV", 785), NamedValue("790 mV", 790),
+            NamedValue("795 mV", 795),     NamedValue("800 mV", 800), NamedValue("805 mV", 805), NamedValue("810 mV", 810), NamedValue("815 mV", 815),
+            NamedValue("820 mV", 820),     NamedValue("825 mV", 825), NamedValue("830 mV", 830), NamedValue("835 mV", 835), NamedValue("840 mV", 840),
+            NamedValue("845 mV", 845),     NamedValue("850 mV", 850), NamedValue("855 mV", 855), NamedValue("860 mV", 860), NamedValue("865 mV", 865),
+            NamedValue("870 mV", 870),     NamedValue("875 mV", 875), NamedValue("880 mV", 880), NamedValue("885 mV", 885), NamedValue("890 mV", 890),
+            NamedValue("895 mV", 895),     NamedValue("900 mV", 900), NamedValue("905 mV", 905), NamedValue("910 mV", 910), NamedValue("915 mV", 915),
+            NamedValue("920 mV", 920),     NamedValue("925 mV", 925), NamedValue("930 mV", 930), NamedValue("935 mV", 935), NamedValue("940 mV", 940),
+            NamedValue("945 mV", 945),     NamedValue("950 mV", 950), NamedValue("955 mV", 955), NamedValue("960 mV", 960),
         };
 
         std::vector<NamedValue> eGpuVolts = {
-            NamedValue("Disabled", 2000), NamedValue("Auto", 0),    NamedValue("675mV", 675), NamedValue("680mV", 680), NamedValue("685mV", 685),
-            NamedValue("690mV", 690),     NamedValue("695mV", 695), NamedValue("700mV", 700), NamedValue("705mV", 705), NamedValue("710mV", 710),
-            NamedValue("715mV", 715),     NamedValue("720mV", 720), NamedValue("725mV", 725), NamedValue("730mV", 730), NamedValue("735mV", 735),
-            NamedValue("740mV", 740),     NamedValue("745mV", 745), NamedValue("750mV", 750), NamedValue("755mV", 755), NamedValue("760mV", 760),
-            NamedValue("765mV", 765),     NamedValue("770mV", 770), NamedValue("775mV", 775), NamedValue("780mV", 780), NamedValue("785mV", 785),
-            NamedValue("790mV", 790),     NamedValue("795mV", 795), NamedValue("800mV", 800), NamedValue("805mV", 805), NamedValue("810mV", 810),
-            NamedValue("815mV", 815),     NamedValue("820mV", 820), NamedValue("825mV", 825), NamedValue("830mV", 830), NamedValue("835mV", 835),
-            NamedValue("840mV", 840),     NamedValue("845mV", 845), NamedValue("850mV", 850), NamedValue("855mV", 855), NamedValue("860mV", 860),
-            NamedValue("865mV", 865),     NamedValue("870mV", 870), NamedValue("875mV", 875), NamedValue("880mV", 880), NamedValue("885mV", 885),
-            NamedValue("890mV", 890),     NamedValue("895mV", 895), NamedValue("900mV", 900), NamedValue("905mV", 905), NamedValue("910mV", 910),
-            NamedValue("915mV", 915),     NamedValue("920mV", 920), NamedValue("925mV", 925), NamedValue("930mV", 930), NamedValue("935mV", 935),
-            NamedValue("940mV", 940),     NamedValue("945mV", 945), NamedValue("950mV", 950), NamedValue("955mV", 955), NamedValue("960mV", 960),
-            NamedValue("965mV", 965),     NamedValue("970mV", 970), NamedValue("975mV", 975), NamedValue("980mV", 980), NamedValue("985mV", 985),
-            NamedValue("990mV", 990),     NamedValue("995mV", 995),
+            NamedValue("비활성화", 2000), NamedValue("자동", 0),    NamedValue("675 mV", 675), NamedValue("680 mV", 680), NamedValue("685 mV", 685),
+            NamedValue("690 mV", 690),     NamedValue("695 mV", 695), NamedValue("700 mV", 700), NamedValue("705 mV", 705), NamedValue("710 mV", 710),
+            NamedValue("715 mV", 715),     NamedValue("720 mV", 720), NamedValue("725 mV", 725), NamedValue("730 mV", 730), NamedValue("735 mV", 735),
+            NamedValue("740 mV", 740),     NamedValue("745 mV", 745), NamedValue("750 mV", 750), NamedValue("755 mV", 755), NamedValue("760 mV", 760),
+            NamedValue("765 mV", 765),     NamedValue("770 mV", 770), NamedValue("775 mV", 775), NamedValue("780 mV", 780), NamedValue("785 mV", 785),
+            NamedValue("790 mV", 790),     NamedValue("795 mV", 795), NamedValue("800 mV", 800), NamedValue("805 mV", 805), NamedValue("810 mV", 810),
+            NamedValue("815 mV", 815),     NamedValue("820 mV", 820), NamedValue("825 mV", 825), NamedValue("830 mV", 830), NamedValue("835 mV", 835),
+            NamedValue("840 mV", 840),     NamedValue("845 mV", 845), NamedValue("850 mV", 850), NamedValue("855 mV", 855), NamedValue("860 mV", 860),
+            NamedValue("865 mV", 865),     NamedValue("870 mV", 870), NamedValue("875 mV", 875), NamedValue("880 mV", 880), NamedValue("885 mV", 885),
+            NamedValue("890 mV", 890),     NamedValue("895 mV", 895), NamedValue("900 mV", 900), NamedValue("905 mV", 905), NamedValue("910 mV", 910),
+            NamedValue("915 mV", 915),     NamedValue("920 mV", 920), NamedValue("925 mV", 925), NamedValue("930 mV", 930), NamedValue("935 mV", 935),
+            NamedValue("940 mV", 940),     NamedValue("945 mV", 945), NamedValue("950 mV", 950), NamedValue("955 mV", 955), NamedValue("960 mV", 960),
+            NamedValue("965 mV", 965),     NamedValue("970 mV", 970), NamedValue("975 mV", 975), NamedValue("980 mV", 980), NamedValue("985 mV", 985),
+            NamedValue("990 mV", 990),     NamedValue("995 mV", 995),
         };
 
         std::vector<NamedValue> mGpuVolts_noAuto = {
-            NamedValue("Disabled", 2000), NamedValue("480mV", 480), NamedValue("485mV", 485), NamedValue("490mV", 490), NamedValue("495mV", 495),
-            NamedValue("500mV", 500),     NamedValue("505mV", 505), NamedValue("510mV", 510), NamedValue("515mV", 515), NamedValue("520mV", 520),
-            NamedValue("525mV", 525),     NamedValue("530mV", 530), NamedValue("535mV", 535), NamedValue("540mV", 540), NamedValue("545mV", 545),
-            NamedValue("550mV", 550),     NamedValue("555mV", 555), NamedValue("560mV", 560), NamedValue("565mV", 565), NamedValue("570mV", 570),
-            NamedValue("575mV", 575),     NamedValue("580mV", 580), NamedValue("585mV", 585), NamedValue("590mV", 590), NamedValue("595mV", 595),
-            NamedValue("600mV", 600),     NamedValue("605mV", 605), NamedValue("610mV", 610), NamedValue("615mV", 615), NamedValue("620mV", 620),
-            NamedValue("625mV", 625),     NamedValue("630mV", 630), NamedValue("635mV", 635), NamedValue("640mV", 640), NamedValue("645mV", 645),
-            NamedValue("650mV", 650),     NamedValue("655mV", 655), NamedValue("660mV", 660), NamedValue("665mV", 665), NamedValue("670mV", 670),
-            NamedValue("675mV", 675),     NamedValue("680mV", 680), NamedValue("685mV", 685), NamedValue("690mV", 690), NamedValue("695mV", 695),
-            NamedValue("700mV", 700),     NamedValue("705mV", 705), NamedValue("710mV", 710), NamedValue("715mV", 715), NamedValue("720mV", 720),
-            NamedValue("725mV", 725),     NamedValue("730mV", 730), NamedValue("735mV", 735), NamedValue("740mV", 740), NamedValue("745mV", 745),
-            NamedValue("750mV", 750),     NamedValue("755mV", 755), NamedValue("760mV", 760), NamedValue("765mV", 765), NamedValue("770mV", 770),
-            NamedValue("775mV", 775),     NamedValue("780mV", 780), NamedValue("785mV", 785), NamedValue("790mV", 790), NamedValue("795mV", 795),
-            NamedValue("800mV", 800),     NamedValue("805mV", 805), NamedValue("810mV", 810), NamedValue("815mV", 815), NamedValue("820mV", 820),
-            NamedValue("825mV", 825),     NamedValue("830mV", 830), NamedValue("835mV", 835), NamedValue("840mV", 840), NamedValue("845mV", 845),
-            NamedValue("850mV", 850),     NamedValue("855mV", 855), NamedValue("860mV", 860), NamedValue("865mV", 865), NamedValue("870mV", 870),
-            NamedValue("875mV", 875),     NamedValue("880mV", 880), NamedValue("885mV", 885), NamedValue("890mV", 890), NamedValue("895mV", 895),
-            NamedValue("900mV", 900),     NamedValue("905mV", 905), NamedValue("910mV", 910), NamedValue("915mV", 915), NamedValue("920mV", 920),
-            NamedValue("925mV", 925),     NamedValue("930mV", 930), NamedValue("935mV", 935), NamedValue("940mV", 940), NamedValue("945mV", 945),
-            NamedValue("950mV", 950),     NamedValue("955mV", 955), NamedValue("960mV", 960),
+            NamedValue("비활성화", 2000), NamedValue("480 mV", 480), NamedValue("485 mV", 485), NamedValue("490 mV", 490), NamedValue("495 mV", 495),
+            NamedValue("500 mV", 500),     NamedValue("505 mV", 505), NamedValue("510 mV", 510), NamedValue("515 mV", 515), NamedValue("520 mV", 520),
+            NamedValue("525 mV", 525),     NamedValue("530 mV", 530), NamedValue("535 mV", 535), NamedValue("540 mV", 540), NamedValue("545 mV", 545),
+            NamedValue("550 mV", 550),     NamedValue("555 mV", 555), NamedValue("560 mV", 560), NamedValue("565 mV", 565), NamedValue("570 mV", 570),
+            NamedValue("575 mV", 575),     NamedValue("580 mV", 580), NamedValue("585 mV", 585), NamedValue("590 mV", 590), NamedValue("595 mV", 595),
+            NamedValue("600 mV", 600),     NamedValue("605 mV", 605), NamedValue("610 mV", 610), NamedValue("615 mV", 615), NamedValue("620 mV", 620),
+            NamedValue("625 mV", 625),     NamedValue("630 mV", 630), NamedValue("635 mV", 635), NamedValue("640 mV", 640), NamedValue("645 mV", 645),
+            NamedValue("650 mV", 650),     NamedValue("655 mV", 655), NamedValue("660 mV", 660), NamedValue("665 mV", 665), NamedValue("670 mV", 670),
+            NamedValue("675 mV", 675),     NamedValue("680 mV", 680), NamedValue("685 mV", 685), NamedValue("690 mV", 690), NamedValue("695 mV", 695),
+            NamedValue("700 mV", 700),     NamedValue("705 mV", 705), NamedValue("710 mV", 710), NamedValue("715 mV", 715), NamedValue("720 mV", 720),
+            NamedValue("725 mV", 725),     NamedValue("730 mV", 730), NamedValue("735 mV", 735), NamedValue("740 mV", 740), NamedValue("745 mV", 745),
+            NamedValue("750 mV", 750),     NamedValue("755 mV", 755), NamedValue("760 mV", 760), NamedValue("765 mV", 765), NamedValue("770 mV", 770),
+            NamedValue("775 mV", 775),     NamedValue("780 mV", 780), NamedValue("785 mV", 785), NamedValue("790 mV", 790), NamedValue("795 mV", 795),
+            NamedValue("800 mV", 800),     NamedValue("805 mV", 805), NamedValue("810 mV", 810), NamedValue("815 mV", 815), NamedValue("820 mV", 820),
+            NamedValue("825 mV", 825),     NamedValue("830 mV", 830), NamedValue("835 mV", 835), NamedValue("840 mV", 840), NamedValue("845 mV", 845),
+            NamedValue("850 mV", 850),     NamedValue("855 mV", 855), NamedValue("860 mV", 860), NamedValue("865 mV", 865), NamedValue("870 mV", 870),
+            NamedValue("875 mV", 875),     NamedValue("880 mV", 880), NamedValue("885 mV", 885), NamedValue("890 mV", 890), NamedValue("895 mV", 895),
+            NamedValue("900 mV", 900),     NamedValue("905 mV", 905), NamedValue("910 mV", 910), NamedValue("915 mV", 915), NamedValue("920 mV", 920),
+            NamedValue("925 mV", 925),     NamedValue("930 mV", 930), NamedValue("935 mV", 935), NamedValue("940 mV", 940), NamedValue("945 mV", 945),
+            NamedValue("950 mV", 950),     NamedValue("955 mV", 955), NamedValue("960 mV", 960),
         };
 
         std::vector<NamedValue> eGpuVolts_noAuto = {
-            NamedValue("Disabled", 2000), NamedValue("700mV", 700), NamedValue("705mV", 705), NamedValue("710mV", 710), NamedValue("715mV", 715),
-            NamedValue("720mV", 720),     NamedValue("725mV", 725), NamedValue("730mV", 730), NamedValue("735mV", 735), NamedValue("740mV", 740),
-            NamedValue("745mV", 745),     NamedValue("750mV", 750), NamedValue("755mV", 755), NamedValue("760mV", 760), NamedValue("765mV", 765),
-            NamedValue("770mV", 770),     NamedValue("775mV", 775), NamedValue("780mV", 780), NamedValue("785mV", 785), NamedValue("790mV", 790),
-            NamedValue("795mV", 795),     NamedValue("800mV", 800), NamedValue("805mV", 805), NamedValue("810mV", 810), NamedValue("815mV", 815),
-            NamedValue("820mV", 820),     NamedValue("825mV", 825), NamedValue("830mV", 830), NamedValue("835mV", 835), NamedValue("840mV", 840),
-            NamedValue("845mV", 845),     NamedValue("850mV", 850), NamedValue("855mV", 855), NamedValue("860mV", 860), NamedValue("865mV", 865),
-            NamedValue("870mV", 870),     NamedValue("875mV", 875), NamedValue("880mV", 880), NamedValue("885mV", 885), NamedValue("890mV", 890),
-            NamedValue("895mV", 895),     NamedValue("900mV", 900), NamedValue("905mV", 905), NamedValue("910mV", 910), NamedValue("915mV", 915),
-            NamedValue("920mV", 920),     NamedValue("925mV", 925), NamedValue("930mV", 930), NamedValue("935mV", 935), NamedValue("940mV", 940),
-            NamedValue("945mV", 945),     NamedValue("950mV", 950), NamedValue("955mV", 955), NamedValue("960mV", 960), NamedValue("965mV", 965),
-            NamedValue("970mV", 970),     NamedValue("975mV", 975), NamedValue("980mV", 980), NamedValue("985mV", 985), NamedValue("990mV", 990),
-            NamedValue("995mV", 995),
+            NamedValue("비활성화", 2000), NamedValue("700 mV", 700), NamedValue("705 mV", 705), NamedValue("710 mV", 710), NamedValue("715 mV", 715),
+            NamedValue("720 mV", 720),     NamedValue("725 mV", 725), NamedValue("730 mV", 730), NamedValue("735 mV", 735), NamedValue("740 mV", 740),
+            NamedValue("745 mV", 745),     NamedValue("750 mV", 750), NamedValue("755 mV", 755), NamedValue("760 mV", 760), NamedValue("765 mV", 765),
+            NamedValue("770 mV", 770),     NamedValue("775 mV", 775), NamedValue("780 mV", 780), NamedValue("785 mV", 785), NamedValue("790 mV", 790),
+            NamedValue("795 mV", 795),     NamedValue("800 mV", 800), NamedValue("805 mV", 805), NamedValue("810 mV", 810), NamedValue("815 mV", 815),
+            NamedValue("820 mV", 820),     NamedValue("825 mV", 825), NamedValue("830 mV", 830), NamedValue("835 mV", 835), NamedValue("840 mV", 840),
+            NamedValue("845 mV", 845),     NamedValue("850 mV", 850), NamedValue("855 mV", 855), NamedValue("860 mV", 860), NamedValue("865 mV", 865),
+            NamedValue("870 mV", 870),     NamedValue("875 mV", 875), NamedValue("880 mV", 880), NamedValue("885 mV", 885), NamedValue("890 mV", 890),
+            NamedValue("895 mV", 895),     NamedValue("900 mV", 900), NamedValue("905 mV", 905), NamedValue("910 mV", 910), NamedValue("915 mV", 915),
+            NamedValue("920 mV", 920),     NamedValue("925 mV", 925), NamedValue("930 mV", 930), NamedValue("935 mV", 935), NamedValue("940 mV", 940),
+            NamedValue("945 mV", 945),     NamedValue("950 mV", 950), NamedValue("955 mV", 955), NamedValue("960 mV", 960), NamedValue("965 mV", 965),
+            NamedValue("970 mV", 970),     NamedValue("975 mV", 975), NamedValue("980 mV", 980), NamedValue("985 mV", 985), NamedValue("990 mV", 990),
+            NamedValue("995 mV", 995),
         };
 
         if (IsMariko()) {
 
             tsl::elm::CustomDrawer *warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-                renderer->drawString("\uE150 Setting GPU Clocks past", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-                renderer->drawString("1305MHz without a proper undervolt", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-                renderer->drawString("can cause degradation or damage", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-                renderer->drawString("to your console!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
-                renderer->drawString("Proceed at your own risk!", false, x + 20, y + 110, 18, tsl::style::color::ColorText);
+                renderer->drawString("\uE150 적절한 언더볼팅 없이 1305 MHz 이상", false, x + 15, y + 20, 18, tsl::warningTextColor);
+                renderer->drawString("클럭을 설정할 경우, 콘솔의 성능 저하 및", false, x + 38, y + 40, 18, tsl::warningTextColor);
+                renderer->drawString("치명적인 손상이 발생할 수 있습니다!", false, x + 38, y + 60, 18, tsl::warningTextColor);
             });
-            warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 130);
+            warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 90);
             this->listElement->addItem(warningText);
 
-            addConfigButton(KipConfigValue_g_volt_76800, "76.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts, false,
+            addConfigButton(KipConfigValue_g_volt_76800, "76.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts, false,
                             true);
-            addConfigButton(KipConfigValue_g_volt_153600, "153.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_153600, "153.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_230400, "230.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_230400, "230.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_307200, "307.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_307200, "307.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_384000, "384.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_384000, "384.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_460800, "460.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_460800, "460.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_537600, "537.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_537600, "537.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_614400, "614.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_614400, "614.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_691200, "691.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_691200, "691.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_768000, "768.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_768000, "768.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_844800, "844.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_844800, "844.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_921600, "921.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_921600, "921.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_998400, "998.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {}, mGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_998400, "998.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {}, mGpuVolts,
                             false, true);
             if (this->configList->values[KipConfigValue_marikoGpuUV] >= GPUUVLevel_SLT) {
-                addConfigButton(KipConfigValue_g_volt_1075200, "1075.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                addConfigButton(KipConfigValue_g_volt_1075200, "1075.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                 mGpuVolts, false, true);
                 if (this->configList->values[KipConfigValue_marikoGpuUV] >= GPUUVLevel_HiOPT)
-                    addConfigButton(KipConfigValue_g_volt_1152000, "1152.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1152000, "1152.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts, false, true);
                 if (this->configList->values[KipConfigValue_marikoGpuUV] >= GPUUVLevel_HighUV) {
-                    addConfigButton(KipConfigValue_g_volt_1228800, "1228.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1228800, "1228.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1267200, "1267.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1267200, "1267.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1305600, "1305.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1305600, "1305.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1344000, "1344.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1344000, "1344.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1382400, "1382.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1382400, "1382.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1420800, "1420.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1420800, "1420.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1459200, "1459.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1459200, "1459.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1497600, "1497.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1497600, "1497.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
-                    addConfigButton(KipConfigValue_g_volt_1536000, "1536.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &MgpuVmaxThresholds, {},
+                    addConfigButton(KipConfigValue_g_volt_1536000, "1536.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &MgpuVmaxThresholds, {},
                                     mGpuVolts_noAuto, false, true);
                 }
             }
         } else {
 
-            tsl::elm::CustomDrawer *warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-                renderer->drawString("\uE150 Setting GPU Clocks past", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
-                renderer->drawString("921MHz without a proper undervolt", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
-                renderer->drawString("can cause degradation or damage", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
-                renderer->drawString("to your console!", false, x + 20, y + 90, 18, tsl::style::color::ColorText);
-                renderer->drawString("Proceed at your own risk!", false, x + 20, y + 110, 18, tsl::style::color::ColorText);
+            tsl::elm::CustomDrawer* warningText = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+                renderer->drawString("\uE150 적절한 언더볼팅 없이 921 MHz 이상", false, x + 15, y + 20, 18, tsl::warningTextColor);
+                renderer->drawString("클럭을 설정할 경우, 콘솔의 성능 저하 및", false, x + 38, y + 40, 18, tsl::warningTextColor);
+                renderer->drawString("치명적인 손상이 발생할 수 있습니다!", false, x + 38, y + 60, 18, tsl::warningTextColor);
             });
-            warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 130);
+            warningText->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 90);
             this->listElement->addItem(warningText);
 
-            addConfigButton(KipConfigValue_g_volt_e_76800, "76.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_76800, "76.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_115200, "115.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_115200, "115.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_153600, "153.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_153600, "153.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_192000, "192.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_192000, "192.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_230400, "230.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_230400, "230.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_268800, "268.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_268800, "268.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_307200, "307.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_307200, "307.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_345600, "345.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_345600, "345.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_384000, "384.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_384000, "384.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_422400, "422.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_422400, "422.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_460800, "460.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_460800, "460.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_499200, "499.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_499200, "499.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_537600, "537.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_537600, "537.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_576000, "576.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_576000, "576.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_614400, "614.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_614400, "614.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_652800, "652.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_652800, "652.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_691200, "691.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_691200, "691.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_729600, "729.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_729600, "729.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_768000, "768.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_768000, "768.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_806400, "806.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_806400, "806.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_844800, "844.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_844800, "844.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_883200, "883.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_883200, "883.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
-            addConfigButton(KipConfigValue_g_volt_e_921600, "921.6MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {}, eGpuVolts,
+            addConfigButton(KipConfigValue_g_volt_e_921600, "921.6 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {}, eGpuVolts,
                             false, true);
             if (this->configList->values[KipConfigValue_eristaGpuUV] >= GPUUVLevel_SLT)
-                addConfigButton(KipConfigValue_g_volt_e_960000, "960.0MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {},
+                addConfigButton(KipConfigValue_g_volt_e_960000, "960.0 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {},
                                 eGpuVolts, false, true);
             if (this->configList->values[KipConfigValue_eristaGpuUV] >= GPUUVLevel_HiOPT) {
-                addConfigButton(KipConfigValue_g_volt_e_998400, "998.4MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {},
+                addConfigButton(KipConfigValue_g_volt_e_998400, "998.4 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {},
                                 eGpuVolts, false, true);
-                addConfigButton(KipConfigValue_g_volt_e_1036800, "1036.8MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {},
+                addConfigButton(KipConfigValue_g_volt_e_1036800, "1036.8 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {},
                                 eGpuVolts_noAuto, false, true);
-                addConfigButton(KipConfigValue_g_volt_e_1075200, "1075.2MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &EgpuVmaxThresholds, {},
+                addConfigButton(KipConfigValue_g_volt_e_1075200, "1075.2 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &EgpuVmaxThresholds, {},
                                 eGpuVolts_noAuto, false, true);
             }
         }
@@ -2388,50 +2389,50 @@ class SocCustomTableSubmenuGui : public MiscGui {
             return;
         }
 
-        this->listElement->addItem(new CompactCategoryHeader("SOC Custom Voltages"));
+        this->listElement->addItem(new CompactCategoryHeader("SoC 전압 설정"));
 
         ValueThresholds voltageThresholds(1075, 1150);
 
         std::vector<NamedValue> socVolts = {
-            NamedValue("No Override", 0),
+            NamedValue("설정 안 함", 0),
 
-            NamedValue("637mV", 637),   NamedValue("650mV", 650),   NamedValue("662mV", 662),   NamedValue("675mV", 675),   NamedValue("687mV", 687),
-            NamedValue("700mV", 700),   NamedValue("712mV", 712),   NamedValue("725mV", 725),   NamedValue("737mV", 737),   NamedValue("750mV", 750),
-            NamedValue("762mV", 762),   NamedValue("775mV", 775),   NamedValue("787mV", 787),   NamedValue("800mV", 800),   NamedValue("812mV", 812),
-            NamedValue("825mV", 825),   NamedValue("837mV", 837),   NamedValue("850mV", 850),   NamedValue("862mV", 862),   NamedValue("875mV", 875),
-            NamedValue("887mV", 887),   NamedValue("900mV", 900),   NamedValue("912mV", 912),   NamedValue("925mV", 925),   NamedValue("937mV", 937),
-            NamedValue("950mV", 950),   NamedValue("962mV", 962),   NamedValue("975mV", 975),   NamedValue("987mV", 987),   NamedValue("1000mV", 1000),
-            NamedValue("1012mV", 1012), NamedValue("1025mV", 1025), NamedValue("1037mV", 1037), NamedValue("1050mV", 1050), NamedValue("1062mV", 1062),
-            NamedValue("1075mV", 1075), NamedValue("1087mV", 1087), NamedValue("1100mV", 1100), NamedValue("1112mV", 1112), NamedValue("1125mV", 1125),
-            NamedValue("1137mV", 1137), NamedValue("1150mV", 1150),
+            NamedValue("637 mV", 637),   NamedValue("650 mV", 650),   NamedValue("662 mV", 662),   NamedValue("675 mV", 675),   NamedValue("687 mV", 687),
+            NamedValue("700 mV", 700),   NamedValue("712 mV", 712),   NamedValue("725 mV", 725),   NamedValue("737 mV", 737),   NamedValue("750 mV", 750),
+            NamedValue("762 mV", 762),   NamedValue("775 mV", 775),   NamedValue("787 mV", 787),   NamedValue("800 mV", 800),   NamedValue("812 mV", 812),
+            NamedValue("825 mV", 825),   NamedValue("837 mV", 837),   NamedValue("850 mV", 850),   NamedValue("862 mV", 862),   NamedValue("875 mV", 875),
+            NamedValue("887 mV", 887),   NamedValue("900 mV", 900),   NamedValue("912 mV", 912),   NamedValue("925 mV", 925),   NamedValue("937 mV", 937),
+            NamedValue("950 mV", 950),   NamedValue("962 mV", 962),   NamedValue("975 mV", 975),   NamedValue("987 mV", 987),   NamedValue("1000 mV", 1000),
+            NamedValue("1012 mV", 1012), NamedValue("1025 mV", 1025), NamedValue("1037 mV", 1037), NamedValue("1050 mV", 1050), NamedValue("1062 mV", 1062),
+            NamedValue("1075 mV", 1075), NamedValue("1087 mV", 1087), NamedValue("1100 mV", 1100), NamedValue("1112 mV", 1112), NamedValue("1125 mV", 1125),
+            NamedValue("1137 mV", 1137), NamedValue("1150 mV", 1150),
         };
 
-        addConfigButton(KipConfigValue_g_soc_volt_1866000, "1866MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2000000, "2000MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2133000, "2133MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2200000, "2200MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2266000, "2266MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2333000, "2333MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2400000, "2400MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2433000, "2433MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2466000, "2466MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2533000, "2533MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2566000, "2566MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2600000, "2600MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2666000, "2666MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2700000, "2700MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2733000, "2733MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2766000, "2766MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2800000, "2800MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2833000, "2833MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2900000, "2900MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_2933000, "2933MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3000000, "3000MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3033000, "3033MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3100000, "3100MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3133000, "3133MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3166000, "3166MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
-        addConfigButton(KipConfigValue_g_soc_volt_3200000, "3200MHz", ValueRange(0, 0, 0, "0", 1), "Voltage", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_1866000, "1866 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2000000, "2000 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2133000, "2133 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2200000, "2200 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2266000, "2266 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2333000, "2333 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2400000, "2400 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2433000, "2433 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2466000, "2466 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2533000, "2533 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2566000, "2566 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2600000, "2600 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2666000, "2666 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2700000, "2700 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2733000, "2733 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2766000, "2766 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2800000, "2800 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2833000, "2833 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2900000, "2900 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_2933000, "2933 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3000000, "3000 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3033000, "3033 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3100000, "3100 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3133000, "3133 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3166000, "3166 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
+        addConfigButton(KipConfigValue_g_soc_volt_3200000, "3200 MHz", ValueRange(0, 0, 0, "0", 1), "전압", &voltageThresholds, {}, socVolts, false, true);
     }
 };
 
@@ -2480,7 +2481,7 @@ void MiscGui::refresh() {
             auto it = this->configNamedValues.find(key);
             if (it != this->configNamedValues.end()) {
                 for (auto &nv : it->second)
-                    if (nv.name != "Disabled")
+                    if (nv.name != "비활성화")
                         nv.name = formatMemClockKhzLabel(nv.value, unit);
             }
         }

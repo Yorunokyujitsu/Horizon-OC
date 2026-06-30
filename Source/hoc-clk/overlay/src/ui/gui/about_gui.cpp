@@ -65,124 +65,118 @@ void AboutGui::listUI()
         return;
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Voltages")
+        new tsl::elm::CategoryHeader("전압")
     );
 
     ramVoltItem =
-        new tsl::elm::ListItem("RAM Voltage:");
+        new tsl::elm::ListItem("RAM 전압");
 
     if(IsMariko()) {
         this->listElement->addItem(ramVoltItem);
     }
     dispVoltItem =
-        new tsl::elm::ListItem("Display Voltage:");
+        new tsl::elm::ListItem("표시 전압");
     this->listElement->addItem(dispVoltItem);
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Temperatures")
+        new tsl::elm::CategoryHeader("온도")
     );
     eristaPLLXItem =
-        new tsl::elm::ListItem("PLLX Temp:");
+        new tsl::elm::ListItem("PLLX 온도");
     if(this->context->temps[HocClkThermalSensor_AO] > 0) { // Only show if the value is valid (not -126, which means not patched)
         this->listElement->addItem(eristaPLLXItem);
     }
 
     aotagTempItem =
-        new tsl::elm::ListItem("AOTAG Temp:");
+        new tsl::elm::ListItem("AOTAG 온도");
     this->listElement->addItem(aotagTempItem);
 
     bqtempitem =
-        new tsl::elm::ListItem("BQ24193 Temp:");
+        new tsl::elm::ListItem("BQ24193 온도");
     this->listElement->addItem(bqtempitem);
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("RAM Bandwidth")
+        new tsl::elm::CategoryHeader("RAM 대역폭")
     );
 
     ramBWItemMax =
-        new tsl::elm::ListItem("RAM BW (Peak):");
+        new tsl::elm::ListItem("피크");
     this->listElement->addItem(ramBWItemMax);
 
     ramBWItemAll =
-        new tsl::elm::ListItem("RAM BW (All):");
+        new tsl::elm::ListItem("전체");
     this->listElement->addItem(ramBWItemAll);
 
     ramBWItemCpu =
-        new tsl::elm::ListItem("RAM BW (CPU):");
+        new tsl::elm::ListItem("CPU");
     this->listElement->addItem(ramBWItemCpu);
 
     ramBWItemGpu =
-        new tsl::elm::ListItem("RAM BW (GPU):");
+        new tsl::elm::ListItem("GPU");
     this->listElement->addItem(ramBWItemGpu);
 
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Hardware Info")
+        new tsl::elm::CategoryHeader("하드웨어 정보")
     );
 
     cTypeItem =
-        new tsl::elm::ListItem("Console Type:");
+        new tsl::elm::ListItem("기기");
     this->listElement->addItem(cTypeItem);
 
     SpeedoItem =
-        new tsl::elm::ListItem("Speedo:");
+        new tsl::elm::ListItem("Speedo");
     this->listElement->addItem(SpeedoItem);
 
     IddqItem =
-        new tsl::elm::ListItem("IDDQ:");
+        new tsl::elm::ListItem("IDDQ");
     this->listElement->addItem(IddqItem);
 
     DramModule =
-        new tsl::elm::ListItem("DRAM Module: ");
+        new tsl::elm::ListItem("RAM 모듈");
     this->listElement->addItem(DramModule);
 
     waferCordsItem =
-        new tsl::elm::ListItem("Wafer Position:");
+        new tsl::elm::ListItem("웨이퍼 위치");
     this->listElement->addItem(waferCordsItem);
 
     if(IsHoag()) {
         RETROStatusItem =
-            new tsl::elm::ListItem("RR Display status:");
+            new tsl::elm::ListItem("주사율");
         this->listElement->addItem(RETROStatusItem);
     }
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Software Info")
+        new tsl::elm::CategoryHeader("소프트웨어 정보")
     );
 
     // custRevItem = new tsl::elm::ListItem("CUST revision:");
     // this->listElement->addItem(custRevItem);
 
-    kipVersionItem = new tsl::elm::ListItem("KIP version:");
+    kipVersionItem = new tsl::elm::ListItem("KIP 버전");
     this->listElement->addItem(kipVersionItem);
 
-    kipLoadedItem = new tsl::elm::ListItem("KIP status:");
+    kipLoadedItem = new tsl::elm::ListItem("KIP");
     this->listElement->addItem(kipLoadedItem);
 
     if(!IsHoag()) {
         sysdockStatusItem =
-            new tsl::elm::ListItem("sys-dock status:");
+            new tsl::elm::ListItem("sys-dock");
         this->listElement->addItem(sysdockStatusItem);
     }
 
     saltyNXStatusItem =
-        new tsl::elm::ListItem("SaltyNX status:");
+        new tsl::elm::ListItem("SaltyNX");
     this->listElement->addItem(saltyNXStatusItem);
 
-    this->listElement->addItem(
-        new tsl::elm::CategoryHeader("General Info")
-    );
-
-    creditsItem = new tsl::elm::ListItem("Credits");
-    creditsItem->setClickListener([](u64 keys) {
-        if (keys & HidNpadButton_A) {
-            tsl::changeTo<CreditsSubMenu>();
-            return true;
-        }
-        return false;
-    });
-    creditsItem->setValue(R_ARROW);
-    this->listElement->addItem(creditsItem);
+    this->listElement->addItem(new tsl::elm::CategoryHeader("크레딧"));
+        tsl::elm::CustomDrawer* devCredits = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+            renderer->drawString("개발: Souldbminer, Lightos_", false, x + 20, y + 30, 18, tsl::style::color::ColorText);
+            renderer->drawString("기여: Dom, Blaise25", false, x + 20, y + 70, 18, tsl::style::color::ColorText);
+            renderer->drawString("번역: Yorunokyujitsu", false, x + 20, y + 50, 18, tsl::style::color::ColorText);
+        });
+        devCredits->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 90);
+        this->listElement->addItem(devCredits);
 }
 
 std::string AboutGui::formatRamModule() {
@@ -224,7 +218,7 @@ std::string AboutGui::formatRamModule() {
 
         case 32 ... 34: return "WT:B 4GB";
 
-        default: return "Unknown";
+        default: return "알 수 없음";
     }
 }
 
@@ -240,9 +234,9 @@ void AboutGui::refresh()
     if (!this->context)
         return;
     // Format strings once per refresh
-    sprintf(strings[0], "%u/%u/%u", this->context->speedos[HocClkSpeedo_CPU], this->context->speedos[HocClkSpeedo_GPU], this->context->speedos[HocClkSpeedo_SOC]);
+    sprintf(strings[0], "%u%u%u", this->context->speedos[HocClkSpeedo_CPU], this->context->speedos[HocClkSpeedo_GPU], this->context->speedos[HocClkSpeedo_SOC]);
     // This is how hekate does it
-    sprintf(strings[1], "%u/%u/%u", this->context->iddq[HocClkSpeedo_CPU], this->context->iddq[HocClkSpeedo_GPU], this->context->iddq[HocClkSpeedo_SOC]);
+    sprintf(strings[1], "%u%u%u", this->context->iddq[HocClkSpeedo_CPU], this->context->iddq[HocClkSpeedo_GPU], this->context->iddq[HocClkSpeedo_SOC]);
     SpeedoItem->setValue(strings[0]);
     IddqItem->setValue(strings[1]);
     DramModule->setValue(formatRamModule());
@@ -250,17 +244,17 @@ void AboutGui::refresh()
     // custRevItem->setValue(std::to_string(this->context->custRev));
 
     kipVersionItem->setValue(std::to_string((this->context->kipVersion / 100) % 10) + "." + std::to_string((this->context->kipVersion / 10) % 10) + "." + std::to_string( this->context->kipVersion % 10) + " (Cust Rev " + std::to_string(this->context->custRev) + ")");
-    kipLoadedItem->setValue(this->context->isKipLoaded ? "Loaded" : "Not Loaded");
+    kipLoadedItem->setValue(this->context->isKipLoaded ? "활성화" : "비활성화");
 
     if(!IsHoag())
-        sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "Installed" : "Not Installed");
+        sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "설치됨" : "설치 안 됨");
 
-    saltyNXStatusItem->setValue(this->context->isSaltyNXInstalled ? "Installed" : "Not Installed");
+    saltyNXStatusItem->setValue(this->context->isSaltyNXInstalled ? "설치됨" : "설치 안 됨");
 
     if(IsHoag())
-        RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "Installed" : "Not Installed");
+        RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "설치됨" : "설치 안 됨");
 
-    sprintf(strings[2], "X: %d Y: %d", this->context->waferX, this->context->waferY);
+    sprintf(strings[2], "X: %dY: %d", this->context->waferX, this->context->waferY);
     waferCordsItem->setValue(strings[2]);
 
     s32 millis = context->temps[HocClkThermalSensor_PLLX];
@@ -271,9 +265,9 @@ void AboutGui::refresh()
     if(millis > 0) {
         sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
     } else if (millis == -125) {
-        sprintf(strings[11], "Invalid");
+        sprintf(strings[11], "유효하지 않음");
     } else if (millis == -126) {
-        sprintf(strings[11], "Not Patched");
+        sprintf(strings[11], "패치되지 않음");
     }
     aotagTempItem->setValue(strings[11]);
 
@@ -297,176 +291,23 @@ void AboutGui::refresh()
 
     switch(context->temps[HocClkThermalSensor_BQ24193]) {
         case BQ24193Temp_Normal:
-            strcpy(strings[10], "Normal");
+            strcpy(strings[10], "정상");
             break;
         case BQ24193Temp_Warm:
-            strcpy(strings[10], "Warm");
+            strcpy(strings[10], "온도 상승");
             break;
         case BQ24193Temp_Hot:
-            strcpy(strings[10], "Hot");
+            strcpy(strings[10], "고온");
             break;
         case BQ24193Temp_Overheat:
-            strcpy(strings[10], "Overheat");
+            strcpy(strings[10], "과열");
             break;
         default:
-            strcpy(strings[10], "Unknown");
+            strcpy(strings[10], "알 수 없음");
     }
 
     bqtempitem->setValue(strings[10]);
 
     cTypeItem->setValue(hocClkFormatConsoleType(this->context->consoleType, true));
+
 }
-
-class CreditsSubMenu : public AboutGui {
-    public:
-        CreditsSubMenu() { }
-
-    protected:
-        ImageElement* CatImage = NULL;
-        HideableCategoryHeader* CatHeader = NULL;
-        HideableCustomDrawer* CatSpacer = NULL;
-        int lightosClickCount = 0;
-
-        void listUI() override {
-            this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Developers")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Souldbminer")
-            );
-
-            // Create special clickable item for Lightos
-            auto lightosItem = new tsl::elm::ListItem("Lightos_");
-            lightosItem->setClickListener([this](u64 keys) -> bool {
-                if (keys & HidNpadButton_A) {
-                    lightosClickCount++;
-                    if (lightosClickCount >= 10) {
-                        if (CatImage != NULL) CatImage->setVisible(true);
-                        if (CatHeader != NULL) CatHeader->setVisible(true);
-                        if (CatSpacer != NULL) CatSpacer->setVisible(true);
-                    }
-                    return true;
-                }
-                return false;
-            });
-            this->listElement->addItem(lightosItem);
-
-            // ---- Contributors ----
-            this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Contributors")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Dom")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Blaise25")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("tetetete-ctrl")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("B3711")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("TDRR")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("MasaGratoR")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Miki1305")
-            );
-
-            // ---- Testers ----
-            this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Testers")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Samybigio2011")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("arcdelta")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Happy")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Winnerboi77")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Blaise25")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("WE1ZARD")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Alvise")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("agjeococh")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("Frost")
-            );
-
-            // ---- Special Thanks ----
-            this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Special Thanks")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("SciresM, hexkyz and Alula - Atmosphere CFW")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("KazushiMe - Switch OC Suite")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("hanai3Bi - Switch OC Suite & EOS")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("RetroNX - sys-clk")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("ppkantorski - Ultrahand")
-            );
-
-            this->listElement->addItem(
-                new tsl::elm::ListItem("CtCaer - Hekate, L4T and Proper Timings")
-            );
-
-            // Create cat elements but hide them initially
-            CatHeader = new HideableCategoryHeader("Cat");
-            CatHeader->setVisible(false);
-            this->listElement->addItem(CatHeader);
-
-            CatImage = new ImageElement(CAT_DATA, CAT_WIDTH, CAT_HEIGHT);
-            CatImage->setVisible(false);
-            this->listElement->addItem(CatImage);
-
-            CatSpacer = new HideableCustomDrawer(75);
-            CatSpacer->setVisible(false);
-            this->listElement->addItem(CatSpacer);
-        }
-
-};

@@ -60,11 +60,11 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer *renderer) {
     BaseGui::preDraw(renderer);
 
     // All constants pre-calculated and cached
-    const char *labels[] = { "App ID", "Profile", "CPU", "GPU", "MEM",  "SoC", "Board",
-                             "Skin",   "Now",     "Avg", "BAT", "PMIC", "Fan", IsAula() || this->context->isUsingRetroSuper ? "OLED" : "LCD",
-                             "FPS",    "RES" };
+    const char *labels[] = { "App ID", "프로필", "CPU", "GPU", "MEM", "SoC", "보드",
+                             "본체", "현재", "평균", "BAT", "PMIC", "Fan", IsAula() || this->context->isUsingRetroSuper ? "OLED" : "LCD",
+                             "FPS", "RES" };
 
-    static constexpr u32 dataPositions[6] = { 63 - 3 + 3, 200 - 1, 344 - 1 - 3, 200 - 1, 342 - 1, 321 - 1 };
+    static constexpr u32 dataPositions[6] = { 65 - 3 + 3, 200 - 1, 344 - 1 - 3, 200 - 1, 342 - 1, 321 - 1 };
 
     static u32 labelWidths[10];
     static bool positionsInitialized = false;
@@ -75,18 +75,18 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer *renderer) {
         }
         positionsInitialized = true;
     }
-    static u32 positions[10] = { 24 - 1,
+    static u32 positions[10] = { 24 - 1, // App ID
                                  310 - labelWidths[1],
-                                 24 - 1,
-                                 192 - labelWidths[3],
+                                 23 - 1, // CPU, BAT
+                                 192 - labelWidths[3], // GPU, Fan
                                  332 - labelWidths[4],
                                  24 - 1,
-                                 192 - labelWidths[6],
-                                 332 - labelWidths[7],
-                                 192 - labelWidths[8],
-                                 332 - labelWidths[9] };
+                                 188 - labelWidths[6], // Board
+                                 324 - labelWidths[7], // Device
+                                 189 - labelWidths[8], // Now
+                                 324 - labelWidths[9] }; // Avg
 
-    static u32 maxProfileValueWidth = renderer->getTextDimensions("USB Charger", false, SMALL_TEXT_SIZE).first;  // longest word
+    static u32 maxProfileValueWidth = renderer->getTextDimensions("일반 충전기", false, SMALL_TEXT_SIZE).first;  // longest word
 
     u32 y = 91 + TOP_Y_OFFSET;
 
@@ -173,11 +173,11 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer *renderer) {
 
     renderer->drawString(labels[12], false, positions[3], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);  // fan label
 
-    renderer->drawString(displayStrings[24], false, dataPositions[1] + 5, y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // fan speed
+    renderer->drawString(displayStrings[24], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // fan speed
 
-    renderer->drawString(labels[13], false, positions[4] + 4, y, SMALL_TEXT_SIZE, tsl::sectionTextColor);  // disp label
+    renderer->drawString(labels[13], false, positions[4] - 1, y, SMALL_TEXT_SIZE, tsl::sectionTextColor);  // disp label
 
-    renderer->drawString(displayStrings[25], false, dataPositions[2] + 6, y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // disp freq
+    renderer->drawString(displayStrings[25], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // disp freq
 
     y += 20;
 
@@ -186,11 +186,11 @@ void BaseMenuGui::preDraw(tsl::gfx::Renderer *renderer) {
 
     if (this->context->isSaltyNXInstalled) {
 
-        renderer->drawString(labels[15], false, positions[3] + 7, y, SMALL_TEXT_SIZE, tsl::sectionTextColor);           // RES label
-        renderer->drawString(displayStrings[27], false, dataPositions[1] + 5, y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // RES
+        renderer->drawString(labels[15], false, positions[3], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);           // RES label
+        renderer->drawString(displayStrings[27], false, dataPositions[1], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // RES
 
-        renderer->drawString(labels[14], false, positions[4] + 9, y, SMALL_TEXT_SIZE, tsl::sectionTextColor);           // FPS label
-        renderer->drawString(displayStrings[26], false, dataPositions[2] + 6, y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // FPS
+        renderer->drawString(labels[14], false, positions[4], y, SMALL_TEXT_SIZE, tsl::sectionTextColor);           // FPS label
+        renderer->drawString(displayStrings[26], false, dataPositions[2], y, SMALL_TEXT_SIZE, tsl::infoTextColor);  // FPS
     }
 
     y += 20;

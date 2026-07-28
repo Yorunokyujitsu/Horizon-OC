@@ -32,7 +32,7 @@
 
 #include <hocclk/board.h>
 
-#define FREQ_DEFAULT_TEXT "Do not override"
+#define FREQ_DEFAULT_TEXT "설정 안 함"
 
 static inline std::string formatListFreqMHz(std::uint32_t mhz) {
     if (mhz == 0) {

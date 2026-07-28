@@ -405,7 +405,7 @@ namespace clockManager {
         /* Apply nothing with disabled voltage. */
         constexpr u32 DisabledVoltage = 2000;
         if (voltage == DisabledVoltage) {
-            notification::writeNotification("Horizon OC\nDeactivated frequency.\nReboot to apply.");
+            notification::writeNotification("비활성화된 클럭\n적용을 위해 재부팅 필요");
             return;
         }
 

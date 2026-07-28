@@ -248,7 +248,7 @@ namespace board {
         svcCallSecureMonitor(&args);
 
         if (args.X[1] == (MC_REGISTER_BASE + MC_EMEM_CFG_0)) {  // if param 1 is identical read failed
-            notification::writeNotification("Horizon OC\nSecmon read failed!\n This may be a hardware issue!");
+            notification::writeNotification("Secmon 읽기 실패!\n하드웨어 문제일 수 있음");
             return false;
         }
 

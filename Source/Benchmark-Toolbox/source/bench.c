@@ -301,24 +301,24 @@ void bench_run_full(bench_results_t *out, bench_progress_fn progress, void *user
             progress((label), (frac), user); \
     } while (0)
 
-    STEP("GPU bandwidth", 0.05f);
+    STEP("GPU 대역폭", 0.05f);
     gpu_bw_run(is_4gb, &out->gpu_copy, &out->gpu_read, &out->gpu_write);
 
     int64_t *srcbuf, *dstbuf;
     void *poolbuf = alloc_nonaliased_buffers((void **)&srcbuf, size * threads, (void **)&dstbuf, size * threads, NULL, 0);
 
-    STEP("CPU copy", 0.40f);
+    STEP("CPU 복사", 0.40f);
     out->cpu_copy = bandwidth_bench_helper(threads, dstbuf, srcbuf, size, aligned_block_copy);
-    STEP("CPU read", 0.55f);
+    STEP("CPU 읽기", 0.55f);
     out->cpu_read = bandwidth_bench_helper(threads, dstbuf, srcbuf, size, aligned_block_fetch);
-    STEP("CPU write", 0.70f);
+    STEP("CPU 쓰기", 0.70f);
     out->cpu_write = bandwidth_bench_helper(threads, dstbuf, srcbuf, size, aligned_block_fill);
     free(poolbuf);
 
-    STEP("Latency", 0.85f);
+    STEP("레이턴시", 0.85f);
     latency_bench(&out->l2_ns, &out->ram_ns);
 
-    STEP("Done", 1.0f);
+    STEP("완료", 1.0f);
 #undef STEP
 }
 
@@ -345,22 +345,22 @@ bool bench_step(bench_ctx *c, bench_results_t *out, const char **label, float *f
     switch (c->phase) {
         case 0:
             gpu_bw_run(c->is_4gb, &out->gpu_copy, &out->gpu_read, &out->gpu_write);
-            *label = "GPU bandwidth";
+            *label = "GPU 대역폭";
             *frac = 0.25f;
             break;
         case 1:
             out->cpu_copy = bandwidth_bench_helper(threads, c->dst, c->src, size, aligned_block_copy);
-            *label = "CPU copy";
+            *label = "CPU 복사";
             *frac = 0.45f;
             break;
         case 2:
             out->cpu_read = bandwidth_bench_helper(threads, c->dst, c->src, size, aligned_block_fetch);
-            *label = "CPU read";
+            *label = "CPU 읽기";
             *frac = 0.60f;
             break;
         case 3:
             out->cpu_write = bandwidth_bench_helper(threads, c->dst, c->src, size, aligned_block_fill);
-            *label = "CPU write";
+            *label = "CPU 쓰기";
             *frac = 0.75f;
             break;
         case 4:
@@ -369,11 +369,11 @@ bool bench_step(bench_ctx *c, bench_results_t *out, const char **label, float *f
                 c->pool = NULL;
             }
             latency_bench(&out->l2_ns, &out->ram_ns);
-            *label = "Latency";
+            *label = "레이턴시";
             *frac = 0.95f;
             break;
         default:
-            *label = "Done";
+            *label = "완료";
             *frac = 1.0f;
             return false;
     }

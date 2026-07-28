@@ -32,28 +32,28 @@ unsigned short mt_dividend = 1;
 volatile int mt_abort = 0;
 
 struct mt_test mt_tests[] = {
-    { "Random Value", mt_test_random_value },
-    { "Compare XOR", mt_test_xor_comparison },
-    { "Compare SUB", mt_test_sub_comparison },
-    { "Compare MUL", mt_test_mul_comparison },
-    { "Compare DIV", mt_test_div_comparison },
-    { "Compare OR", mt_test_or_comparison },
-    { "Compare AND", mt_test_and_comparison },
-    { "Sequential Increment", mt_test_seqinc_comparison },
-    { "Solid Bits", mt_test_solidbits_comparison },
-    { "Block Sequential", mt_test_blockseq_comparison },
-    { "Checkerboard", mt_test_checkerboard_comparison },
-    { "Bit Spread", mt_test_bitspread_comparison },
-    { "Bit Flip", mt_test_bitflip_comparison },
-    { "Walking Ones", mt_test_walkbits0_comparison },
-    { "Walking Zeroes", mt_test_walkbits1_comparison },
+    { "무작위 값", mt_test_random_value },
+    { "XOR 비교", mt_test_xor_comparison },
+    { "SUB 비교", mt_test_sub_comparison },
+    { "MUL 비교", mt_test_mul_comparison },
+    { "DIV 비교", mt_test_div_comparison },
+    { "OR 비교", mt_test_or_comparison },
+    { "AND 비교", mt_test_and_comparison },
+    { "순차 증가", mt_test_seqinc_comparison },
+    { "고정 Bit", mt_test_solidbits_comparison },
+    { "블록 순차", mt_test_blockseq_comparison },
+    { "체커보드", mt_test_checkerboard_comparison },
+    { "Bit 확산", mt_test_bitspread_comparison },
+    { "Bit 반전", mt_test_bitflip_comparison },
+    { "워킹 1", mt_test_walkbits0_comparison },
+    { "워킹 0", mt_test_walkbits1_comparison },
     { NULL, NULL }
 };
 
 struct mt_test mt_stress_tests[] = {
-    { "Stress memcpy x128", mt_test_stress_memcpy },
-    { "Stress memset x128", mt_test_stress_memset },
-    { "Stress memcmp x32", mt_test_stress_memcmp },
+    { "memcpy 부하 x128", mt_test_stress_memcpy },
+    { "memset 부하 x128", mt_test_stress_memset },
+    { "memcmp 부하 x32", mt_test_stress_memcmp },
     { NULL, NULL }
 };
 

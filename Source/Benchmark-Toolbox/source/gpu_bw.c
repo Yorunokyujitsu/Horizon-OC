@@ -14,24 +14,24 @@ static EGLContext s_context = EGL_NO_CONTEXT;
 static bool egl_init(void) {
     s_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (s_display == EGL_NO_DISPLAY) {
-        printf("EGL: no display\n");
+        printf("EGL: 디스플레이를 찾을 수 없습니다\n");
         consoleUpdate(NULL);
         return false;
     }
     if (!eglInitialize(s_display, NULL, NULL)) {
-        printf("EGL: initialize failed (0x%x)\n", eglGetError());
+        printf("EGL: 초기화 실패 (0x%x)\n", eglGetError());
         consoleUpdate(NULL);
         return false;
     }
     if (!eglBindAPI(EGL_OPENGL_API)) {
-        printf("EGL: bindAPI(OPENGL) failed (0x%x)\n", eglGetError());
+        printf("EGL: OpenGL API 바인딩 실패 (0x%x)\n", eglGetError());
         consoleUpdate(NULL);
         return false;
     }
 
     const char *exts = eglQueryString(s_display, EGL_EXTENSIONS);
     if (!exts || !strstr(exts, "EGL_KHR_surfaceless_context")) {
-        printf("EGL: no surfaceless_context\n");
+        printf("EGL: surfaceless_context 미지원\n");
         consoleUpdate(NULL);
         return false;
     }
@@ -56,7 +56,7 @@ static bool egl_init(void) {
     EGLConfig cfg;
     EGLint n;
     if (!eglChooseConfig(s_display, cfg_attribs, &cfg, 1, &n) || !n) {
-        printf("EGL: chooseConfig failed n=%d (0x%x)\n", (int)n, eglGetError());
+        printf("EGL: 설정 선택 실패 n=%d (0x%x)\n", (int)n, eglGetError());
         consoleUpdate(NULL);
         return false;
     }
@@ -72,7 +72,7 @@ static bool egl_init(void) {
     }
 
     if (eglMakeCurrent(s_display, EGL_NO_SURFACE, EGL_NO_SURFACE, s_context) != EGL_TRUE) {
-        printf("EGL: makeCurrent failed (0x%x)\n", eglGetError());
+        printf("EGL: 컨텍스트 생성 실패 (0x%x)\n", eglGetError());
         consoleUpdate(NULL);
         return false;
     }
@@ -101,7 +101,7 @@ static GLuint compile_compute(const char *src, const char *name) {
     if (!ok) {
         char log[256] = { 0 };
         glGetShaderInfoLog(sh, sizeof(log), NULL, log);
-        printf("Compute shader compile failed: %s\n", log[0] ? log : name);
+        printf("컴퓨트 셰이더 컴파일 실패: %s\n", log[0] ? log : name);
         glDeleteShader(sh);
         return 0;
     }
@@ -172,7 +172,7 @@ bool gpu_bw_run(bool is_4gb, double *copy_out, double *read_out, double *write_o
                                    "}\n";
 
     if (!egl_init()) {
-        printf("Failed to initialize EGL/GL for GPU benchmark.\n");
+        printf("GPU 벤치마크용 EGL/GL 초기화 실패.\n");
         consoleUpdate(NULL);
         return false;
     }
@@ -180,7 +180,7 @@ bool gpu_bw_run(bool is_4gb, double *copy_out, double *read_out, double *write_o
     GLint max_ssbo = 0;
     glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &max_ssbo);
     if (max_ssbo < 1) {
-        printf("Failed to query GPU SSBO size.\n");
+        printf("GPU SSBO 크기 조회 실패\n");
         consoleUpdate(NULL);
         egl_exit();
         return false;
@@ -194,7 +194,7 @@ bool gpu_bw_run(bool is_4gb, double *copy_out, double *read_out, double *write_o
     buf_bytes &= ~(size_t)0x3FF;
 
     if (buf_bytes < 0x400) {
-        printf("GPU benchmark buffer is too small.\n");
+        printf("GPU 벤치마크 버퍼가 너무 작습니다.\n");
         consoleUpdate(NULL);
         egl_exit();
         return false;
@@ -203,9 +203,9 @@ bool gpu_bw_run(bool is_4gb, double *copy_out, double *read_out, double *write_o
     int loops = is_4gb ? 400 : 800;
     int wloops = loops / 10;
 
-    GLuint prog_copy = compile_compute(src_copy, "GPU Copy");
-    GLuint prog_read = compile_compute(src_read, "GPU Read");
-    GLuint prog_write = compile_compute(src_write, "GPU Write");
+    GLuint prog_copy = compile_compute(src_copy, "GPU 복사");
+    GLuint prog_read = compile_compute(src_read, "GPU 읽기");
+    GLuint prog_write = compile_compute(src_write, "GPU 쓰기");
     if (!prog_copy || !prog_read || !prog_write) {
         if (prog_copy)
             glDeleteProgram(prog_copy);
@@ -225,7 +225,7 @@ bool gpu_bw_run(bool is_4gb, double *copy_out, double *read_out, double *write_o
     glBufferData(GL_SHADER_STORAGE_BUFFER, (GLsizeiptr)buf_bytes, NULL, GL_DYNAMIC_COPY);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     if (glGetError() != GL_NO_ERROR) {
-        printf("Failed to allocate GPU buffers!\n");
+        printf("GPU 버퍼를 할당 실패!\n");
         consoleUpdate(NULL);
         glDeleteBuffers(2, ssbo);
         glDeleteProgram(prog_copy);

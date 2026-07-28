@@ -100,17 +100,31 @@ class SysInfoTab : public brls::Box {
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
         auto *clk = new brls::Header();
-        clk->setTitle("Clocks");
+        clk->setTitle("클럭");
         this->addView(clk);
+
+        auto* s1 = new brls::Box();
+        s1->setHeight(30.0f);
+        this->addView(s1);
+
         cpuR = makeCompRow(this, "CPU");
         gpuR = makeCompRow(this, "GPU");
         ramR = makeRamRow(this);
 
+        auto* s2 = new brls::Box();
+        s2->setHeight(40.0f);
+        this->addView(s2);
+
         auto *sys = new brls::Header();
-        sys->setTitle("System");
+        sys->setTitle("시스템");
         this->addView(sys);
-        mode = makeRow(this, "Mode");
-        threads = makeRow(this, "Threads");
+
+        auto* s3 = new brls::Box();
+        s3->setHeight(30.0f);
+        this->addView(s3);
+
+        mode = makeRow(this, "모드");
+        threads = makeRow(this, "스레드");
 
         hocclk_init();
         refresh();
@@ -178,7 +192,7 @@ class SysInfoTab : public brls::Box {
     void refresh() {
         sysinfo_t s;
         bench_get_sysinfo(&s);
-        mode->setText(s.is_4gb ? "Application" : "Applet");
+        mode->setText(s.is_4gb ? "애플리케이션" : "애플릿");
         threads->setText(fstru("%llu", (unsigned long long)s.threads));
 
         HocClkContext c;
@@ -206,8 +220,13 @@ class BenchTab : public brls::Box {
         this->setGrow(1.0f);
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
+        auto *t = new brls::Header();
+        t->setTitle("벤치마크");
+        t->setMarginBottom(10.0f);
+        this->addView(t);
+
         runBtn = new brls::Button();
-        runBtn->setText("Run");
+        runBtn->setText("실행");
         runBtn->registerClickAction([this](brls::View *) {
             start();
             return true;
@@ -215,9 +234,9 @@ class BenchTab : public brls::Box {
         this->addView(runBtn);
 
         status = new brls::Label();
-        status->setText("Idle");
-        status->setMarginTop(8.0f);
-        status->setMarginBottom(6.0f);
+        status->setText("유휴 상태");
+        status->setMarginTop(14.0f);
+        status->setMarginBottom(8.0f);
         this->addView(status);
 
         bar = new brls::Box(brls::Axis::ROW);
@@ -235,24 +254,27 @@ class BenchTab : public brls::Box {
         this->addView(bar);
 
         auto *h1 = new brls::Header();
-        h1->setTitle("GPU bandwidth");
+        h1->setTitle("GPU  CPU 대역폭");
+        h1->setMarginBottom(14.0f);
         this->addView(h1);
-        gpuCopy = makeRow(this, "GPU Copy");
-        gpuRead = makeRow(this, "GPU Read");
-        gpuWrite = makeRow(this, "GPU Write");
+        gpuCopy = makeRow(this, "GPU 복사");
+        gpuRead = makeRow(this, "GPU 읽기");
+        gpuWrite = makeRow(this, "GPU 쓰기");
 
-        auto *h2 = new brls::Header();
-        h2->setTitle("CPU bandwidth");
-        this->addView(h2);
-        cpuCopy = makeRow(this, "CPU Copy");
-        cpuRead = makeRow(this, "CPU Read");
-        cpuWrite = makeRow(this, "CPU Write");
+        auto* spacer = new brls::Box();
+        spacer->setHeight(12.0f);
+        this->addView(spacer);
+
+        cpuCopy = makeRow(this, "CPU 복사");
+        cpuRead = makeRow(this, "CPU 읽기");
+        cpuWrite = makeRow(this, "CPU 쓰기");
 
         auto *h3 = new brls::Header();
-        h3->setTitle("RAM latency");
+        h3->setTitle("RAM 레이턴시");
+        h3->setMarginBottom(14.0f);
         this->addView(h3);
-        l2 = makeRow(this, "L2");
-        ram = makeRow(this, "Full RAM");
+        l2 = makeRow(this, "L2 캐시");
+        ram = makeRow(this, "전체 RAM");
     }
 
     ~BenchTab() override {
@@ -278,7 +300,7 @@ class BenchTab : public brls::Box {
                     bench_end(ctx);
                     ctx = nullptr;
                     running = false;
-                    status->setText("Done");
+                    status->setText("완료");
                     appletSetAutoSleepDisabled(false);
                 }
             }
@@ -308,13 +330,13 @@ class BenchTab : public brls::Box {
         memset(&res, 0, sizeof(res));
         ctx = bench_begin();
         if (!ctx) {
-            status->setText("Out of memory");
+            status->setText("메모리 부족");
             return;
         }
         running = true;
         primed = true;
         setProgress(0.0f);
-        status->setText("Running benchmark...");
+        status->setText("벤치마크 실행 중...");
         appletSetAutoSleepDisabled(true);
     }
 
@@ -343,31 +365,44 @@ class StressTab : public brls::Box {
         this->setGrow(1.0f);
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
+        auto *t = new brls::Header();
+        t->setTitle("실행");
+        this->addView(t);
+
+        auto *hint = new brls::Label();
+        hint->setText("오류 횟수가 1회 이상이면 시스템이 불안정한 상태입니다,  버튼을 눌러 실행하세요.");
+        hint->setFontSize(15.0f);
+        hint->setTextColor(nvgRGB(150, 150, 150));
+        hint->setMarginTop(16.0f);
+        hint->setMarginBottom(14.0f);
+        this->addView(hint);
+
         toggle = new brls::Button();
-        toggle->setText("Start GPU stress");
+        toggle->setText("GPU 부하 테스트 시작");
         toggle->registerClickAction([this](brls::View *) {
             onToggle();
             return true;
         });
+        toggle->setMarginBottom(40.0f);
         this->addView(toggle);
 
+        auto *s = new brls::Header();
+        s->setTitle("상태");
+        this->addView(s);
+
         statusL = new brls::Label();
-        statusL->setText("Stopped");
-        statusL->setMarginTop(8.0f);
-        statusL->setMarginBottom(8.0f);
+        statusL->setText("중지됨");
+        statusL->setMarginTop(16.0f);
+        statusL->setMarginBottom(40.0f);
         this->addView(statusL);
 
         auto *h = new brls::Header();
-        h->setTitle("Info");
+        h->setTitle("정보");
+        h->setMarginBottom(16.0f);
         this->addView(h);
         gflops = makeRow(this, "GFLOPS");
-        dispatches = makeRow(this, "Dispatches");
-        mismatches = makeRow(this, "Mismatches");
-
-        auto *info = new brls::Label();
-        info->setText("GPU stress test, Mismatches > 0 indicate instability.");
-        info->setMarginTop(16.0f);
-        this->addView(info);
+        dispatches = makeRow(this, "작업 횟수");
+        mismatches = makeRow(this, "오류 횟수");
     }
 
     ~StressTab() override {
@@ -400,8 +435,8 @@ class StressTab : public brls::Box {
             sh.worker.join();
         sh.stop.store(false);
         sh.running.store(true);
-        toggle->setText("Stop GPU stress");
-        statusL->setText("Running...");
+        toggle->setText("GPU 부하 테스트 중지");
+        statusL->setText("실행 중...");
         sh.worker = std::thread([this] {
             appletSetAutoSleepDisabled(true);
             uint64_t totD = 0, totM = 0;
@@ -427,9 +462,9 @@ class StressTab : public brls::Box {
         gpu_stress_shutdown();
         sh.running.store(false);
         if (toggle)
-            toggle->setText("Start GPU stress");
+            toggle->setText("GPU 부하 테스트 시작");
         if (statusL)
-            statusL->setText("Stopped");
+            statusL->setText("중지됨");
     }
     StressShared sh;
     brls::Button *toggle;
@@ -443,27 +478,41 @@ class FurmarkTab : public brls::Box {
         this->setGrow(1.0f);
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
+        auto *t = new brls::Header();
+        t->setTitle("실행");
+        this->addView(t);
+
+        auto *hint = new brls::Label();
+        std::string text = std::string(desc) + ",  버튼을 눌러 실행하세요.";
+        hint->setText(text);
+        hint->setFontSize(15.0f);
+        hint->setTextColor(nvgRGB(150, 150, 150));
+        hint->setMarginTop(16.0f);
+        hint->setMarginBottom(14.0f);
+        this->addView(hint);
+
         toggle = new brls::Button();
-        toggle->setText("Start");
+        toggle->setText("시작");
         toggle->registerClickAction([this](brls::View *) {
             onToggle();
             return true;
         });
+        toggle->setMarginBottom(40.0f);
         this->addView(toggle);
 
+        auto *s = new brls::Header();
+        s->setTitle("상태");
+        this->addView(s);
+
         statusL = new brls::Label();
-        statusL->setText("Stopped");
-        statusL->setMarginTop(8.0f);
-        statusL->setMarginBottom(12.0f);
+        statusL->setText("중지됨");
+        statusL->setMarginTop(16.0f);
+        statusL->setMarginBottom(40.0f);
         this->addView(statusL);
 
-        auto *info = new brls::Label();
-        info->setText(desc);
-        info->setMarginBottom(8.0f);
-        this->addView(info);
-
         auto *h = new brls::Header();
-        h->setTitle("Info");
+        h->setTitle("정보");
+        h->setMarginBottom(16.0f);
         this->addView(h);
         if (which == 3) {
             gpuFpsL = makeRow(this, "GPU FPS");
@@ -488,8 +537,8 @@ class FurmarkTab : public brls::Box {
         bool r = run_furmark_running() != 0;
         if (r != shown) {
             shown = r;
-            toggle->setText(r ? "Stop" : "Start");
-            statusL->setText(r ? "Running..." : "Stopped");
+            toggle->setText(r ? "중지" : "시작");
+            statusL->setText(r ? "실행 중..." : "중지됨");
             if (!r) {
                 gpuFpsL->setText("-");
                 if (cpuFpsL)
@@ -526,30 +575,40 @@ class MemtesterTab : public brls::Box {
         this->setGrow(1.0f);
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
+        auto *t = new brls::Header();
+        t->setTitle("테스트");
+        this->addView(t);
+
         auto *modeRow = new brls::Box(brls::Axis::ROW);
         modeRow->setMarginBottom(10.0f);
         auto *ml = new brls::Label();
-        ml->setText("Mode");
+        ml->setText("모드:ㅤ");
         ml->setGrow(1.0f);
+        ml->setFontSize(18.0f);
+        ml->setHorizontalAlign(brls::HorizontalAlign::RIGHT);
         modeRow->addView(ml);
         modeVal = new brls::Label();
         modeVal->setText(modeName(mode));
+        modeVal->setFontSize(18.0f);
         modeRow->addView(modeVal);
+        modeRow->setMarginTop(-34.0f);
         this->addView(modeRow);
 
         auto *hint = new brls::Label();
-        hint->setText("Use L / R to select the memtester mode. Press A to run.");
+        hint->setText(" 또는  버튼으로 메모리 테스트 모드를 선택하고,  버튼을 눌러 실행하세요.");
         hint->setFontSize(15.0f);
         hint->setTextColor(nvgRGB(150, 150, 150));
+        hint->setMarginTop(16.0f);
         hint->setMarginBottom(14.0f);
         this->addView(hint);
 
         toggle = new brls::Button();
-        toggle->setText("Start");
+        toggle->setText("시작");
         toggle->registerClickAction([this](brls::View *) {
             onToggle();
             return true;
         });
+        toggle->setMarginBottom(20.0f);
         this->addView(toggle);
 
         this->registerAction("Prev mode", brls::ControllerButton::BUTTON_LB, [this](brls::View *) {
@@ -561,9 +620,13 @@ class MemtesterTab : public brls::Box {
             return true;
         });
 
+        auto *s = new brls::Header();
+        s->setTitle("상태");
+        this->addView(s);
+
         statusL = new brls::Label();
-        statusL->setText("Stopped");
-        statusL->setMarginTop(10.0f);
+        statusL->setText("중지됨");
+        statusL->setMarginTop(16.0f);
         statusL->setMarginBottom(8.0f);
         this->addView(statusL);
 
@@ -582,11 +645,13 @@ class MemtesterTab : public brls::Box {
         this->addView(bar);
 
         auto *h = new brls::Header();
-        h->setTitle("Info");
+        h->setTitle("정보");
+        h->setMarginTop(20.0f);
+        h->setMarginBottom(16.0f);
         this->addView(h);
-        rowA = makeRow(this, "Loops");
-        rowB = makeRow(this, "Mismatches");
-        rowC = makeRow(this, "Detail");
+        rowA = makeRow(this, "반복 횟수");
+        rowB = makeRow(this, "오류 횟수");
+        rowC = makeRow(this, "상세 정보");
 
         updateBar();
     }
@@ -615,8 +680,8 @@ class MemtesterTab : public brls::Box {
             if (s.running || lastRunning) {
                 rowA->setText(fstru("%llu", (unsigned long long)s.loop));
                 rowB->setText(fstru("%llu", (unsigned long long)s.mismatches));
-                rowC->setText(fstru("%llu MB tested", (unsigned long long)s.size_mb));
-                statusL->setText(s.error ? std::string("Error: ") + s.status : std::string(s.status));
+                rowC->setText(fstru("%llu MB 검사 완료", (unsigned long long)s.size_mb));
+                statusL->setText(s.error ? std::string("오류: ") + s.status : std::string(s.status));
             }
             syncToggle(s.running != 0);
         } else {
@@ -630,12 +695,12 @@ class MemtesterTab : public brls::Box {
                     std::snprintf(d, sizeof d, "%llu MB, burn-in x%llu",
                                   (unsigned long long)s.total_mb, (unsigned long long)s.burnin_iters);
                 else
-                    std::snprintf(d, sizeof d, "%llu MB, %d threads",
+                    std::snprintf(d, sizeof d, "%llu MB, %d 스레드",
                                   (unsigned long long)s.total_mb, s.threads);
                 rowC->setText(d);
                 setProgress(mt_cpu_running() ? s.progress : 0.0f);
                 if (mt_cpu_running())
-                    statusL->setText(std::string(s.mismatches ? "Errors found! Running - " : "Running - ") +
+                    statusL->setText(std::string(s.mismatches ? "오류 발견! 실행 중 - " : "실행 중 - ") +
                                      (s.test ? s.test : ""));
             }
             syncToggle(mt_cpu_running() != 0);
@@ -646,10 +711,10 @@ class MemtesterTab : public brls::Box {
     private:
     static const char *modeName(int m) {
         switch (m) {
-            case 0: return "CPU - Memtester";
-            case 1: return "CPU - Memtester + BW Burn-in";
-            case 2: return "GPU - Memtester (Fast)";
-            case 3: return "GPU - Memtester (Full)";
+            case 0: return "CPU - 메모리 테스트";
+            case 1: return "CPU - 메모리 테스트 + 대역폭 burn-in";
+            case 2: return "GPU - 메모리 테스트 (빠른 검사)";
+            case 3: return "GPU - 메모리 테스트 (전체 검사)";
         }
         return "";
     }
@@ -693,9 +758,9 @@ class MemtesterTab : public brls::Box {
         if (running == lastRunning)
             return;
         lastRunning = running;
-        toggle->setText(running ? "Stop" : "Start");
+        toggle->setText(running ? "중지" : "시작");
         if (!running)
-            statusL->setText("Stopped");
+            statusL->setText("중지됨");
     }
     int mode = 0;
     bool lastRunning = false;
@@ -712,30 +777,40 @@ class CpuStressTab : public brls::Box {
         this->setGrow(1.0f);
         this->setPadding(40.0f, 60.0f, 40.0f, 60.0f);
 
+        auto *t = new brls::Header();
+        t->setTitle("실행");
+        this->addView(t);
+
         auto *modeRow = new brls::Box(brls::Axis::ROW);
         modeRow->setMarginBottom(10.0f);
         auto *ml = new brls::Label();
-        ml->setText("Mode");
+        ml->setText("모드:ㅤ");
         ml->setGrow(1.0f);
+        ml->setFontSize(18.0f);
+        ml->setHorizontalAlign(brls::HorizontalAlign::RIGHT);
         modeRow->addView(ml);
         modeVal = new brls::Label();
         modeVal->setText(modeName(mode));
+        modeVal->setFontSize(18.0f);
         modeRow->addView(modeVal);
+        modeRow->setMarginTop(-34.0f);
         this->addView(modeRow);
 
         auto *hint = new brls::Label();
-        hint->setText("Use L / R to select the CPU stress mode. Press A to run.");
+        hint->setText(" 또는  버튼으로 CPU 부하 테스트 모드를 선택하고,  버튼을 눌러 실행하세요.");
         hint->setFontSize(15.0f);
         hint->setTextColor(nvgRGB(150, 150, 150));
+        hint->setMarginTop(16.0f);
         hint->setMarginBottom(14.0f);
         this->addView(hint);
 
         toggle = new brls::Button();
-        toggle->setText("Start");
+        toggle->setText("시작");
         toggle->registerClickAction([this](brls::View *) {
             onToggle();
             return true;
         });
+        toggle->setMarginBottom(40.0f);
         this->addView(toggle);
 
         this->registerAction("Prev mode", brls::ControllerButton::BUTTON_LB, [this](brls::View *) {
@@ -747,18 +822,23 @@ class CpuStressTab : public brls::Box {
             return true;
         });
 
+        auto *s = new brls::Header();
+        s->setTitle("상태");
+        this->addView(s);
+
         statusL = new brls::Label();
-        statusL->setText("Stopped");
-        statusL->setMarginTop(10.0f);
-        statusL->setMarginBottom(8.0f);
+        statusL->setText("중지됨");
+        statusL->setMarginTop(16.0f);
+        statusL->setMarginBottom(40.0f);
         this->addView(statusL);
 
         auto *h = new brls::Header();
-        h->setTitle("Info");
+        h->setTitle("정보");
+        h->setMarginBottom(16.0f);
         this->addView(h);
-        rowA = makeRow(this, "Iterations");
-        rowB = makeRow(this, "Mismatches");
-        rowC = makeRow(this, "Threads");
+        rowA = makeRow(this, "반복 횟수");
+        rowB = makeRow(this, "오류 횟수");
+        rowC = makeRow(this, "스레드");
     }
 
     ~CpuStressTab() override {
@@ -780,7 +860,7 @@ class CpuStressTab : public brls::Box {
             rowB->setText(fstru("%llu", (unsigned long long)s.mismatches));
             rowC->setText(fstru("%llu", (unsigned long long)s.threads));
             if (cpu_stress_running())
-                statusL->setText(s.mismatches ? "Errors found! Running..." : "Running...");
+                statusL->setText(s.mismatches ? "오류 발견! 실행 중..." : "실행 중...");
         }
         syncToggle(cpu_stress_running() != 0);
         brls::Box::frame(ctx);
@@ -789,8 +869,8 @@ class CpuStressTab : public brls::Box {
     private:
     static const char *modeName(int m) {
         switch (m) {
-            case 0: return "Matrixprod";
-            case 1: return "Hanoi (verify)";
+            case 0: return "행렬 연산";
+            case 1: return "하노이 테스트 (검증)";
         }
         return "";
     }
@@ -814,9 +894,9 @@ class CpuStressTab : public brls::Box {
         if (running == lastRunning)
             return;
         lastRunning = running;
-        toggle->setText(running ? "Stop" : "Start");
+        toggle->setText(running ? "중지" : "시작");
         if (!running)
-            statusL->setText("Stopped");
+            statusL->setText("중지됨");
     }
     int mode = 0;
     bool lastRunning = false;
@@ -837,23 +917,45 @@ class CreditsTab : public brls::Box {
         this->addView(title);
 
         auto *by = new brls::Label();
-        by->setText("by Souldbminer and Lightos_, licensed under the GPLv2");
+        by->setText("개발자: Souldbminer, Lightos_  GPLv2 라이센스에 따라 제작되었습니다.");
         by->setFontSize(16.0f);
         by->setTextColor(nvgRGB(150, 150, 150));
         this->addView(by);
 
+        auto* s1 = new brls::Box();
+        s1->setHeight(20.0f);
+        this->addView(s1);
+
         auto *h = new brls::Header();
-        h->setTitle("Credits");
+        h->setTitle("크레딧");
         this->addView(h);
 
-        makeRow(this, "Memtester")->setText("Simon Kirby, Charles Cazabon, KazushiMe & CTCaer");
-        makeRow(this, "FurMark")->setText("StanislavPetrovV & AnxietyTimmy");
+        auto* s2 = new brls::Box();
+        s2->setHeight(20.0f);
+        this->addView(s2);
+
+        makeRow(this, "Memtester")->setText("Simon Kirby  Charles Cazabon  KazushiMe  CTCaer");
+        makeRow(this, "FurMark")->setText("StanislavPetrovV  AnxietyTimmy");
         makeRow(this, "GPU Test")->setText("NaGaa95");
-        makeRow(this, "Membench")->setText("Siarhei Siamashka, KazushiMe & Lineon");
-        makeRow(this, "Stress-ng")->setText("ColinIanKing & Lineon");
+        makeRow(this, "Membench")->setText("Siarhei Siamashka  KazushiMe  Lineon");
+        makeRow(this, "Stress-ng")->setText("ColinIanKing  Lineon");
+
+        auto* s3 = new brls::Box();
+        s3->setHeight(20.0f);
+        this->addView(s3);
+
+        auto *tr = new brls::Header();
+        tr->setTitle("번역");
+        this->addView(tr);
+
+        auto* s4 = new brls::Box();
+        s4->setHeight(20.0f);
+        this->addView(s4);
+
+        makeRow(this, "한국어")->setText("Yorunokyujitsu");
 
         auto *note = new brls::Label();
-        note->setText("Thanks to all the original authors.");
+        note->setText("모든 원 개발자 여러분께 감사드립니다.");
         note->setFontSize(15.0f);
         note->setTextColor(nvgRGB(150, 150, 150));
         note->setMarginTop(18.0f);
@@ -933,28 +1035,32 @@ class MainActivity : public brls::Activity {
         auto *tab = new AppFrame();
         tab->setTitle("Benchmark Toolbox");
         tab->setIconFromRes("img/logo.png");
-        tab->addTab("System Info", [] { return new SysInfoTab(); });
+        tab->addHeader("정보");
+        tab->addSeparator();
+        tab->addTab("애플리케이션", [] { return new CreditsTab(); });
+        tab->addTab("시스템", [] { return new SysInfoTab(); });
 
-        tab->addHeader("Combined");
-        tab->addTab("Black Hole", [] { return new FurmarkTab(3, "CPU+GPU black-hole."); });
+        tab->addHeader("종합");
+        tab->addSeparator();
+        tab->addTab("블랙홀", [] { return new FurmarkTab(3, "CPU  GPU 동시 최대 부하 테스트"); });
 
         tab->addHeader("CPU");
-        tab->addTab("CPU Stress", [] { return new CpuStressTab(); });
-        tab->addTab("CPU Ray Trace", [] { return new FurmarkTab(4, "CPU Path Tracer"); });
+        tab->addSeparator();
+        tab->addTab("부하 테스트", [] { return new CpuStressTab(); });
+        tab->addTab("레이 트레이싱", [] { return new FurmarkTab(4, "CPU 레이 트레이서"); });
 
         tab->addHeader("GPU");
-        tab->addTab("GPU Test", [] { return new StressTab(); });
-        tab->addTab("Furmark", [] { return new FurmarkTab(0, "FurMark for Switch (48 step)"); });
-        tab->addTab("GPU Path Trace", [] { return new FurmarkTab(2, "GPU Path Tracer"); });
+        tab->addSeparator();
+        tab->addTab("부하 테스트", [] { return new StressTab(); });
+        tab->addTab("Furmark", [] { return new FurmarkTab(0, "Switch용 FurMark (48 스텝)"); });
+        tab->addTab("레이 트레이싱", [] { return new FurmarkTab(2, "GPU 레이 트레이서"); });
 
         tab->addHeader("RAM");
-        tab->addTab("Memtester", [] { return new MemtesterTab(); });
-        tab->addTab("Membench", [] { return new BenchTab(); });
-        tab->addTab("Furmark RAM", [] { return new FurmarkTab(1, "FurMark with extra ram stress"); });
-        tab->addTab("CPU RAM", [] { return new FurmarkTab(5, "CPU RT with extra RAM stress"); });
-
         tab->addSeparator();
-        tab->addTab("Credits", [] { return new CreditsTab(); });
+        tab->addTab("메모리 테스트", [] { return new MemtesterTab(); });
+        tab->addTab("벤치마크", [] { return new BenchTab(); });
+        tab->addTab("Furmark", [] { return new FurmarkTab(1, "RAM 부하를 추가한 FurMark"); });
+        tab->addTab("CPU 레이 트레이싱", [] { return new FurmarkTab(5, "RAM 부하를 추가한 CPU 레이 트레이싱"); });
         return tab;
     }
 };

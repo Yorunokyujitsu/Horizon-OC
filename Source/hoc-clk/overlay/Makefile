@@ -56,7 +56,7 @@ CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
 # Enable appearance overriding
 export MSYS2_ARG_CONV_EXCL := -DUI_OVERRIDE_PATH
-UI_OVERRIDE_PATH := /config/horizon-oc/
+UI_OVERRIDE_PATH := /config/sys-clk/
 CFLAGS += -DUI_OVERRIDE_PATH="\"$(UI_OVERRIDE_PATH)\""
 
 # Disable fstream

@@ -253,9 +253,9 @@ static inline const char* hocclkFormatModule(HocClkModule module, bool pretty)
         case HocClkModule_GPU:
             return pretty ? "GPU" : "gpu";
         case HocClkModule_MEM:
-            return pretty ? "Memory" : "mem";
+            return pretty ? "RAM" : "mem";
         case HocClkModule_Display:
-            return pretty ? "Display" : "display";
+            return pretty ? "디스플레이" : "display";
         case HocClkModule_Governor:
             return pretty ? "Governor" : "governor";
         default:
@@ -267,7 +267,7 @@ static inline const char* hocclkFormatThermalSensor(HocClkThermalSensor thermSen
 {
     switch(thermSensor) {
         case HocClkThermalSensor_SOC:
-            return pretty ? "SOC" : "soc";
+            return pretty ? "SoC" : "soc";
         case HocClkThermalSensor_PCB:
             return pretty ? "PCB" : "pcb";
         case HocClkThermalSensor_Skin:
@@ -311,15 +311,15 @@ static inline const char* hocclkFormatProfile(HocClkProfile profile, bool pretty
     switch(profile)
     {
         case HocClkProfile_Docked:
-            return pretty ? "Docked" : "docked";
+            return pretty ? "독 모드" : "docked";
         case HocClkProfile_Handheld:
-            return pretty ? "Handheld" : "handheld";
+            return pretty ? "휴대 모드" : "handheld";
         case HocClkProfile_HandheldCharging:
-            return pretty ? "Charging" : "handheld_charging";
+            return pretty ? "충전 모드" : "handheld_charging";
         case HocClkProfile_HandheldChargingUSB:
-            return pretty ? "USB Charger" : "handheld_charging_usb";
+            return pretty ? "일반 충전기" : "handheld_charging_usb";
         case HocClkProfile_HandheldChargingOfficial:
-            return pretty ? "PD Charger" : "handheld_charging_official";
+            return pretty ? "PD 충전기" : "handheld_charging_official";
         default:
             return "unknown";
     }

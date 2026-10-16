@@ -252,9 +252,9 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "CSV write interval (ms)" : "csv_write_interval_ms";
 
         case HocClkConfigValue_UncappedClocks:
-            return pretty ? "Uncapped Clocks" : "uncapped_clocks";
+            return pretty ? "클럭 제한 해제" : "uncapped_clocks";
         case HocClkConfigValue_OverwriteBoostMode:
-            return pretty ? "Overwrite Boost Mode" : "ow_boost";
+            return pretty ? "부스트 모드 재정의" : "ow_boost";
 
         case HocClkConfigValue_EristaMaxCpuClock:
             return pretty ? "CPU Max Clock" : "cpu_max_e";
@@ -263,7 +263,7 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "CPU Max Display Clock" : "cpu_max_m";
 
         case HocClkConfigValue_ThermalThrottle:
-            return pretty ? "Thermal Throttle" : "thermal_throttle";
+            return pretty ? "온도 제한" : "thermal_throttle";
 
         case HocClkConfigValue_ThermalThrottleThreshold:
             return pretty ? "Thermal Throttle Threshold" : "thermal_throttle_threshold";
@@ -275,7 +275,7 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "Input Current Limit" : "in_curr_limit";
 
         case HocClkConfigValue_OverwriteRefreshRate:
-            return pretty ? "Display Refresh Rate Changing" : "drr_changing";
+            return pretty ? "주사율 변경" : "drr_changing";
 
         case HocClkConfigValue_MaxDisplayClockH:
             return pretty ? "Max Display Clock (Handheld)" : "drr_max_clock";
@@ -293,10 +293,10 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
             return pretty ? "GPU Scheduling Method" : "gpu_sched_method";
 
         case HocClkConfigValue_LiveCpuUv:
-            return pretty ? "Live CPU Undervolt" : "live_cpu_uv";
+            return pretty ? "CPU 실시간 언더볼팅" : "live_cpu_uv";
 
         case HocClkConfigValue_EnableExperimentalSettings:
-            return pretty ? "Enable Experimental Settings" : "enable_experimental_settings";
+            return pretty ? "실험실 기능 활성화" : "enable_experimental_settings";
 
         case HocClkConfigValue_RAMVoltDisplayMode:
             return pretty ? "RAM Voltage / Usage Display Mode" : "ram_volt_usage_display_mode";
@@ -314,7 +314,7 @@ static inline const char* hocclkFormatConfigValue(HocClkConfigValue val, bool pr
         case HocClkConfigValue_AulaDisplayColorPreset:
             return pretty ? "Aula Display Color Preset" : "aula_color_preset";
         case HocClkConfigValue_MarikoMiddleFreqs:
-            return pretty ? "Mariko Middle Clocks" : "mariko_middle_freqs";
+            return pretty ? "Mariko GPU 세밀 조정" : "mariko_middle_freqs";
 
         case HocClkConfigValue_LiveGpuVoltage:
             return pretty ? "GPU Voltage Request" : "gpu_voltage_request";

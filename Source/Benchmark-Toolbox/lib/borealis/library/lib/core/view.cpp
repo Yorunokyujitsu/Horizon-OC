@@ -432,9 +432,12 @@ void View::drawHighlight(NVGcontext* vg, Theme theme, float alpha, Style style, 
     float cornerRadius = this->highlightCornerRadius;
     float strokeWidth  = style["brls/highlight/stroke_width"];
 
-    float x      = this->getX() - padding - strokeWidth / 2;
+    float extraLeft  = this->getHighlightExtraLeft();
+    float extraRight = this->getHighlightExtraRight();
+
+    float x      = this->getX() - padding - strokeWidth / 2 - extraLeft;
     float y      = this->getY() - padding - strokeWidth / 2;
-    float width  = this->getWidth() + padding * 2 + strokeWidth;
+    float width  = this->getWidth() + padding * 2 + strokeWidth + extraLeft + extraRight;
     float height = this->getHeight() + padding * 2 + strokeWidth;
 
     // Shake animation

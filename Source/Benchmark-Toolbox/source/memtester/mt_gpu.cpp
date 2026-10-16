@@ -59,7 +59,7 @@ namespace {
     std::atomic<uint64_t> g_loop{ 0 };
     std::atomic<uint64_t> g_mismatches{ 0 };
     std::atomic<uint64_t> g_size_mb{ 0 };
-    const char *volatile g_status = "Stopped";
+    const char *volatile g_status = "중지됨";
 
     EGLDisplay s_dpy = EGL_NO_DISPLAY;
     EGLContext s_ctx = EGL_NO_CONTEXT;
@@ -138,7 +138,7 @@ namespace {
 
     void worker(bool full) {
         if (!eglUp()) {
-            g_status = "EGL init failed";
+            g_status = "EGL 초기화 실패";
             g_error = true;
             eglDown();
             g_running.store(false);
@@ -149,7 +149,7 @@ namespace {
         GLint maxSsbo = 0;
         glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxSsbo);
         if (maxSsbo <= 0) {
-            g_status = "Failed to query SSBO size";
+            g_status = "SSBO 크기를 확인하지 못했습니다.";
             g_error = true;
             eglDown();
             g_running.store(false);
@@ -160,7 +160,7 @@ namespace {
         size_t want = full ? ((size_t)maxSsbo << 2) : (size_t)maxSsbo;
         size_t bytes = (want < cap + 1) ? (want & ~(size_t)0x3ff) : cap;
         if (bytes < 0x400) {
-            g_status = "GPU memtester buffer too small";
+            g_status = "GPU 메모리 테스트 버퍼가 너무 작습니다";
             g_error = true;
             eglDown();
             g_running.store(false);
@@ -175,7 +175,7 @@ namespace {
         GLuint copy = buildProgram(SH_COPY);
         GLuint verifyCopy = buildProgram(SH_VERIFY_COPY);
         if (!fill || !verifyFill || !copy || !verifyCopy) {
-            g_status = "Compute program build failed";
+            g_status = "컴퓨트 프로그램 빌드에 실패했습니다";
             g_error = true;
             if (fill) glDeleteProgram(fill);
             if (verifyFill) glDeleteProgram(verifyFill);
@@ -200,7 +200,7 @@ namespace {
         glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint), &resInit, GL_DYNAMIC_COPY);
 
         if (glGetError() != GL_NO_ERROR) {
-            g_status = "Failed to allocate GPU memtester buffers";
+            g_status = "GPU 메모리 테스트 버퍼를 할당하지 못했습니다";
             g_error = true;
             glDeleteBuffers(3, bufs);
             glDeleteProgram(fill);
@@ -216,7 +216,7 @@ namespace {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bufs[1]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bufs[2]);
 
-        g_status = "Running";
+        g_status = "실행 중";
 
         while (!g_stop.load()) {
             uint32_t var = nextRandom();
@@ -228,7 +228,7 @@ namespace {
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_BUFFER_UPDATE_BARRIER_BIT);
             glFinish();
             if (glGetError() != GL_NO_ERROR) {
-                g_status = "GPU error during GPU memtester";
+                g_status = "GPU 메모리 테스트 중 GPU 오류가 발생했습니다";
                 g_error = true;
                 break;
             }
@@ -256,7 +256,7 @@ namespace {
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_BUFFER_UPDATE_BARRIER_BIT);
             glFinish();
             if (glGetError() != GL_NO_ERROR) {
-                g_status = "GPU error during GPU memtester";
+                g_status = "GPU 메모리 테스트 중 GPU 오류가 발생했습니다";
                 g_error = true;
                 break;
             }
@@ -290,7 +290,7 @@ namespace {
         eglDown();
 
         if (!g_error.load())
-            g_status = "Stopped";
+            g_status = "중지됨";
         g_running.store(false);
     }
 
@@ -306,7 +306,7 @@ extern "C" void mt_gpu_start(int full) {
     g_loop.store(0);
     g_mismatches.store(0);
     g_size_mb.store(0);
-    g_status = "Preparing GPU memtester...";
+    g_status = "GPU 메모리 테스트 준비 중...";
     g_running.store(true);
     appletSetAutoSleepDisabled(true);
     g_thread = std::thread(worker, full != 0);

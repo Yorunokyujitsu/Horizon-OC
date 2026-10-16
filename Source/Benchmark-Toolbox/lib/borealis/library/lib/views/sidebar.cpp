@@ -206,6 +206,8 @@ SidebarSeparator::SidebarSeparator()
 void SidebarSeparator::draw(NVGcontext* vg, float x, float y, float width, float height, Style style, FrameContext* ctx)
 {
     float midY = y + height / 2;
+    x -= 0.0f;
+    width += 27.0f;
 
     nvgBeginPath(vg);
     nvgFillColor(vg, ctx->theme["brls/sidebar/separator"]);

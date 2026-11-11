@@ -21,7 +21,7 @@
 #pragma once
 
 #define CUST_REV 7
-#define KIP_VERSION 260
+#define KIP_VERSION 261
 
 #include "oc_common.hpp"
 #include "pcv/pcv_common.hpp"

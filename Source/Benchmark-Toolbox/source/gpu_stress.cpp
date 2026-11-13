@@ -110,20 +110,20 @@ static StressState g;
 static bool stress_init(void) {
     g.device = dk::DeviceMaker{}.create();
     if (!g.device) {
-        printf("deko3d: device create failed\n");
+        printf("deko3d: 장치 생성 실패\n");
         return false;
     }
 
     g.queue = dk::QueueMaker{ g.device }.setFlags(DkQueueFlags_Compute).create();
     if (!g.queue) {
-        printf("deko3d: queue create failed\n");
+        printf("deko3d: 작업 생성 실패\n");
         return false;
     }
 
     uint32_t codeSize = round_up_4k(compute_shader_bin_size);
     g.codeBlock = dk::MemBlockMaker{ g.device, codeSize }.setFlags(kCodeFlags).create();
     if (!g.codeBlock) {
-        printf("deko3d: code memblock failed\n");
+        printf("deko3d: 코드 메모리 블록을 생성 실패\n");
         return false;
     }
     memcpy(g.codeBlock.getCpuAddr(), compute_shader_bin, compute_shader_bin_size);
@@ -136,7 +136,7 @@ static bool stress_init(void) {
     g.outBBlock = dk::MemBlockMaker{ g.device, kOutBytes }.setFlags(kDataFlags).create();
     g.cmdmemBlock = dk::MemBlockMaker{ g.device, kCmdbufSz }.setFlags(kDataFlags).create();
     if (!g.paramsBlock || !g.seedBlock || !g.scratchBlock || !g.outABlock || !g.outBBlock || !g.cmdmemBlock) {
-        printf("deko3d: memblock alloc failed\n");
+        printf("deko3d: 메모리 블록 할당 실패\n");
         return false;
     }
 
@@ -161,7 +161,7 @@ static bool stress_init(void) {
 
     g.cmdbuf = dk::CmdBufMaker{ g.device }.create();
     if (!g.cmdbuf) {
-        printf("deko3d: cmdbuf create failed\n");
+        printf("deko3d: 명령 버퍼 생성 실패\n");
         return false;
     }
 
@@ -207,13 +207,13 @@ static bool stress_init(void) {
         if (g.outA[i] != 0xcafebabeu)
             gpu_wrote = true;
     if (!gpu_wrote) {
-        printf("deko3d: golden dispatch produced no GPU writes\n");
+        printf("deko3d: 기준 데이터 생성 중 GPU 쓰기 미발생\n");
         return false;
     }
 
     g.golden = (uint32_t *)malloc(kOutBytes);
     if (!g.golden) {
-        printf("deko3d: OOM for golden\n");
+        printf("deko3d: 기준 버퍼용 메모리 부족\n");
         return false;
     }
     memcpy(g.golden, g.outA, kOutBytes);

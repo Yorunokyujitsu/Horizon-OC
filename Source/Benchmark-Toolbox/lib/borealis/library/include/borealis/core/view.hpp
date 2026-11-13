@@ -1224,6 +1224,16 @@ class View
 
     virtual float getAlpha(bool child = false);
 
+    virtual float getHighlightExtraLeft() const
+    {
+        return 0.0f;
+    }
+
+    virtual float getHighlightExtraRight() const
+    {
+        return 0.0f;
+    }
+
     /**
       * Forces this view and its children to use
       * the specified theme.

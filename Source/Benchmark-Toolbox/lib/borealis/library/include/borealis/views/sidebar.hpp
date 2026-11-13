@@ -62,6 +62,16 @@ class SidebarItem : public Box
 
     GenericEvent* getActiveEvent();
 
+    float getHighlightExtraLeft() const override
+    {
+        return 0.0f;
+    }
+
+    float getHighlightExtraRight() const override
+    {
+        return 27.0f;
+    }
+
   private:
     BRLS_BIND(Rectangle, accent, "brls/sidebar/item_accent");
     BRLS_BIND(Label, label, "brls/sidebar/item_label");

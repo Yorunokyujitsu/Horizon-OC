@@ -41,7 +41,7 @@ static volatile uint64_t s_total_mb = 0;
 static volatile int s_nthreads = 0;
 static int s_mode = 0;
 static bool s_coord_open = false;
-static const char *volatile s_cur_test = "Idle";
+static const char *volatile s_cur_test = "유휴 상태";
 static volatile int s_step = 0;
 
 #define MT_TESTS_COUNT 15
@@ -53,7 +53,7 @@ static int run_sequence(mt_worker_t *w) {
     ulv *bufb = (ulv *)((size_t)w->aligned + (words / 2) * sizeof(ul));
 
     if (w->idx == 0) {
-        s_cur_test = "Stuck Address";
+        s_cur_test = "고정 주소";
         s_step = 0;
     }
     if (mt_test_stuck_address((unsigned long volatile *)w->aligned, words))
@@ -231,7 +231,7 @@ static void coordinator(void *arg) {
         s_total_mb += (uint64_t)(bufsize >> MT_MEMSHIFT);
     }
 
-    s_cur_test = "Stuck Address";
+    s_cur_test = "고정 주소";
     s_step = 0;
 
     bool started[MT_MAX_THREADS] = { false };
@@ -270,7 +270,7 @@ void mt_cpu_start(int mode) {
     s_total_mb = 0;
     s_nthreads = 0;
     s_workers[0].loop = 0;
-    s_cur_test = "Preparing...";
+    s_cur_test = "준비 중...";
     s_running = true;
     appletSetAutoSleepDisabled(true);
 

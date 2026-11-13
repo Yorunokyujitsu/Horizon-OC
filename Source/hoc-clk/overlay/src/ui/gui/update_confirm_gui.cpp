@@ -34,9 +34,9 @@ void UpdateConfirmGui::listUI() {
 
     addWrappedTextItems(this->listElement, m_changelog);
 
-    this->listElement->addItem(new tsl::elm::CategoryHeader("Confirm"));
+    this->listElement->addItem(new tsl::elm::CategoryHeader("업데이트"));
 
-    auto *installItem = new tsl::elm::ListItem("Install Update");
+    auto *installItem = new tsl::elm::ListItem("다운로드 및 설치");
     installItem->setValue("");
     installItem->setClickListener([this](u64 keys) -> bool {
         if ((keys & HidNpadButton_A) == HidNpadButton_A) {

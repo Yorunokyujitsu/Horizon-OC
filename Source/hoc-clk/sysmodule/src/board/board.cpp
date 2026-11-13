@@ -238,7 +238,39 @@ namespace board {
         return gConsoleType;
     }
 
+    // Match Fusee's selected DRAM ID rule using the running MC configuration.
+    // Cache the secure-monitor read so DRAM ID and capacity share one snapshot.
+    namespace {
+        struct DramCapacitySnapshot {
+            bool valid;
+            u32 ememCfg;
+        };
+
+        DramCapacitySnapshot GetDramCapacitySnapshot() {
+            static const DramCapacitySnapshot snapshot = []() {
+                SecmonArgs args = {};
+                args.X[0] = 0xF0000002;
+                args.X[1] = MC_REGISTER_BASE + MC_EMEM_CFG_0;
+                svcCallSecureMonitor(&args);
+
+                if (args.X[1] == (MC_REGISTER_BASE + MC_EMEM_CFG_0)) {
+                    notification::writeNotification("Secmon 읽기 실패!\n하드웨어 문제일 수 있음");
+                    return DramCapacitySnapshot{false, 0};
+                }
+                return DramCapacitySnapshot{true, static_cast<u32>(args.X[1]) & 0x3FFF};
+            }();
+            return snapshot;
+        }
+    }
+
     u8 GetDramID() {
+        const auto snapshot = GetDramCapacitySnapshot();
+        if (snapshot.valid) {
+            if (GetSocType() == HocClkSocType_Erista && snapshot.ememCfg == 0x1800)
+                return 4;
+            if (GetSocType() == HocClkSocType_Mariko && snapshot.ememCfg == 0x2000)
+                return 28;
+        }
         return soc::mrr::IdentifyDramId();
     }
 
@@ -247,17 +279,8 @@ namespace board {
     }
 
     bool IsDram8GB() {
-        SecmonArgs args = {};
-        args.X[0] = 0xF0000002;
-        args.X[1] = MC_REGISTER_BASE + MC_EMEM_CFG_0;
-        svcCallSecureMonitor(&args);
-
-        if (args.X[1] == (MC_REGISTER_BASE + MC_EMEM_CFG_0)) {  // if param 1 is identical read failed
-            notification::writeNotification("Horizon OC\nSecmon read failed!\n This may be a hardware issue!");
-            return false;
-        }
-
-        return args.X[1] == 0x00002000 ? true : false;
+        const auto snapshot = GetDramCapacitySnapshot();
+        return snapshot.valid && GetSocType() == HocClkSocType_Mariko && snapshot.ememCfg == 0x2000;
     }
 
     /* TODO: Put this into a different file. */

@@ -57,11 +57,11 @@ private:
     };
 
     static constexpr PackageInfo kPackages[2] = {
-        {"Horizon OC",     "https://github.com/Horizon-OC/Horizon-OC/releases/latest/download/dist.zip", "sdmc:/config/horizon-oc/dist.zip"},
-        {"Horizon OC + Extensions", "https://github.com/Horizon-OC/Horizon-OC/releases/latest/download/dist_ext.zip", "sdmc:/config/horizon-oc/dist_ext.zip"},
+        {"Horizon OC",     "https://raw.githubusercontent.com/Yorunokyujitsu/ASAP-NX/main/output/oc.zip", "sdmc:/config/sys-clk/oc.zip"},
+        {"Benchmark-Toolbox", "https://raw.githubusercontent.com/Yorunokyujitsu/ASAP-NX/main/output/oc_ext.zip", "sdmc:/config/sys-clk/oc_ext.zip"},
     };
 
-    static constexpr const char *kReleaseApiUrl = "https://api.github.com/repos/Horizon-OC/Horizon-OC/releases/latest";
+    static constexpr const char *kReleaseApiUrl = "https://api.github.com/repos/Yorunokyujitsu/Horizon-OC/releases/latest";
     static constexpr const char *kReleaseInfoPath = "sdmc:/config/horizon-oc/release_info.json";
 
     bool isBusy() const {

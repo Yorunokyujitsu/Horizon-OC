@@ -53,14 +53,14 @@ public:
         }
 
         if (m_stage == 1 || m_stage == 2) {
-            const char *opLabel = (m_stage == 1) ? "Downloading" : "Extracting";
+            const char *opLabel = (m_stage == 1) ? "다운로드 중..." : "압축 해제 중...";
             tsl::Color accent   = (m_stage == 1)
                 ? tsl::Color{0x4, 0x8, 0xF, 0xF}   // blue
                 : tsl::Color{0x3, 0xA, 0x8, 0xF};  // teal
 
-            renderer->drawString(opLabel,       false, x,       y + 20, 15, accent);
-            renderer->drawString(m_pkg.c_str(), false, x + 104, y + 20, 15,
-                                 tsl::sectionTextColor);
+            renderer->drawString(m_pkg.c_str(), false, x, y + 20, 15, tsl::sectionTextColor);
+            u32 pkgWidth = renderer->getTextDimensions(m_pkg.c_str(), false, 15).first;
+            renderer->drawString(opLabel, false, x + pkgWidth + 8, y + 20, 15, accent);
 
             const s32 barY = y + 48;
             renderer->drawRect(x, barY, w, 7, tsl::Color{0x3, 0x3, 0x3, 0xF});
@@ -127,7 +127,7 @@ void UpdateGui::startJob(int packageIndex, bool extractOnly) {
         m_threadActive = true;
         threadStart(&m_thread);
     } else {
-        m_resultMessage = "Failed to create thread";
+        m_resultMessage = "작업 스레드를 생성할 수 없습니다";
         m_stage.store(UpdateStage::Failed, std::memory_order_release);
         m_threadActive = false;
     }
@@ -150,7 +150,7 @@ void UpdateGui::startChangelogFetch(int packageIndex) {
         m_threadActive = true;
         threadStart(&m_thread);
     } else {
-        m_resultMessage = "Failed to create thread";
+        m_resultMessage = "작업 스레드를 생성할 수 없습니다";
         m_stage.store(UpdateStage::Failed, std::memory_order_release);
         m_threadActive = false;
     }
@@ -178,13 +178,13 @@ void UpdateGui::jobBody() {
 
     if (!m_extractOnly) {
         m_stage.store(UpdateStage::Downloading, std::memory_order_release);
-        ult::createDirectory("sdmc:/config/horizon-oc/");
+        ult::createDirectory("sdmc:/config/sys-clk/");
 
         bool ok = ult::downloadFile(pkg.url, pkg.zipPath, false, false);
         if (!ok || ult::abortDownload.load(std::memory_order_acquire)) {
             m_resultMessage = ult::abortDownload.load(std::memory_order_acquire)
-                ? "Download cancelled"
-                : "Download failed -- check network";
+                ? "다운로드 중단됨"
+                : "네트워크 연결 상태를 확인하세요";
             m_stage.store(
                 ult::abortDownload.load() ? UpdateStage::Cancelled : UpdateStage::Failed,
                 std::memory_order_release);
@@ -197,8 +197,8 @@ void UpdateGui::jobBody() {
     bool ok = ult::unzipFile(pkg.zipPath, "sdmc:/");
     if (!ok || ult::abortUnzip.load(std::memory_order_acquire)) {
         m_resultMessage = ult::abortUnzip.load(std::memory_order_acquire)
-            ? "Extraction cancelled"
-            : "Extraction failed -- archive may be corrupt";
+            ? "압축 해제 중단됨"
+            : "파일이 손상되었을 수 있습니다";
         m_stage.store(
             ult::abortUnzip.load() ? UpdateStage::Cancelled : UpdateStage::Failed,
             std::memory_order_release);
@@ -207,7 +207,7 @@ void UpdateGui::jobBody() {
 
     std::remove(pkg.zipPath);
 
-    m_resultMessage = "Update complete! Restart required.";
+    m_resultMessage = "업데이트 완료, 재부팅이 필요합니다";
     m_stage.store(UpdateStage::Done, std::memory_order_release);
 }
 
@@ -221,8 +221,8 @@ void UpdateGui::fetchChangelogBody() {
     bool ok = ult::downloadFile(kReleaseApiUrl, kReleaseInfoPath, false, false);
     if (!ok || ult::abortDownload.load(std::memory_order_acquire)) {
         m_resultMessage = ult::abortDownload.load(std::memory_order_acquire)
-            ? "Changelog fetch cancelled"
-            : "Could not fetch changelog -- check network";
+            ? "변경 내역 불러오기 취소됨"
+            : "네트워크 연결 상태를 확인하세요";
         m_stage.store(
             ult::abortDownload.load() ? UpdateStage::Cancelled : UpdateStage::Failed,
             std::memory_order_release);
@@ -233,7 +233,7 @@ void UpdateGui::fetchChangelogBody() {
     std::remove(kReleaseInfoPath);
 
     if (!root) {
-        m_resultMessage = "Could not parse changelog";
+        m_resultMessage = "변경 내역 파싱 실패";
         m_stage.store(UpdateStage::Failed, std::memory_order_release);
         return;
     }
@@ -255,7 +255,7 @@ void UpdateGui::fetchChangelogBody() {
         pos = nl + 1;
     }
     if (m_changelogLines.empty())
-        m_changelogLines.push_back("No changelog available for this release.");
+        m_changelogLines.push_back("변경 내역이 없습니다");
 
     m_stage.store(UpdateStage::ChangelogReady, std::memory_order_release);
 }
@@ -265,7 +265,7 @@ void UpdateGui::listUI() {
     BaseMenuGui::refresh();
     if (!this->context) return;
 
-    this->listElement->addItem(new tsl::elm::CategoryHeader("Releases"));
+    this->listElement->addItem(new tsl::elm::CategoryHeader("릴리즈"));
 
     for (int i = 0; i < 2; ++i) {
         auto *item = new tsl::elm::ListItem(kPackages[i].displayName);
@@ -277,7 +277,7 @@ void UpdateGui::listUI() {
             if (keys & HidNpadButton_A) {
                 if (ult::limitedMemory) {
                     m_status->setState(4, 100, kPackages[idx].displayName,
-                                       "Updates cannot be performed on a 4MB overlay heap");
+                                       "4MB 오버레이 힙에서는 업데이트를 수행할 수 없습니다");
                     return true;
                 }
                 startChangelogFetch(idx);
@@ -290,7 +290,7 @@ void UpdateGui::listUI() {
         this->listElement->addItem(item);
     }
 
-    this->listElement->addItem(new tsl::elm::CategoryHeader("Status"));
+    this->listElement->addItem(new tsl::elm::CategoryHeader("상태"));
 
     auto *panel = new UpdateStatusPanel();
     panel->setState(0, 0, "", "");
@@ -322,7 +322,7 @@ void UpdateGui::pollJob() {
     }
 
     if (stage == UpdateStage::FetchingChangelog) {
-        m_status->setState(6, 0, pkgName, "Fetching changelog...");
+        m_status->setState(6, 0, pkgName, "변경 내역 불러오는 중...");
         if (m_items[m_activePackage])
             m_items[m_activePackage]->setValue("...");
         return;
@@ -376,5 +376,5 @@ bool UpdateGui::handleInput(u64 keysDown, u64 keysHeld,
 }
 
 std::string UpdateGui::getJumpToItemName() {
-    return "Updates";
+    return "업데이트";
 }

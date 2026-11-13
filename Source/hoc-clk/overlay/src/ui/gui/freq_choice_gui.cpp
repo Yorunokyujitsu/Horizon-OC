@@ -100,7 +100,7 @@ void FreqChoiceGui::listUI() {
     hocclkIpcGetConfigValues(this->configList);
 
     // Header based on CPU/GPU/MEM module
-    std::string moduleName = hocclkFormatModule(this->module, false);
+    std::string moduleName = hocclkFormatModule(this->module, true);
     this->listElement->addItem(new tsl::elm::CategoryHeader(moduleName));
 
     // Default option
@@ -124,7 +124,7 @@ void FreqChoiceGui::listUI() {
         //     //     continue;
 
         if (checkMax && IsErista())
-            if (moduleName == "cpu" && this->configList->values[HocClkConfigValue_EristaMaxCpuClock] < mhz)
+            if (module == HocClkModule_CPU && this->configList->values[HocClkConfigValue_EristaMaxCpuClock] < mhz)
                 continue;
 
         //     // if (moduleName == "gpu" &&
@@ -136,7 +136,7 @@ void FreqChoiceGui::listUI() {
         //     //     continue;
         // }
 
-        if (moduleName == "mem" && mhz <= 600)
+        if (module == HocClkModule_MEM && mhz <= 600)
             continue;
 
         uint32_t unsafe_cpu;
@@ -162,7 +162,7 @@ void FreqChoiceGui::listUI() {
 
         int safety = 0;
 
-        if (moduleName == "cpu") {
+        if (module == HocClkModule_CPU) {
 
             if (mhz >= danger_cpu)
                 safety = 2;
@@ -171,7 +171,7 @@ void FreqChoiceGui::listUI() {
             else
                 safety = 0;
 
-        } else if (moduleName == "gpu") {
+        } else if (module == HocClkModule_GPU) {
 
             if (mhz >= danger_gpu)
                 safety = 2;
@@ -180,7 +180,7 @@ void FreqChoiceGui::listUI() {
             else
                 safety = 0;
 
-        } else if (moduleName == "mem") {
+        } else if (module == HocClkModule_MEM) {
 
             safety = 0;
         }

@@ -66,111 +66,123 @@ void AboutGui::listUI()
         return;
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Voltages")
+        new tsl::elm::CategoryHeader("전압")
     );
 
     ramVoltItem =
-        new tsl::elm::ListItem("RAM Voltage:");
+        new tsl::elm::ListItem("RAM");
 
     if(IsMariko()) {
         this->listElement->addItem(ramVoltItem);
     }
     dispVoltItem =
-        new tsl::elm::ListItem("Display Voltage:");
+        new tsl::elm::ListItem("디스플레이");
     this->listElement->addItem(dispVoltItem);
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Temperatures")
+        new tsl::elm::CategoryHeader("온도")
     );
     eristaPLLXItem =
-        new tsl::elm::ListItem("PLLX Temp:");
+        new tsl::elm::ListItem("PLLX");
     if(this->context->temps[HocClkThermalSensor_AO] > 0) { // Only show if the value is valid (not -126, which means not patched)
         this->listElement->addItem(eristaPLLXItem);
     }
 
     aotagTempItem =
-        new tsl::elm::ListItem("AOTAG Temp:");
+        new tsl::elm::ListItem("AOTAG");
     this->listElement->addItem(aotagTempItem);
 
     bqtempitem =
-        new tsl::elm::ListItem("BQ24193 Temp:");
+        new tsl::elm::ListItem("BQ24193");
     this->listElement->addItem(bqtempitem);
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("RAM Bandwidth")
+        new tsl::elm::CategoryHeader("RAM 대역폭")
     );
 
     ramBWItemMax =
-        new tsl::elm::ListItem("RAM BW (Peak):");
+        new tsl::elm::ListItem("피크");
     this->listElement->addItem(ramBWItemMax);
 
     ramBWItemAll =
-        new tsl::elm::ListItem("RAM BW (All):");
+        new tsl::elm::ListItem("전체");
     this->listElement->addItem(ramBWItemAll);
 
     ramBWItemCpu =
-        new tsl::elm::ListItem("RAM BW (CPU):");
+        new tsl::elm::ListItem("CPU");
     this->listElement->addItem(ramBWItemCpu);
 
     ramBWItemGpu =
-        new tsl::elm::ListItem("RAM BW (GPU):");
+        new tsl::elm::ListItem("GPU");
     this->listElement->addItem(ramBWItemGpu);
 
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Hardware Info")
+        new tsl::elm::CategoryHeader("하드웨어")
     );
 
     cTypeItem =
-        new tsl::elm::ListItem("Console Type:");
+        new tsl::elm::ListItem("디바이스");
     this->listElement->addItem(cTypeItem);
 
     SpeedoItem =
-        new tsl::elm::ListItem("Speedo:");
+        new tsl::elm::ListItem("Speedo");
     this->listElement->addItem(SpeedoItem);
 
     IddqItem =
-        new tsl::elm::ListItem("IDDQ:");
+        new tsl::elm::ListItem("IDDQ");
     this->listElement->addItem(IddqItem);
 
     DramModule =
-        new tsl::elm::ListItem("DRAM Module: ");
+        new tsl::elm::ListItem("DRAM 모듈");
     this->listElement->addItem(DramModule);
 
     waferCordsItem =
-        new tsl::elm::ListItem("Wafer Position:");
+        new tsl::elm::ListItem("웨이퍼 좌표");
     this->listElement->addItem(waferCordsItem);
 
     if(IsHoag()) {
         RETROStatusItem =
-            new tsl::elm::ListItem("RR Display status:");
+            new tsl::elm::ListItem("디스플레이");
         this->listElement->addItem(RETROStatusItem);
     }
 
     this->listElement->addItem(
-        new tsl::elm::CategoryHeader("Software Info")
+        new tsl::elm::CategoryHeader("소프트웨어")
     );
 
     // custRevItem = new tsl::elm::ListItem("CUST revision:");
     // this->listElement->addItem(custRevItem);
 
-    kipVersionItem = new tsl::elm::ListItem("KIP version:");
+    kipVersionItem = new tsl::elm::ListItem("KIP 버전");
     this->listElement->addItem(kipVersionItem);
 
-    kipLoadedItem = new tsl::elm::ListItem("KIP status:");
+    kipLoadedItem = new tsl::elm::ListItem("KIP 패치");
     this->listElement->addItem(kipLoadedItem);
 
     if(!IsHoag()) {
         sysdockStatusItem =
-            new tsl::elm::ListItem("sys-dock status:");
+            new tsl::elm::ListItem("sys-dock");
         this->listElement->addItem(sysdockStatusItem);
     }
 
     saltyNXStatusItem =
-        new tsl::elm::ListItem("SaltyNX status:");
+        new tsl::elm::ListItem("SaltyNX");
     this->listElement->addItem(saltyNXStatusItem);
 
     this->listElement->addItem(
+        new tsl::elm::CategoryHeader("크레딧")
+    );
+    tsl::elm::CustomDrawer* devCredits = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+        renderer->drawString("개발: Souldbminer, Lightos_", false, x + 20, y + 20, 18, tsl::style::color::ColorText);
+        //renderer->drawString("기여: Dom, Blaise25, tetetete-ctrl", false, x + 20, y + 40, 18, tsl::style::color::ColorText);
+        //renderer->drawString("B3711, MasaGratoR, Miki1305", false, x + 65, y + 60, 18, tsl::style::color::ColorText);
+        renderer->drawString("번역: Yorunokyujitsu", false, x + 20, y + 40, 18, tsl::style::color::ColorText);
+    });
+    devCredits->setBoundaries(0, 0, tsl::cfg::FramebufferWidth, 50);
+    this->listElement->addItem(devCredits);
+
+    /*this->listElement->addItem(
         new tsl::elm::CategoryHeader("General Info")
     );
 
@@ -183,7 +195,7 @@ void AboutGui::listUI()
         return false;
     });
     creditsItem->setValue(R_ARROW);
-    this->listElement->addItem(creditsItem);
+    this->listElement->addItem(creditsItem);*/
 
     if (!lastItemName.empty()) {
         this->listElement->jumpToItem(lastItemName);
@@ -230,7 +242,7 @@ std::string AboutGui::formatRamModule() {
 
         case 32 ... 34: return "WT:B 4GB";
 
-        default: return "Unknown";
+        default: return "알 수 없음";
     }
 }
 
@@ -240,7 +252,7 @@ void AboutGui::update()
 }
 
 std::string AboutGui::getJumpToItemName() {
-    return "About";
+    return "정보";
 }
 
 void AboutGui::refresh()
@@ -250,9 +262,9 @@ void AboutGui::refresh()
     if (!this->context)
         return;
     // Format strings once per refresh
-    sprintf(strings[0], "%u/%u/%u", this->context->speedos[HocClkSpeedo_CPU], this->context->speedos[HocClkSpeedo_GPU], this->context->speedos[HocClkSpeedo_SOC]);
+    sprintf(strings[0], "%u%u%u", this->context->speedos[HocClkSpeedo_CPU], this->context->speedos[HocClkSpeedo_GPU], this->context->speedos[HocClkSpeedo_SOC]);
     // This is how hekate does it
-    sprintf(strings[1], "%u/%u/%u", this->context->iddq[HocClkSpeedo_CPU], this->context->iddq[HocClkSpeedo_GPU], this->context->iddq[HocClkSpeedo_SOC]);
+    sprintf(strings[1], "%u%u%u", this->context->iddq[HocClkSpeedo_CPU], this->context->iddq[HocClkSpeedo_GPU], this->context->iddq[HocClkSpeedo_SOC]);
     SpeedoItem->setValue(strings[0]);
     IddqItem->setValue(strings[1]);
     DramModule->setValue(formatRamModule());
@@ -260,17 +272,17 @@ void AboutGui::refresh()
     // custRevItem->setValue(std::to_string(this->context->custRev));
 
     kipVersionItem->setValue(std::to_string((this->context->kipVersion / 100) % 10) + "." + std::to_string((this->context->kipVersion / 10) % 10) + "." + std::to_string( this->context->kipVersion % 10) + " (Cust Rev " + std::to_string(this->context->custRev) + ")");
-    kipLoadedItem->setValue(this->context->isKipLoaded ? "Loaded" : "Not Loaded");
+    kipLoadedItem->setValue(this->context->isKipLoaded ? "활성화됨" : "비활성화됨");
 
     if(!IsHoag())
-        sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "Installed" : "Not Installed");
+        sysdockStatusItem->setValue(this->context->isSysDockInstalled ? "설치됨" : "설치 안 됨");
 
-    saltyNXStatusItem->setValue(this->context->isSaltyNXInstalled ? "Installed" : "Not Installed");
+    saltyNXStatusItem->setValue(this->context->isSaltyNXInstalled ? "설치됨" : "설치 안 됨");
 
     if(IsHoag())
-        RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "Installed" : "Not Installed");
+        RETROStatusItem->setValue(this->context->isUsingRetroSuper ? "SUPER5 OLED" : "LCD");
 
-    sprintf(strings[2], "X: %d Y: %d", this->context->waferX, this->context->waferY);
+    sprintf(strings[2], "X: %dY: %d", this->context->waferX, this->context->waferY);
     waferCordsItem->setValue(strings[2]);
 
     s32 millis = context->temps[HocClkThermalSensor_PLLX];
@@ -281,9 +293,9 @@ void AboutGui::refresh()
     if(millis > 0) {
         sprintf(strings[11], "%u.%u °C", millis / 1000U, (millis % 1000U) / 100U);
     } else if (millis == -125) {
-        sprintf(strings[11], "Invalid");
+        sprintf(strings[11], "유효하지 않음");
     } else if (millis == -126) {
-        sprintf(strings[11], "Not Patched");
+        sprintf(strings[11], "패치되지 않음");
     }
     aotagTempItem->setValue(strings[11]);
 
@@ -307,19 +319,19 @@ void AboutGui::refresh()
 
     switch(context->temps[HocClkThermalSensor_BQ24193]) {
         case BQ24193Temp_Normal:
-            strcpy(strings[10], "Normal");
+            strcpy(strings[10], "정상");
             break;
         case BQ24193Temp_Warm:
-            strcpy(strings[10], "Warm");
+            strcpy(strings[10], "발열");
             break;
         case BQ24193Temp_Hot:
-            strcpy(strings[10], "Hot");
+            strcpy(strings[10], "고온");
             break;
         case BQ24193Temp_Overheat:
-            strcpy(strings[10], "Overheat");
+            strcpy(strings[10], "과열");
             break;
         default:
-            strcpy(strings[10], "Unknown");
+            strcpy(strings[10], "알 수 없음");
     }
 
     bqtempitem->setValue(strings[10]);
@@ -327,7 +339,7 @@ void AboutGui::refresh()
     cTypeItem->setValue(hocClkFormatConsoleType(this->context->consoleType, true));
 }
 
-class CreditsSubMenu : public AboutGui {
+/*class CreditsSubMenu : public AboutGui {
     public:
         CreditsSubMenu() { }
 
@@ -342,7 +354,7 @@ class CreditsSubMenu : public AboutGui {
             return false;
         }
 
-        /* This is needed because AboutGui::Refresh() dereferences pointers that get freed after swapTo is called. */
+        // This is needed because AboutGui::Refresh() dereferences pointers that get freed after swapTo is called.
         void refresh() override {
             BaseMenuGui::refresh();
         }
@@ -355,7 +367,7 @@ class CreditsSubMenu : public AboutGui {
 
         void listUI() override {
             this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Developers")
+                new tsl::elm::CategoryHeader("개발자")
             );
 
             this->listElement->addItem(
@@ -380,7 +392,7 @@ class CreditsSubMenu : public AboutGui {
 
             // ---- Contributors ----
             this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Contributors")
+                new tsl::elm::CategoryHeader("기여해 주신 분들")
             );
 
             this->listElement->addItem(
@@ -413,7 +425,7 @@ class CreditsSubMenu : public AboutGui {
 
             // ---- Testers ----
             this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Testers")
+                new tsl::elm::CategoryHeader("테스터 분들")
             );
 
             this->listElement->addItem(
@@ -454,11 +466,11 @@ class CreditsSubMenu : public AboutGui {
 
             // ---- Special Thanks ----
             this->listElement->addItem(
-                new tsl::elm::CategoryHeader("Special Thanks")
+                new tsl::elm::CategoryHeader("도움을 주신 분들")
             );
 
             this->listElement->addItem(
-                new tsl::elm::ListItem("SciresM, hexkyz and Alula - Atmosphere CFW")
+                new tsl::elm::ListItem("SciresM, hexkyz, Alula - Atmosphere")
             );
 
             this->listElement->addItem(
@@ -466,7 +478,7 @@ class CreditsSubMenu : public AboutGui {
             );
 
             this->listElement->addItem(
-                new tsl::elm::ListItem("hanai3Bi - Switch OC Suite & EOS")
+                new tsl::elm::ListItem("hanai3Bi - SOS & EOS")
             );
 
             this->listElement->addItem(
@@ -478,7 +490,7 @@ class CreditsSubMenu : public AboutGui {
             );
 
             this->listElement->addItem(
-                new tsl::elm::ListItem("CtCaer - Hekate, L4T and Proper Timings")
+                new tsl::elm::ListItem("CTCaer - Hekate, L4T, 타이밍")
             );
 
             // Create cat elements but hide them initially
@@ -495,4 +507,4 @@ class CreditsSubMenu : public AboutGui {
             this->listElement->addItem(CatSpacer);
         }
 
-};
+};*/
